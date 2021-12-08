@@ -1,0 +1,12 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div>
+    <form action="{% url 'authentication:register' %}" method="POST">
+    {% csrf_token %}
+        <p><input type="email" name="email"></p>
+        <p><input type="password" name="password"></p>
+        <p><input type="submit"></p>
+    </form>
+</div>
+{% endblock content %}
