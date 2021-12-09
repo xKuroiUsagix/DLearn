@@ -10,6 +10,7 @@ class Course(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=CASCADE, verbose_name=_('Owner'))
     group_name = models.CharField(max_length=60, null=True, blank=True, verbose_name=_('GroupName'))
     join_code = models.CharField(max_length=20, unique=True, verbose_name=_('JoinCode'))
+    password = models.CharField(max_length=128,  verbose_name=_('Password'))
     created_at = models.DateField(auto_now_add=True, verbose_name=_('CreatedAt'))
 
 
