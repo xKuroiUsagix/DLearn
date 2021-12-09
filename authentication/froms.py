@@ -2,7 +2,6 @@ from django.forms import ModelForm
 from django import forms
 
 from .models import CustomUser
-import json
 
 
 class RegistrationForm(ModelForm):
@@ -35,4 +34,11 @@ class RegistrationForm(ModelForm):
         if commit:
             user.save()
         return user
-            
+
+
+class LoginForm(ModelForm):
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput())
+    
+    class Meta:
+        model = CustomUser
+        fields = ['email']
