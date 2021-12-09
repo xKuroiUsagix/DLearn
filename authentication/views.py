@@ -53,7 +53,6 @@ class LoginView(View):
             login(request, user)
             user.is_active = True
             user.save()
-            # TODO: redirect to homepage
             return redirect('/home')
 
         return render(request, self.template_name, {'form': form})
@@ -64,6 +63,7 @@ class LogoutView(View):
         LogoutView provides opeartions for user logining out.
     """
     def get(self, request):
+        request.user.is_active = False
+        request.user.save()
         logout(request)
-        # TODO: redirect to homepage
         return redirect('/home')
