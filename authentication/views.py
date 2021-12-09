@@ -1,12 +1,21 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.views import View
 
 from .models import CustomUser
-from .froms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm
 
 
 class RegisterView(View):
+    """
+        RegisterView provides operations for user registration.
+        Attributes:
+        ----------
+        param template_name: Describes template name for render
+        type template_name: str
+        param form: Describes django-form for registration
+        type form: ModelForm
+    """
     template_name = 'authentication/register.html'
     form = RegistrationForm
     
@@ -23,6 +32,13 @@ class RegisterView(View):
     
 
 class LoginView(View):
+    """
+        LoginView provides operations for user loging in.
+        Attributes:
+        ----------
+        param template_name: Describes template name for render
+        type template_name: 
+    """
     template_name = 'authentication/login.html'
     form = LoginForm
     
@@ -33,12 +49,12 @@ class LoginView(View):
         form = self.form(request.POST)
         user = CustomUser.objects.get(email=form.data['email'])
         
-        if not user:
-            return redirect('/')
         if user.check_password(form.data['password']):
             login(request, user)
             user.is_active = True
             user.save()
+            # TODO: redirect to user profile or homepage (idk)
             return redirect('/')
-        return redirect('')
+
+        return render(request, self.template_name, {'form': form})
     

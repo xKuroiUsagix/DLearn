@@ -20,6 +20,11 @@ class RegistrationForm(ModelForm):
         ]
         
     def clean(self):
+        """Redefined method clean from ModelForm to add password confimation
+
+        Raises:
+            forms.ValidationError: raise if password and confirm password don't match
+        """
         cleaned_data = super(RegistrationForm, self).clean()
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
@@ -28,6 +33,15 @@ class RegistrationForm(ModelForm):
             raise forms.ValidationError('password and confirm password don\'t mathc')
     
     def save(self, commit=True):
+        """Redefined method save from ModelForm
+
+        Args:
+            commit (bool, optional): 
+            set to True in case to commit changes, set to False to get user object without commiting. Defaults to True.
+
+        Returns:
+            CustomUser: user object
+        """
         user = super(RegistrationForm, self).save(commit=False)
         user.set_password(self.cleaned_data['password'])
         
