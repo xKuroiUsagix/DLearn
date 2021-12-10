@@ -106,7 +106,7 @@ class CourseJoinForm(forms.ModelForm):
         """
         user_course = UserCourse()
         user_course.user = self.user
-        user_course.course =  self.cleaned_data.get('course')
+        user_course.course = self.cleaned_data.get('course')
         
         if commit:
             user_course.save()

@@ -46,14 +46,14 @@ class LoginView(View):
         return render(request, self.template_name, {'form': self.form})
     
     def post(self, request):
-        form = self.form(request.POST)
-        user = CustomUser.objects.get(email=form.data['email'])
+        form = self.form(request.user, request.POST)
         
-        if user.check_password(form.data['password']):
+        if form.is_valid():
+            user = form.save(commit=False)
             login(request, user)
             user.is_active = True
             user.save()
-            return redirect('/home')
+            return redirect('/')
 
         return render(request, self.template_name, {'form': form})
 
@@ -63,7 +63,8 @@ class LogoutView(View):
         LogoutView provides opeartions for user logining out.
     """
     def get(self, request):
-        request.user.is_active = False
-        request.user.save()
-        logout(request)
-        return redirect('/home')
+        if request.user.is_authenticated:
+            request.user.is_active = False
+            request.user.save()
+            logout(request)
+        return redirect('/')

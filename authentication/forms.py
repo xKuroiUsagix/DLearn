@@ -1,12 +1,11 @@
 from django.utils.translation import gettext_lazy as _
-from django.forms import ModelForm
 from django import forms
 
 from .models import CustomUser
 from .validators import is_password_valid
 
 
-class RegistrationForm(ModelForm):
+class RegistrationForm(forms.ModelForm):
     
     password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
     confirm_password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
@@ -63,10 +62,25 @@ class RegistrationForm(ModelForm):
         return user
 
 
-class LoginForm(ModelForm):
+class LoginForm(forms.ModelForm):
     
     password = forms.CharField(max_length=30, widget=forms.PasswordInput())
     
     class Meta:
         model = CustomUser
         fields = ['email']
+    
+    # TODO: Fix the fields not set bug
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(LoginForm, self).__init__(*args, **kwargs)
+    
+    def clean(self):
+        cleaned_data = super(LoginForm, self).clean()
+        self._validate_unique = False
+        user = CustomUser.objects.get(email=cleaned_data['email'])
+        
+        if not user.is_authenticated:
+            raise forms.ValidationError(_('You have already logged in'))
+        if not user or not user.check_password(cleaned_data['password']):
+            raise forms.ValidationError(_('Bad course Login or Password'))

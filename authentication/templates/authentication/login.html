@@ -6,8 +6,8 @@
     {{ form.as_p }}
     <input type="submit">
 </form>
-<a href="{% url 'authentication:logout' %}">logut</a><br>
 {% if user.is_authenticated %}
     Current user is {{ user.email }}
+    <a href="{% url 'authentication:logout' %}">logut</a><br>
 {% endif %}
 {% endblock content %}

@@ -36,6 +36,8 @@ class CourseJoinView(View):
     form = CourseJoinForm
     
     def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect('/auth/login')
         return render(request, self.template_name, {'form': self.form})
     
     def post(self, request):
