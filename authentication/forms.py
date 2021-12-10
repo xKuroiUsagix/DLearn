@@ -1,6 +1,4 @@
-import re
-from django.core.exceptions import ValidationError
-
+from django.utils.translation import gettext_lazy as _
 from django.forms import ModelForm
 from django import forms
 
@@ -9,8 +7,9 @@ from .validators import is_password_valid
 
 
 class RegistrationForm(ModelForm):
-    password = forms.CharField(max_length=30, min_length=6, widget=forms.PasswordInput())
-    confirm_password = forms.CharField(max_length=30, min_length=6, widget=forms.PasswordInput())
+    
+    password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
+    confirm_password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
     patronymic = forms.CharField(max_length=30, required=False, widget=forms.TextInput())
     
     class Meta:
@@ -40,9 +39,9 @@ class RegistrationForm(ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         
         if is_password_valid(password):
-            raise forms.ValidationError('passwrod should contains at least 1 character, at least 1 number')
+            raise forms.ValidationError(_('passwrod should contains at least 1 character, at least 1 number'))
         if password != confirm_password:
-            raise forms.ValidationError('password and confirm password don\'t match')
+            raise forms.ValidationError(_('password and confirm password don\'t match'))
     
     def save(self, commit=True):
         """Redefined method save from ModelForm
@@ -63,6 +62,7 @@ class RegistrationForm(ModelForm):
 
 
 class LoginForm(ModelForm):
+    
     password = forms.CharField(max_length=30, widget=forms.PasswordInput())
     
     class Meta:
