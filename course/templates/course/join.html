@@ -1,4 +1,4 @@
-{% extends 'authentication/base.html' %}
+{% extends 'homepage/_base.html' %}
 {% block content %}
 <form action="{% url 'course:join' %}" method="POST">
     {% csrf_token %}
