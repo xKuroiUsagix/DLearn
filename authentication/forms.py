@@ -32,7 +32,9 @@ class RegistrationForm(ModelForm):
         """Redefined method clean from ModelForm to add password confimation
 
         Raises:
-            forms.ValidationError: raise if password and confirm password don't match
+            forms.ValidationError: 
+                - raise if password and confirm password don't match
+                - raise of password doesn't contain at least 1 character and at least 1 number
         """
         cleaned_data = super(RegistrationForm, self).clean()
         password = cleaned_data.get('password')

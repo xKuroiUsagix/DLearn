@@ -47,8 +47,9 @@ class Course(models.Model):
 
         Args:
             raw_password (str): potential password of the course
+            
         Return:
-            (bool): True if password and raw_password same, else False
+            bool: True if password and raw_password same, else False
         """
         def setter(raw_password):
             self.set_password(raw_password)
