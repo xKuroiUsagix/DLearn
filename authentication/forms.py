@@ -39,7 +39,7 @@ class RegistrationForm(forms.ModelForm):
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
         
-        if is_password_valid(password):
+        if not is_password_valid(password):
             raise forms.ValidationError(_('passwrod should contains at least 1 character, at least 1 number'))
         if password != confirm_password:
             raise forms.ValidationError(_('password and confirm password don\'t match'))

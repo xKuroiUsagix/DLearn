@@ -15,4 +15,4 @@ def is_password_valid(password):
     #   at least 1 number
     #   at least length >= 6
     pattern = r'(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'
-    return not bool(re.match(pattern, password))
+    return bool(re.fullmatch(pattern, password))

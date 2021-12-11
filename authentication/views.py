@@ -28,7 +28,7 @@ class RegisterView(View):
 
     def post(self, request):
         form = self.form(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('/')
