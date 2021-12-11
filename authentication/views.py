@@ -2,6 +2,7 @@ from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext_lazy as _
 
 from .models import CustomUser
 from .forms import RegistrationForm, LoginForm
@@ -57,7 +58,7 @@ class LoginView(View):
             user = None
         
         if not user or user.check_password(form.data['password']):
-            form.errors['email'] = form.error_class(['No such user with this email and password'])
+            form.errors['email'] = form.error_class([_('No such user with this email and password')])
             return render(request, self.template_name, {'form': form})
         
         login(request, user)
