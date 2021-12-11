@@ -71,5 +71,5 @@ class UserCourse(models.Model):
         type joined_at: timestamp, auto_now_add=True
     """
     user = models.ForeignKey(CustomUser, on_delete=CASCADE, verbose_name=_('User'))
-    course = models.ForeignKey(Course, on_delete=DO_NOTHING, verbose_name=_('Course'))
+    course = models.ForeignKey(Course, on_delete=CASCADE, verbose_name=_('Course'))
     joined_at = models.DateTimeField(auto_now_add=True, verbose_name=_('JoinedAt'))

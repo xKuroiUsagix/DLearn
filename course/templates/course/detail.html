@@ -1,0 +1,12 @@
+{% extends 'homepage/_base.html' %}
+{% block content %}
+<p>{{ course.name }}</p>
+<p>{{ course.group_name }}</p>
+<p>{{ course.owner.email }}</p>
+{% if is_owner %}
+<form action="{% url 'course:detail' course.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
+{% endif %}
+{% endblock content %}
