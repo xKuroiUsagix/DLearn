@@ -6,7 +6,12 @@
 {% if is_owner %}
 <form action="{% url 'course:detail' course.id %}" method="POST">
     {% csrf_token %}
-    <input type="submit" value="Delete">
+    <input type="submit" value="Delete" name="delete">
+</form>
+{% else %}
+<form action="{% url 'course:detail' course.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Leave" name="leave">
 </form>
 {% endif %}
 {% endblock content %}

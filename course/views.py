@@ -113,8 +113,14 @@ class CourseDetailView(View):
     
     def post(self, request, pk, *args, **kwargs):
         course = self.model.objects.get(id=pk)
-        if course.owner != request.user:
+        if course.owner != request.user and request.POST.get('delete'):
             return HttpResponseForbidden()
+        if request.POST.get('leave'):
+            user_course = UserCourse.objects.get(user=request.user, course=course)
+            user_course.delete()
+            return redirect('/course/joined-courses/')
         
         course.delete()
         return redirect('/course/owned-courses/')
+        
+        
