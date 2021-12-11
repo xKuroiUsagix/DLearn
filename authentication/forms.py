@@ -69,18 +69,3 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['email']
-    
-    # TODO: Fix the fields not set bug
-    def __init__(self, user, *args, **kwargs):
-        self.user = user
-        super(LoginForm, self).__init__(*args, **kwargs)
-    
-    def clean(self):
-        cleaned_data = super(LoginForm, self).clean()
-        self._validate_unique = False
-        user = CustomUser.objects.get(email=cleaned_data['email'])
-        
-        if not user.is_authenticated:
-            raise forms.ValidationError(_('You have already logged in'))
-        if not user or not user.check_password(cleaned_data['password']):
-            raise forms.ValidationError(_('Bad course Login or Password'))

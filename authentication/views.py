@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import CustomUser
 from .forms import RegistrationForm, LoginForm
@@ -20,11 +21,13 @@ class RegisterView(View):
     form = RegistrationForm
     
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('/')
         return render(request, self.template_name, {'form': self.form})
 
     def post(self, request):
         form = self.form(request.POST)
-        if form.is_valid():
+        if form.is_valid:
             user = form.save()
             login(request, user)
             return redirect('/')
@@ -46,16 +49,22 @@ class LoginView(View):
         return render(request, self.template_name, {'form': self.form})
     
     def post(self, request):
-        form = self.form(request.user, request.POST)
+        form = self.form(request.POST)
         
-        if form.is_valid():
-            user = form.save(commit=False)
-            login(request, user)
-            user.is_active = True
-            user.save()
-            return redirect('/')
+        try:
+            user = CustomUser.objects.get(email=form.data['email'])
+        except ObjectDoesNotExist:
+            user = None
+        
+        if not user or user.check_password(form.data['password']):
+            form.errors['email'] = form.error_class(['No such user with this email and password'])
+            return render(request, self.template_name, {'form': form})
+        
+        login(request, user)
+        user.is_active = True
+        user.save()
 
-        return render(request, self.template_name, {'form': form})
+        return redirect('/')
 
 
 class LogoutView(View):
