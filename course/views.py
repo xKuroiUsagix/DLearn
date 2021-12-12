@@ -4,8 +4,9 @@ from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
+from authentication.errors import ErrorMessages
 from .models import Course, UserCourse
-from .forms import CourseCreateForm, CourseJoinForm
+from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
 
 class CourseCreateView(View):
@@ -46,13 +47,13 @@ class CourseJoinView(View):
             course = None
         
         if not course or not course.check_password(form.data['password']):
-            form.errors['join_code'] = form.error_class([_('Bad course Join Code or Password')])
+            form.errors['join_code'] = form.error_class([ErrorMessages.BAD_PASSWORD_OR_JOINCODE_ERROR])
             return render(request, self.template_name, {'form': form})
         if UserCourse.objects.filter(user=request.user, course=course):
-            form.errors['join_code'] = form.error_class([_('You have already joined this course.')])
+            form.errors['join_code'] = form.error_class([ErrorMessages.USER_ALREADY_JOINED_ERROR])
             return render(request, self.template_name, {'form': form})
         if Course.objects.filter(owner=request.user):
-            form.errors['join_code'] = form.error_class([_('You are the owner of this course')])
+            form.errors['join_code'] = form.error_class([ErrorMessages.USER_IS_OWNER_ERROR])
             return render(request, self.template_name, {'form': form})
         
         user_course = UserCourse()
@@ -126,3 +127,39 @@ class CourseDetailView(View):
         return redirect('/course/owned-courses/')
         
         
+class CourseUpdateView(View):
+    
+    model = Course
+    form = CourseUpdateForm
+    template_name = 'course/settings.html'
+    
+    def get(self, request, pk, *args, **kwargs):
+        course = self.model.objects.get(id=pk)
+        context = {
+            'course': course,
+            'form': self.form(instance=course)
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        course = self.model.objects.get(id=pk)
+        form = self.form(request.POST, instance=course)
+        context = {
+            'course': course,
+            'form': form
+        }
+        
+        if not form.is_valid():
+            return render(request, self.template_name, context)
+        
+        if form.data['name'] != course.name:
+            course.name = form.data['name']
+        if form.data['new_password']:
+            course.set_password(form.data['new_password'])
+        if form.data['join_code'] != course.join_code:
+            course.join_code = form.data['join_code']
+        if form.data['group_name'] != course.group_name:
+            course.group_name = form.data['group_name']
+        
+        course.save()
+        return redirect(f'/course/{course.id}/')
