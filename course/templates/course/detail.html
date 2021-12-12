@@ -8,6 +8,7 @@
     {% csrf_token %}
     <input type="submit" value="Delete" name="delete">
 </form>
+<a href="{% url 'course:settings' course.id %}"><button>Settings</button></a>
 {% else %}
 <form action="{% url 'course:detail' course.id %}" method="POST">
     {% csrf_token %}

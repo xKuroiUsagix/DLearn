@@ -4,6 +4,7 @@ from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
+from .errors import ErrorMessages
 from .models import CustomUser
 from .forms import RegistrationForm, LoginForm
 
@@ -58,7 +59,7 @@ class LoginView(View):
             user = None
         
         if not user or user.check_password(form.data['password']):
-            form.errors['email'] = form.error_class([_('No such user with this email and password')])
+            form.errors['email'] = form.error_class([ErrorMessages.USER_NOT_FOUND_ERROR])
             return render(request, self.template_name, {'form': form})
         
         login(request, user)

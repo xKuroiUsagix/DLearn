@@ -1,6 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from django import forms
 
+from .errors import ErrorMessages
 from .models import CustomUser
 from .validators import is_password_valid
 
@@ -40,9 +41,9 @@ class RegistrationForm(forms.ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         
         if not is_password_valid(password):
-            raise forms.ValidationError(_('passwrod should contains at least 1 character, at least 1 number'))
+            raise forms.ValidationError(ErrorMessages.PASSWORD_VALIDATION_ERROR)
         if password != confirm_password:
-            raise forms.ValidationError(_('password and confirm password don\'t match'))
+            raise forms.ValidationError(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
     
     def save(self, commit=True):
         """Redefined method save from ModelForm
