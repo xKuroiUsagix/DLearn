@@ -9,6 +9,7 @@
     <input type="submit" value="Delete" name="delete">
 </form>
 <a href="{% url 'course:settings' course.id %}"><button>Settings</button></a>
+<a href="{% url 'task:create' course.id %}"><button>Add Task</button></a>
 {% else %}
 <form action="{% url 'course:detail' course.id %}" method="POST">
     {% csrf_token %}

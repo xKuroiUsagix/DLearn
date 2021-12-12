@@ -33,6 +33,9 @@ class Course(models.Model):
     
     _password = None
     
+    def __str__(self):
+        return self.name
+    
     def set_password(self, raw_password):
         """Sets the course password
 
