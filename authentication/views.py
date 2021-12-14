@@ -23,8 +23,6 @@ class RegisterView(View):
     form = RegistrationForm
     
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('/')
         return render(request, self.template_name, {'form': self.form})
 
     def post(self, request):

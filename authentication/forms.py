@@ -6,11 +6,27 @@ from .models import CustomUser
 from .validators import is_password_valid
 
 
+def set_default_attrs(**kwargs):
+    attrs = {
+        'class': 'form-control'
+    }
+    for k, v in kwargs.items():
+        attrs[k] = v
+    
+    return attrs
+
+
 class RegistrationForm(forms.ModelForm):
     
-    password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
-    confirm_password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
-    patronymic = forms.CharField(max_length=30, required=False, widget=forms.TextInput())
+    password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput(
+        attrs=set_default_attrs(placeholder='Password')
+    ))
+    confirm_password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput(
+        attrs=set_default_attrs(placeholder='Confirm Password')
+    ))
+    patronymic = forms.CharField(max_length=30, required=False, widget=forms.TextInput(
+        attrs=set_default_attrs(placeholder='Patronymic')
+    ))
     
     class Meta:
         model = CustomUser
@@ -23,9 +39,9 @@ class RegistrationForm(forms.ModelForm):
             'patronymic',
         ]
         widgets = {
-            'email': forms.EmailInput(),
-            'first_name': forms.TextInput(),
-            'last_name': forms.TextInput(),
+            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Email')),
+            'first_name': forms.TextInput(attrs=set_default_attrs(placeholder='First Name')),
+            'last_name': forms.TextInput(attrs=set_default_attrs(placeholder='Last Name')),
         }
         
     def clean(self):

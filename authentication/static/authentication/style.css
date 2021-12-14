@@ -1,0 +1,15 @@
+.form-container {
+    width: 40%;
+    padding: 2.5%;
+    box-shadow: 0px 0px 5px gray;
+}
+
+.form-control {
+    margin-bottom: 2%;
+}
+
+.form-button {
+    height: auto;
+    width: 30%;
+    margin-top: 4%;
+}

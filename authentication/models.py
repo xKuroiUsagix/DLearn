@@ -35,8 +35,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     email = models.EmailField(verbose_name=_('Email'), max_length=40, unique=True, validators=[validate_email])
     password = models.CharField(verbose_name=_('Password'), max_length=255)
-    first_name = models.CharField(verbose_name=_('FirstName'), max_length=30, null=True)
-    last_name = models.CharField(verbose_name=_('LastName'), max_length=30, null=True)
+    first_name = models.CharField(verbose_name=_('First Name'), max_length=30, null=True)
+    last_name = models.CharField(verbose_name=_('Last Name'), max_length=30, null=True)
     patronymic = models.CharField(verbose_name=_('Patronymic'), max_length=30, null=True)
     created_at = models.DateField(verbose_name=_('CreatedAt'), auto_now_add=True)
     role = models.IntegerField(default=0, choices=ROLE_CHOICES)
