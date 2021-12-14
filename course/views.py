@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from authentication.errors import ErrorMessages
+from task.models import Task
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
@@ -103,9 +104,11 @@ class CourseDetailView(View):
     
     def get(self, request, pk, *args, **kwargs):
         course = self.model.objects.get(id=pk)
+        tasks = Task.objects.filter(course=course)
         is_owner = True if course.owner == request.user else False
         
         context = {
+            'tasks': tasks,
             'course': course,
             'is_owner': is_owner
         }

@@ -119,5 +119,5 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = LOGIN_URL
 
-MEDIA_ROOT = BASE_DIR / 'homepage/media'
+MEDIA_ROOT = BASE_DIR / 'uploads/'
 MEDIA_URL = '/media/'
