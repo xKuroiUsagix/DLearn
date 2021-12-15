@@ -24,6 +24,12 @@
         {% if task.do_up_to %}
             <small>Do To {{ task.do_up_to }}</small>
         {% endif %}
+        {% if is_owner %}
+            <form action="{% url 'task:delete' course.id task.id %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Delete">
+            </form>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>

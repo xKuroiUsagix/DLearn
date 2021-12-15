@@ -57,3 +57,12 @@ class TaskDetailView(View):
     def get(self, request, course_id, task_id):
         task = self.model.objects.get(id=task_id)
         return render(request, self.tempalte_name, {'task': task})
+
+
+class TaskDeleteView(View):
+    
+    model = Task
+    
+    def post(self, request, course_id, task_id):
+        self.model.objects.get(id=task_id).delete()
+        return redirect(f'/course/{course_id}/')

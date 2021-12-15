@@ -3,7 +3,7 @@
 <br>
 Current user is 
     {% if user.is_authenticated %}
-        {{ user.email }}
+        {{ user.first_name }} {{ user.last_name }}
     {% else %}
         NotLogedIn
     {% endif %}
