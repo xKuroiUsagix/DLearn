@@ -11,11 +11,6 @@ ROLE_CHOICES = (
     (0, 'common_user'),
     (1, 'admin')
 )
-BIOLOGY_SEX_CHOICES = (
-    (0, 'Male'),
-    (1, 'Female')
-)
-
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -40,8 +35,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(verbose_name=_('Password'), max_length=255)
     first_name = models.CharField(verbose_name=_('First Name'), max_length=30, null=True)
     last_name = models.CharField(verbose_name=_('Last Name'), max_length=30, null=True)
-    birthday = models.DateField(verbose_name=_('Birthday'), null=True, blank=True)
-    biology_sex = models.SmallIntegerField(verbose_name=_('Biology Sex'), choices=BIOLOGY_SEX_CHOICES)
     created_at = models.DateField(verbose_name=_('CreatedAt'), auto_now_add=True)
     role = models.IntegerField(default=0, choices=ROLE_CHOICES)
     is_superuser = models.BooleanField(default=False)

@@ -1,6 +1,7 @@
 .form-container {
     width: 40%;
     padding: 2.5%;
+    padding-bottom: 1%;
     box-shadow: 0px 0px 5px gray;
 }
 
@@ -10,6 +11,6 @@
 
 .form-button {
     height: auto;
-    width: 30%;
+    width: 50%;
     margin-top: 4%;
 }

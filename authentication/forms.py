@@ -8,11 +8,6 @@ from .models import CustomUser
 from .validators import is_password_valid
 
 
-BIRTH_DAY_CHOICES = [i+1 for i in range(31)]
-BIRTH_YEAR_CHOICES = [i for i in range(1920, datetime.now().year)]
-BIRTH_MONTH_CHOICES = [i+1 for i in range(12)]
-
-
 def set_default_attrs(**kwargs):
     attrs = {'class': 'form-control'}
     for k, v in kwargs.items():
@@ -22,15 +17,11 @@ def set_default_attrs(**kwargs):
 
 class RegistrationForm(forms.ModelForm):
     
-    password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput(
+    password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
         attrs=set_default_attrs(placeholder='Password')
     ))
-    confirm_password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput(
+    confirm_password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
         attrs=set_default_attrs(placeholder='Confirm Password')
-    ))
-    birthday = forms.DateField(widget=forms.SelectDateWidget(
-        months=BIRTH_MONTH_CHOICES,
-        years=BIRTH_YEAR_CHOICES,
     ))
     
     class Meta:
@@ -41,8 +32,6 @@ class RegistrationForm(forms.ModelForm):
             'confirm_password',
             'first_name',
             'last_name',
-            'birthday',
-            'biology_sex'
         ]
         widgets = {
             'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Email')),
@@ -63,9 +52,11 @@ class RegistrationForm(forms.ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         
         if not is_password_valid(password):
-            raise forms.ValidationError(ErrorMessages.PASSWORD_VALIDATION_ERROR)
+            self.errors['password'] = ErrorMessages.PASSWORD_VALIDATION_ERROR
+            return
         if password != confirm_password:
-            raise forms.ValidationError(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
+            self.errors['password'] = ErrorMessages.PASSWORD_NOT_MATCH_ERROR
+            return
     
     def save(self, commit=True):
         """Redefined method save from ModelForm

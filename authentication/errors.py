@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 class ErrorMessages:
     
     PASSWORD_VALIDATION_ERROR = _('Passwrod should contains at least 1 character, at least 1 number')
-    PASSWORD_NOT_MATCH_ERROR = _('Password and confirm password don\'t match')
+    PASSWORD_NOT_MATCH_ERROR = _('Password and Confirm Password don\'t match')
     BAD_PASSWORD_ERROR = _('Bad password')
     BAD_PASSWORD_OR_JOINCODE_ERROR = _('Bad course Join Code or Password')
     
