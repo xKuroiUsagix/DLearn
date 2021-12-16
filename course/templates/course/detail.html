@@ -3,18 +3,19 @@
 <p>{{ course.name }}</p>
 <p>{{ course.group_name }}</p>
 <p>{{ course.owner.email }}</p>
+
 {% if is_owner %}
-<form action="{% url 'course:detail' course.id %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Delete" name="delete">
-</form>
-<a href="{% url 'course:settings' course.id %}"><button>Settings</button></a>
-<a href="{% url 'task:create' course.id %}"><button>Add Task</button></a>
+    <form action="{% url 'course:detail' course.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Delete">
+    </form>
+    <a href="{% url 'course:settings' course.id %}"><button>Settings</button></a>
+    <a href="{% url 'task:create' course.id %}"><button>Add Task</button></a>
 {% else %}
-<form action="{% url 'course:detail' course.id %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Leave" name="leave">
-</form>
+    <form action="{% url 'course:leave' course.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Leave">
+    </form>
 {% endif %}
 
 <h3>Tasks:</h3>
@@ -36,7 +37,7 @@
         {% endfor %}
     </ul>
 {% else %}
-There are no tasks for this course.
+There are no tasks for this course
 {% endif %}
 
 {% if is_owner %}

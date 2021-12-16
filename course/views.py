@@ -122,13 +122,8 @@ class CourseDetailView(View):
     def post(self, request, pk, *args, **kwargs):
         course = self.model.objects.get(id=pk)
         
-        if course.owner != request.user and request.POST.get('delete'):
+        if course.owner != request.user:
             return HttpResponseForbidden()
-        
-        if request.POST.get('leave'):
-            user_course = UserCourse.objects.get(user=request.user, course=course)
-            user_course.delete()
-            return redirect('/course/joined-courses/')
         
         course.delete()
         return redirect('/course/owned-courses/')
@@ -181,3 +176,13 @@ class KickUserView(View):
         user = CustomUser.objects.get(id=user_id)
         self.model.objects.get(user=user, course=course).delete()
         return redirect(f'/course/{course.id}/')
+    
+    
+class LeaveFromCourseView(View):
+    
+    model = UserCourse
+    
+    def post(self, request, course_id):
+        course = Course.objects.get(id=course_id)
+        self.model.objects.get(user=request.user, course=course).delete()
+        return redirect('/course/joined-courses/')
