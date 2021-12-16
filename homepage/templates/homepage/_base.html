@@ -29,18 +29,33 @@
             </div>
             <div class="collapse navbar-collapse justify-content-end">
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'authentication:register' %}">
-                            <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/person.svg' %}">
-                            Sign Up
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'authentication:login' %}">
-                            <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/account-login.svg' %}">
-                            Login
-                        </a>
-                    </li>
+                    {% if not user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'authentication:register' %}">
+                                <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/person.svg' %}">
+                                Sign Up
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'authentication:login' %}">
+                                <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/account-login.svg' %}">
+                                Login
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'authentication:logout' %}">
+                                <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/account-logout.svg' %}">
+                                Logout
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/person.svg' %}">
+                                {{ user.email }}
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
