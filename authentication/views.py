@@ -17,7 +17,7 @@ class RegisterView(View):
         param template_name: Describes template name for render
         type template_name: str
         param form: Describes django-form for registration
-        type form: ModelForm
+        type form: RegistrationForm
     """
     template_name = 'authentication/register.html'
     form = RegistrationForm
@@ -40,7 +40,9 @@ class LoginView(View):
         Attributes:
         ----------
         param template_name: Describes template name for render
-        type template_name: 
+        type template_name: str
+        param form: Describes django-form for logining in
+        type form: LoginForm
     """
     template_name = 'authentication/login.html'
     form = LoginForm
