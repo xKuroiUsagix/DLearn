@@ -1,5 +1,6 @@
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +14,6 @@ from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
 class CourseCreateView(View):
     
-    model = Course
     template_name = 'course/create.html'
     form = CourseCreateForm
     
@@ -44,7 +44,7 @@ class CourseJoinView(View):
         form = self.form(request.POST)
         
         try:
-            course = Course.objects.get(join_code=form.data['join_code'])
+            course = self.model.objects.get(join_code=form.data['join_code'])
         except ObjectDoesNotExist:
             course = None
         
@@ -104,7 +104,7 @@ class CourseDetailView(View):
     template_name = 'course/detail.html'
     
     def get(self, request, pk, *args, **kwargs):
-        course = self.model.objects.get(id=pk)
+        course = get_object_or_404(self.model, id=pk)
         tasks = Task.objects.filter(course=course)
         is_owner = True if course.owner == request.user else False
         user_course = UserCourse.objects.filter(course=course)
@@ -120,7 +120,7 @@ class CourseDetailView(View):
         return render(request, self.template_name, context)
     
     def post(self, request, pk, *args, **kwargs):
-        course = self.model.objects.get(id=pk)
+        course = get_object_or_404(self.model, id=pk)
         
         if course.owner != request.user:
             return HttpResponseForbidden()
@@ -128,7 +128,7 @@ class CourseDetailView(View):
         course.delete()
         return redirect('/course/owned-courses/')
         
-        
+     
 class CourseUpdateView(View):
     
     model = Course
@@ -136,7 +136,7 @@ class CourseUpdateView(View):
     template_name = 'course/settings.html'
     
     def get(self, request, pk, *args, **kwargs):
-        course = self.model.objects.get(id=pk)
+        course = get_object_or_404(self.model, id=pk)
         context = {
             'course': course,
             'form': self.form(instance=course)
@@ -144,7 +144,7 @@ class CourseUpdateView(View):
         return render(request, self.template_name, context)
     
     def post(self, request, pk, *args, **kwargs):
-        course = self.model.objects.get(id=pk)
+        course = get_object_or_404(self.model, id=pk)
         form = self.form(request.POST, instance=course)
         context = {
             'course': course,
@@ -172,17 +172,19 @@ class KickUserView(View):
     model = UserCourse
     
     def post(self, request, course_id, user_id):
-        course = Course.objects.get(id=course_id)
-        user = CustomUser.objects.get(id=user_id)
-        self.model.objects.get(user=user, course=course).delete()
+        course = get_object_or_404(Course, id=course_id)
+        user = get_object_or_404(CustomUser, id=user_id)
+        user_course = get_object_or_404(self.model, course=course, user=user)
+        user_course.delete()
         return redirect(f'/course/{course.id}/')
     
     
-class LeaveFromCourseView(View):
+class LeaveCourseView(View):
     
     model = UserCourse
     
     def post(self, request, course_id):
-        course = Course.objects.get(id=course_id)
-        self.model.objects.get(user=request.user, course=course).delete()
+        course = get_object_or_404(Course, id=course_id)
+        user_course = get_object_or_404(self.model, user=request.user, course=course)
+        user_course.delete()
         return redirect('/course/joined-courses/')
