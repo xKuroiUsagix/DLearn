@@ -8,6 +8,7 @@ from .views import (
     JoinedCoursesView,
     CourseDetailView,
     CourseUpdateView,
+    KickUserView,
 )
 
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path('joined-courses/', login_required(JoinedCoursesView.as_view()), name='joined_courses'),
     path('<int:pk>/', login_required(CourseDetailView.as_view()), name='detail'),
     path('<int:pk>/settings/', login_required(CourseUpdateView.as_view()), name='settings'),
+    path('<int:course_id>/delete-user/<int:user_id>', login_required(KickUserView.as_view()), name="kick_user")
 ]

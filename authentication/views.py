@@ -56,7 +56,7 @@ class LoginView(View):
         except ObjectDoesNotExist:
             user = None
         
-        if not user or user.check_password(form.data['password']):
+        if not user or not user.check_password(form.data['password']):
             form.errors['email'] = form.error_class([ErrorMessages.USER_NOT_FOUND_ERROR])
             return render(request, self.template_name, {'form': form})
         

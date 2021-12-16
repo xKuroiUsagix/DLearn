@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from authentication.errors import ErrorMessages
+from authentication.models import CustomUser
 from task.models import Task
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
@@ -106,11 +107,14 @@ class CourseDetailView(View):
         course = self.model.objects.get(id=pk)
         tasks = Task.objects.filter(course=course)
         is_owner = True if course.owner == request.user else False
+        user_course = UserCourse.objects.filter(course=course)
+        joined_users = [record.user for record in user_course]
         
         context = {
             'tasks': tasks,
             'course': course,
-            'is_owner': is_owner
+            'is_owner': is_owner,
+            'joined_users': joined_users
         }
         
         return render(request, self.template_name, context)
@@ -165,4 +169,15 @@ class CourseUpdateView(View):
             course.group_name = form.data['group_name']
         
         course.save()
+        return redirect(f'/course/{course.id}/')
+
+
+class KickUserView(View):
+    
+    model = UserCourse
+    
+    def post(self, request, course_id, user_id):
+        course = Course.objects.get(id=course_id)
+        user = CustomUser.objects.get(id=user_id)
+        self.model.objects.get(user=user, course=course).delete()
         return redirect(f'/course/{course.id}/')

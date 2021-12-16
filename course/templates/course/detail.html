@@ -16,21 +16,41 @@
     <input type="submit" value="Leave" name="leave">
 </form>
 {% endif %}
+
 <h3>Tasks:</h3>
-<ul>
-    {% for task in tasks %}
-    <li>
-        <a href="{% url 'task:detail' course.id task.id %}">{{ task.name }}</a>
-        {% if task.do_up_to %}
-            <small>Do To {{ task.do_up_to }}</small>
-        {% endif %}
-        {% if is_owner %}
-            <form action="{% url 'task:delete' course.id task.id %}" method="POST">
+{% if tasks %}
+    <ul>
+        {% for task in tasks %}
+        <li>
+            <a href="{% url 'task:detail' course.id task.id %}">{{ task.name }}</a>
+            {% if task.do_up_to %}
+                <small>Do To {{ task.do_up_to }}</small>
+            {% endif %}
+            {% if is_owner %}
+                <form action="{% url 'task:delete' course.id task.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete">
+                </form>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+There are no tasks for this course.
+{% endif %}
+
+{% if is_owner %}
+    <h3>Joined Users:</h3>
+    {% if joined_users %}
+        {% for user in joined_users %}
+            {{ user.email }}
+            <form action="{% url 'course:kick_user' course.id user.id %}" method="POST">
                 {% csrf_token %}
-                <input type="submit" value="Delete">
+                <input type="submit" value="Kick User">
             </form>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
+        {% endfor %}
+    {% else %}
+            No one has joined your course yet
+    {% endif %}
+{% endif %}
 {% endblock content %}
