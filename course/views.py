@@ -13,7 +13,16 @@ from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
 
 class CourseCreateView(View):
-    
+    """
+        CourseCreateView provides operations for user to create own courses.
+        
+        Attributes:
+        ----------
+        param template_name: Describes template name for render
+        type template_name: str
+        param form: Describes django-form for course creation
+        type form: CourseCreateForm
+    """
     template_name = 'course/create.html'
     form = CourseCreateForm
     
@@ -32,7 +41,18 @@ class CourseCreateView(View):
 
 
 class CourseJoinView(View):
-    
+    """
+        CourseJoinView provides operations for user to join courses.
+        
+        Attributes:
+        ----------
+        param model: Describes the Course model in database
+        type model: Course
+        param template_name: Describes template name for render
+        type template_name: str
+        param form: Describes django-form for course joining
+        type form: CourseJoinForm
+    """
     model = Course
     template_name = 'course/join.html'
     form = CourseJoinForm
@@ -48,6 +68,8 @@ class CourseJoinView(View):
         except ObjectDoesNotExist:
             course = None
         
+        # This validation done here because of some troubles in doing...
+        # this in the CourseJoinForm
         if not course or not course.check_password(form.data['password']):
             form.errors['join_code'] = form.error_class([ErrorMessages.BAD_PASSWORD_OR_JOINCODE_ERROR])
             return render(request, self.template_name, {'form': form})
@@ -67,7 +89,16 @@ class CourseJoinView(View):
 
 
 class OwnedCoursesView(View):
-    
+    """
+        OwnedCoursesView provides operations for user to see his created courses.
+        
+        Attributes:
+        ----------
+        param model: Describes the Course model in database
+        type model: Course
+        param template_name: Describes template name for render
+        type template_name: str
+    """
     model = Course
     template_name = 'course/owner-courses.html'
 
@@ -80,7 +111,16 @@ class OwnedCoursesView(View):
 
 
 class JoinedCoursesView(View):
-    
+    """
+        JoinedCoursesView provides operations for user to see his joined courses.
+        
+        Attributes:
+        ----------
+        param model: Describes the UserCourse model in database
+        type model: UserCourse
+        param template_name: Describes template name for render
+        type template_name: str
+    """
     model = UserCourse
     template_name = 'course/joined-courses.html'
     
@@ -99,11 +139,34 @@ class JoinedCoursesView(View):
 
 
 class CourseDetailView(View):
-    
+    """
+        CourseDetailView provides operations for user to see course details.
+        The details that user can see depends on user status in this course.
+        If the user is owner of this course he will see some additional info in the template
+        and also has ability to administrate his course.
+        
+        Abilities for owner:
+            - Modify the course information
+            - Delete the course
+            - See the list of joined users
+            - Kick joined users from the course
+            - Create tasks for joined users
+        
+        Abilities for joined user:
+            - Leave the course
+            - See tasks created by owner
+        
+        Attributes:
+        ----------
+        param model: Describes the Course model in database
+        type model: Course
+        param template_name: Describes template name for render
+        type template_name: str
+    """
     model = Course
     template_name = 'course/detail.html'
     
-    def get(self, request, pk, *args, **kwargs):
+    def get(self, request, pk):
         course = get_object_or_404(self.model, id=pk)
         tasks = Task.objects.filter(course=course)
         is_owner = True if course.owner == request.user else False
@@ -119,7 +182,7 @@ class CourseDetailView(View):
         
         return render(request, self.template_name, context)
     
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, pk):
         course = get_object_or_404(self.model, id=pk)
         
         if course.owner != request.user:
@@ -130,7 +193,19 @@ class CourseDetailView(View):
         
      
 class CourseUpdateView(View):
-    
+    """
+        CourseUpdateView provides operations for owner to change his course information.
+        Owner can change every field in the course.
+        
+        Attributes:
+        ----------
+        param model: Describes the Course model in database
+        type model: Course
+        param template_name: Describes template name for render
+        type template_name: str
+        param form: Describes the form for updating course infromation
+        type form: CourseUpdateForm
+    """
     model = Course
     form = CourseUpdateForm
     template_name = 'course/settings.html'
@@ -168,7 +243,13 @@ class CourseUpdateView(View):
 
 
 class KickUserView(View):
-    
+    """
+        KickUserView provides operations for owner to kick the user from his course.
+        Attributes:
+        ----------
+        param model: Describes the UserCourse model in database
+        type model: UserCourse
+    """
     model = UserCourse
     
     def post(self, request, course_id, user_id):
@@ -177,10 +258,17 @@ class KickUserView(View):
         user_course = get_object_or_404(self.model, course=course, user=user)
         user_course.delete()
         return redirect(f'/course/{course.id}/')
-    
-    
+
+ 
 class LeaveCourseView(View):
-    
+    """
+        LeaveCourseView provides operations for the user to leave the course.
+        
+        Attributes:
+        ----------
+        param model: Describes the UserCourse model in database
+        type model: UserCourse
+    """
     model = UserCourse
     
     def post(self, request, course_id):

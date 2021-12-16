@@ -12,6 +12,7 @@ from .forms import RegistrationForm, LoginForm
 class RegisterView(View):
     """
         RegisterView provides operations for user registration.
+        
         Attributes:
         ----------
         param template_name: Describes template name for render
@@ -37,6 +38,7 @@ class RegisterView(View):
 class LoginView(View):
     """
         LoginView provides operations for user loging in.
+        
         Attributes:
         ----------
         param template_name: Describes template name for render
