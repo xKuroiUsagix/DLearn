@@ -1,4 +1,29 @@
 {% extends 'homepage/_base.html' %}
 {% block content %}
 {{ task.name }}
+{% if is_owner %}
+    <a href="{% url 'task:edit' task.course.id task.id %}">
+        <button>Edit</button>
+    </a>
+{% endif %}
+<ul>
+    <h3>Included files:</h3>
+    {% for file in files %}
+        <li><a href="{{ file.media.url }}" download>{{ file }}</a></li>
+    {% if is_owner %}
+        <form action="{% url 'task:delete_file' course_id task.id file.id %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Delete File">
+        </form>
+    {% endif %}
+    {% endfor %}
+    {% if not is_owner %}
+        <h3>Import Your Files:</h3>
+        <form action="{% url 'task:done' course_id task.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file" multiple>
+            <input type="submit" value="Done">
+        </form>
+    {% endif %}
+</ul>
 {% endblock content %}

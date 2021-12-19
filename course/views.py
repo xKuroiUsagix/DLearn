@@ -169,7 +169,7 @@ class CourseDetailView(View):
     def get(self, request, pk):
         course = get_object_or_404(self.model, id=pk)
         tasks = Task.objects.filter(course=course)
-        is_owner = True if course.owner == request.user else False
+        is_owner = course.owner == request.user
         user_course = UserCourse.objects.filter(course=course)
         joined_users = [record.user for record in user_course]
         

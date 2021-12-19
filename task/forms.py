@@ -4,7 +4,7 @@ from django.forms import widgets
 from .models import Task
 
 
-class TaskCreateForm(forms.ModelForm):
+class TaskForm(forms.ModelForm):
     
     file = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
     do_up_to = forms.DateTimeField(

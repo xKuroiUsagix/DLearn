@@ -1,11 +1,13 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.http.response import HttpResponseForbidden
 
 from course.models import Course
-from .models import Task, OwnerTaskFile
-from .forms import TaskCreateForm
+from dlearn.settings import MEDIA_ROOT
+from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
+from .forms import TaskForm
 
 
 class TaskCreateView(View):
@@ -19,10 +21,10 @@ class TaskCreateView(View):
         param template_name: Describes template name for render
         type template_name: str
         param form: Describes the form for Task creation
-        type form: TaskCreateForm
+        type form: TaskForm
     """
     model = Task
-    form = TaskCreateForm
+    form = TaskForm
     template_name = 'task/create.html'
     
     def get(self, request, course_id):
@@ -89,7 +91,14 @@ class TaskDetailView(View):
     
     def get(self, request, course_id, task_id):
         task = get_object_or_404(self.model, id=task_id)
-        return render(request, self.tempalte_name, {'task': task})
+        owner_files = OwnerTaskFile.objects.filter(task=task)   
+        context = {
+            'course_id': course_id,
+            'task': task,
+            'is_owner': task.course.owner == request.user,
+            'files': owner_files
+        }
+        return render(request, self.tempalte_name, context)
 
 
 class TaskDeleteView(View):
@@ -104,6 +113,85 @@ class TaskDeleteView(View):
     model = Task
     
     def post(self, request, course_id, task_id):
-        task = get_object_or_404(self.mode, id=task_id)
+        task = get_object_or_404(self.model, id=task_id)
         task.delete()
         return redirect(f'/course/{course_id}/')
+
+
+class TaskUpdateView(View):
+    
+    model = Task
+    template_name = 'task/edit.html'
+    form = TaskForm
+    
+    def get(self, request, course_id, task_id):
+        task = get_object_or_404(self.model, id=task_id)
+        form = self.form(instance=task)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, course_id, task_id):
+        task = get_object_or_404(self.model, id=task_id)
+        form = self.form(request.POST, request.FILES)
+        owner_task_file = OwnerTaskFile.objects.filter(owner=request.user, task=task)
+        
+        if not form.is_valid():
+            return render(request, self.template_name, {'form': form})
+        
+        if task.name != form.cleaned_data['name']:
+            task.name = form.cleaned_data['name']
+        if task.description != form.cleaned_data['description']:
+            task.description = form.cleaned_data['description']
+        if task.mark != form.cleaned_data['mark']:
+            task.mark = form.cleaned_data['mark']
+        if task.do_up_to != form.cleaned_data['do_up_to']:
+            task.do_up_to = form.cleaned_data['do_up_to']
+        
+        previous_media = [record.media for record in owner_task_file]
+        for file in request.FILES.getlist('file'):
+            if file not in previous_media:
+                new_record = OwnerTaskFile()
+                new_record.task = task
+                new_record.owner = request.user
+                new_record.media = file
+        
+        for record in owner_task_file:
+            if record.media not in request.FILES.getlist('file'):
+                record.delete()
+
+
+class DeleteOwnerFileView(View):
+    
+    model = OwnerTaskFile
+    
+    def post(self, request, course_id, task_id, file_id):
+        owner_file = self.model.objects.get(id=file_id)
+        if owner_file.owner != request.user:
+            return HttpResponseForbidden()
+        
+        owner_file.delete()
+        return redirect(f'/course/{course_id}/task/{task_id}/')
+
+
+class TaskDoneView(View):
+    
+    model = UserTask
+    
+    def post(self, request, course_id, task_id):
+        task = get_object_or_404(Task, id=task_id)
+        
+        try:
+            user_task = UserTask.objects.get(task=task, user=request.user)
+        except ObjectDoesNotExist:
+            user_task = UserTask()
+            user_task.task = task
+            user_task.user = request.user
+            user_task.save()
+        
+        for file in request.FILES.getlist('file'):
+            user_files = UserTaskFile()
+            user_files.media = file
+            user_files.user = request.user
+            user_files.task = task
+            user_files.save()
+        
+        return redirect(f'/course/{course_id}/task/{task_id}/')         
