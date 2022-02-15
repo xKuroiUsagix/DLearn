@@ -1,0 +1,22 @@
+{% extends 'homepage/_base.html' %}
+{% block content %}
+{% if not is_ready %}
+<h3>Description: {{ quiz.description }}</h3>
+<form action="{% url 'quiz:detail' course_id task_id %}">
+    <input type="submit" value="Ready!" name="ready">
+</form>
+{% else %}
+    Questions:
+    <div>
+        {% for question in questions %}
+            {{ question.question }} <br>
+            {% for option in options %}
+                {% if option.question.id == question.id %}
+                    {{ option.option }}
+                {% endif %}
+            {% endfor %}
+            <br>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock content %}

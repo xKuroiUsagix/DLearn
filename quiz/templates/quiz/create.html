@@ -1,0 +1,102 @@
+{% extends 'homepage/_base.html' %}
+
+{% block content %}
+<div class="container">
+    <form action="{% url 'quiz:create' task.course.id task.id %}" method="POST">
+        {% csrf_token %}
+        <div class="container" id="questionsContainer">
+            <ol id="questionsList">
+                <li>
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" name="question_1">
+                        </div>
+                        <div class="col">
+                            <input type="button" id="addOptionId" name="optionForQuestion_1" value="+Option" onclick="addOption(1);">
+                            <input type="checkbox" id="textOnly_1" name="textOnlyFor_1" onchange="eraseOptions('questionOptions_1')"> Text Answer
+                        </div>
+                    </div>
+                    <div class="row">
+                        <ul id="questionOptions_1"></ul>
+                    </div>
+                </li>
+            </ol>
+        </div>
+        <input type="button" id="addQuestionId" value="+Question" onclick="addQuestion();"><br>
+        <input type="submit" value="Create Quiz">
+    </form>
+</div>
+
+<script>
+    let optionCounter = 0;
+    let questionCounter = 1;
+
+
+    function countItemsInList(ul) {
+        let i = 0, itemCount = 0;
+
+        while (ul.getElementsByTagName('li') [i++]) itemCount++;
+        return itemCount;
+    }
+
+    function addOption(questionNumber) {
+        if (document.getElementById(`textOnly_${questionNumber}`).checked == true) {
+            return 0;
+        }
+        optionCounter++;
+        let questionOptionsUL = document.getElementById(`questionOptions_${questionNumber}`);
+        let options = countItemsInList(questionOptionsUL);
+
+        questionOptionsUL.insertAdjacentHTML('beforeend',
+            `<li id="question_${questionNumber}_option_${options + 1}">
+                <input type="checkbox" name="optionValueForQuestion_${questionNumber}_${options + 1}">
+                <input type="text" name="optionForQuestion_${questionNumber}_${options + 1}">
+                <input type="button" value="-" onclick="eraseOption('question_${questionNumber}_option_${options + 1}');">
+            </li>`
+        );
+    }
+    
+    function eraseOption(optionID) {
+        document.getElementById(optionID).remove();
+    }
+
+    function addQuestion() {
+        questionCounter++;
+        let questionsList = document.getElementById("questionsList");
+
+        questionsList.insertAdjacentHTML('beforeend', 
+        `
+        <li id="questionNumber_${questionCounter}">
+            <div class="row">
+                <div class="col">
+                    <input type="text" name="question_${questionCounter}">
+                    <input type="button" value="-" onclick="eraseQuestion('questionNumber_${questionCounter}');">
+                </div>
+                <div class="col">
+                    <input type="button" id="addOptionId" value="+Option" onclick="addOption('${questionCounter}');">
+                    <input type="checkbox" id="textOnly_${questionCounter}" name="textOnlyFor_${questionCounter}" onchange="eraseOptions('questionOptions_${questionCounter}')"> Text Answer
+                </div>
+            </div>
+            <div class="row">
+                <ul id="questionOptions_${questionCounter}"></ul>
+            </div>
+        </li>
+        `
+        );
+    }
+
+    function eraseQuestion(questionID) {
+        document.getElementById(questionID).remove();
+    }
+
+    function eraseOptions(questionOptionsId) {
+        let questionOptions = document.getElementById(questionOptionsId).getElementsByTagName('li');
+        while (questionOptions.length != 0) {
+            for (i = 0; i < questionOptions.length; i++) {
+                eraseOption(questionOptions[i].id)
+            }
+            questionOptions = document.getElementById(questionOptionsId).getElementsByTagName('li')
+        }
+    }
+</script>
+{% endblock content %}

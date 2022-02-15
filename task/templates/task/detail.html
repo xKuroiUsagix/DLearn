@@ -5,9 +5,15 @@
     <a href="{% url 'task:edit' task.course.id task.id %}">
         <button>Edit</button>
     </a>
+    {% if not quiz %}
+    <a href="{% url 'quiz:create' task.course.id task.id %}">
+        <button>Create Quiz</button>
+    </a>
+    {%  endif %}
 {% endif %}
+<h3>Quiz: <a href="{% url 'quiz:detail' task.course.id task.id %}">{{ quiz.id }}</a></h3>
+<h3>Included files:</h3>
 <ul>
-    <h3>Included files:</h3>
     {% for file in files %}
         <li><a href="{{ file.media.url }}" download>{{ file }}</a></li>
     {% if is_owner %}

@@ -6,6 +6,7 @@ from django.http.response import HttpResponseForbidden
 
 from course.models import Course
 from dlearn.settings import MEDIA_ROOT
+from quiz.models import Quiz
 from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
 from .forms import TaskForm
 
@@ -91,10 +92,17 @@ class TaskDetailView(View):
     
     def get(self, request, course_id, task_id):
         task = get_object_or_404(self.model, id=task_id)
-        owner_files = OwnerTaskFile.objects.filter(task=task)   
+        owner_files = OwnerTaskFile.objects.filter(task=task)
+        
+        try:
+            quiz = Quiz.objects.get(task=task.id)
+        except ObjectDoesNotExist:
+            quiz = None
+        
         context = {
             'course_id': course_id,
             'task': task,
+            'quiz': quiz,
             'is_owner': task.course.owner == request.user,
             'files': owner_files
         }

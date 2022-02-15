@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'course',
     'homepage',
     'task',
+    'quiz',
 ]
 
 MIDDLEWARE = [
