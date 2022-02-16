@@ -9,11 +9,13 @@
                 <li>
                     <div class="row">
                         <div class="col">
-                            <input type="text" name="question_1">
+                            <!-- <input type="text" name="question_1"> -->
+                            {{ question_form.question }}
                         </div>
                         <div class="col">
                             <input type="button" id="addOptionId" name="optionForQuestion_1" value="+Option" onclick="addOption(1);">
-                            <input type="checkbox" id="textOnly_1" name="textOnlyFor_1" onchange="eraseOptions('questionOptions_1')"> Text Answer
+                            <!-- <input type="checkbox" id="textOnly_1" name="textOnlyFor_1" onchange="eraseOptions('questionOptions_1')"> Text Answer -->
+                            {{ question_form.is_textonly }}
                         </div>
                     </div>
                     <div class="row">
