@@ -6,17 +6,33 @@
     <input type="submit" value="Ready!" name="ready">
 </form>
 {% else %}
-    Questions:
     <div>
-        {% for question in questions %}
-            {{ question.question }} <br>
-            {% for option in options %}
-                {% if option.question.id == question.id %}
-                    {{ option.option }}
+        <form acrion="" method="POST">
+            {% csrf_token %}
+            {% for question in questions %}
+                <label>{{ question.question }}</label> <br>
+                {% if question.id in one_answer_questions %}
+                    <div>
+                    {% for option in options %}
+                            {% if option.question.id == question.id %}
+                                {{ option.option }}<input type="radio" id="optionChoice{{ option.id }}" name="option"><br>
+                            {% endif %}
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {% for option in options %}
+                        {% if option.question.id == question.id %}
+                            {{ option.option }} <input type="checkbox"><br>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
+                {% if question.text_answer %}
+                        <textarea name="describe_{{ question.id }}" id="describe_{{ question.id }}" cols="30" rows="6"></textarea>
+                {% endif %}
+                <br>
             {% endfor %}
-            <br>
-        {% endfor %}
+            <input type="submit">
+        </form>
     </div>
 {% endif %}
 {% endblock content %}

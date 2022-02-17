@@ -77,13 +77,24 @@ class QuizDetailView(View):
         quiz = self.model.objects.get(task=task_id)
         questions = Question.objects.filter(quiz=quiz.id)
         options = []
+        one_answer_questions = []
         
         for question in questions:
-            options.extend(Option.objects.filter(question=question.id))
+            current_options = Option.objects.filter(question=question.id)
+            options.extend(current_options)
+            
+            counter = 0
+            for option in current_options:
+                if option.is_right:
+                    counter += 1
+            
+            if counter > 1:
+                one_answer_questions.append(question.id)
         
         context = {
             'quiz': quiz,
             'questions': questions,
+            'one_answer_questions': one_answer_questions,
             'options': options,
             'is_ready': is_ready,
             'course_id': course_id,
@@ -93,7 +104,7 @@ class QuizDetailView(View):
     
     
 # TODO: 
-# Quiz show in TaskDetailView. 
+# Quiz show in TaskDetailView. +
 # Quiz detail. 
 # Quiz update. 
 # Quiz delete. 
