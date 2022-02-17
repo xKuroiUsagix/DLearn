@@ -2,14 +2,14 @@
 
 {% block content %}
 <div class="container">
-    <form action="{% url 'quiz:create' task.course.id task.id %}" method="POST">
+    <form action="{% url 'quiz:create' task.course.id task.id %}" onsubmit="return optionsValidation()" method="POST">
         {% csrf_token %}
         <div class="container" id="questionsContainer">
             <ol id="questionsList">
                 <li>
                     <div class="row">
                         <div class="col">
-                            <input type="text" name="question_1">
+                            <input type="text" name="question_1" required>
                         </div>
                         <div class="col">
                             <input type="button" id="addOptionId" name="optionForQuestion_1" value="+Option" onclick="addOption(1);">
@@ -49,8 +49,8 @@
 
         questionOptionsUL.insertAdjacentHTML('beforeend',
             `<li id="question_${questionNumber}_option_${options + 1}">
-                <input type="checkbox" name="optionValueForQuestion_${questionNumber}_${options + 1}">
-                <input type="text" name="optionForQuestion_${questionNumber}_${options + 1}">
+                <input type="checkbox" id="optionValueForQuestion_${questionNumber}_${options + 1}">
+                <input type="text" name="optionForQuestion_${questionNumber}_${options + 1}" required>
                 <input type="button" value="-" onclick="eraseOption('question_${questionNumber}_option_${options + 1}');">
             </li>`
         );
@@ -69,7 +69,7 @@
         <li id="questionNumber_${questionCounter}">
             <div class="row">
                 <div class="col">
-                    <input type="text" name="question_${questionCounter}">
+                    <input type="text" name="question_${questionCounter}" required>
                     <input type="button" value="-" onclick="eraseQuestion('questionNumber_${questionCounter}');">
                 </div>
                 <div class="col">
@@ -93,10 +93,32 @@
         let questionOptions = document.getElementById(questionOptionsId).getElementsByTagName('li');
         while (questionOptions.length != 0) {
             for (i = 0; i < questionOptions.length; i++) {
-                eraseOption(questionOptions[i].id)
+                eraseOption(questionOptions[i].id);
             }
-            questionOptions = document.getElementById(questionOptionsId).getElementsByTagName('li')
+            questionOptions = document.getElementById(questionOptionsId).getElementsByTagName('li');
         }
+    }
+
+    function optionsValidation() {
+        let all_checked = true
+        for (let i = 0; i < questionCounter; i++) {
+            let questionOptions = document.getElementById(`questionOptions_${i+1}`).getElementsByTagName('li');
+
+            for (let j = 0; j < questionOptions.length; j++) {
+                option_checkbox = document.getElementById(`optionValueForQuestion_${i+1}_${j+1}`)
+                if (option_checkbox.checked) {
+                    all_checked = true
+                    break;
+                }
+                all_checked = false
+            }
+
+            if (all_checked == false) {
+                alert("Each question must have at least 1 right option")
+                return false
+            }
+        }
+        return true
     }
 </script>
 {% endblock content %}
