@@ -56,5 +56,6 @@ class ResultDetail(models.Model):
     
     user_result = models.ForeignKey(UserResult, on_delete=CASCADE)
     question = models.ForeignKey(Question, on_delete=CASCADE)
-    option = models.ForeignKey(Option, on_delete=CASCADE)
-    is_right = models.BooleanField()
+    option = models.ForeignKey(Option, on_delete=CASCADE, null=True, blank=True)
+    is_right = models.BooleanField(null=True, blank=True)
+    text_answer = models.TextField(null=True, blank=True)

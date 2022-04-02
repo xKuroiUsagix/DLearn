@@ -1,0 +1,7 @@
+{% extends 'homepage/_base.html' %}
+{% block content %}
+{% for result in user_results %}
+{{ result.question.question }} <br>
+{{ result.option.option }} {{ result.option.is_right }} <br>
+{% endfor %}
+{% endblock %}

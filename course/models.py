@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
-from django.db.models.deletion import CASCADE, DO_NOTHING
+from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
 
 from authentication.models import CustomUser

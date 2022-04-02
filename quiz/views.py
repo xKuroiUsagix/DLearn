@@ -1,10 +1,13 @@
+from msilib.schema import CustomAction
+from wsgiref.util import request_uri
 from django.core.exceptions import ObjectDoesNotExist
-from django import views
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
 from task.models import Task
-from .models import Quiz, Question, Option
+from authentication.models import CustomUser
+from course.models import Course, UserCourse
+from .models import Quiz, Question, Option, ResultDetail, UserResult
 
 
 class QuizCreateView(View):
@@ -69,15 +72,18 @@ class QuizDetailView(View):
     template_name = 'quiz/detail.html'
     
     def get(self, request, course_id, task_id):
-        # task = get_object_or_404(Task, task_id)
         is_ready = False
         if request.GET.get('ready'):
             is_ready = True
         
         quiz = self.model.objects.get(task=task_id)
         questions = Question.objects.filter(quiz=quiz.id)
+        course = Course.objects.get(id=course_id)
+        users_course = UserCourse.objects.filter(course=course_id)
         options = []
         one_answer_questions = []
+        users_done = []
+        users_not_done = []
         
         for question in questions:
             current_options = Option.objects.filter(question=question.id)
@@ -91,6 +97,12 @@ class QuizDetailView(View):
             if counter > 1:
                 one_answer_questions.append(question.id)
         
+        for user_course in users_course:
+            try:
+                users_done.append(UserResult.objects.get(user=user_course.user).user)
+            except ObjectDoesNotExist:
+                users_not_done.append(user_course.user)
+        
         context = {
             'quiz': quiz,
             'questions': questions,
@@ -98,16 +110,47 @@ class QuizDetailView(View):
             'options': options,
             'is_ready': is_ready,
             'course_id': course_id,
-            'task_id': task_id
+            'task_id': task_id,
+            'is_owner': course.owner == request.user,
+            'users_done': users_done,
+            'users_not_done': users_not_done
         }
         return render(request, self.template_name, context)
     
+    def post(self, request, course_id, task_id):
+        option_start = 'option_'
+        text_start = 'describe_'
+        quiz = Quiz.objects.get(task=task_id)
+        user_result = UserResult.objects.create(user=request.user, quiz=quiz)
+        
+        print(request.POST.keys())
+        for name in request.POST.keys():
+            if name.startswith(option_start):
+                option_id = int(name[name.find('_') + 1:])
+                option = Option.objects.get(id=option_id)
+                result_detail = ResultDetail.objects.create(user_result=user_result, question=option.question, option=option, is_right=option.is_right)
+                result_detail.save()
+            elif name.startswith(text_start):
+                question_id = int(name[name.find('_') + 1:])
+                question = Question.objects.get(id=question_id)
+                text_anser = request.POST.get(name)
+                result_detail = ResultDetail.objects.create(user_result=user_result, question=question, text_answer=text_anser)
+                result_detail.save()
+        
+        return redirect('/')
+
+
+class UserDetailView(View):
     
-# TODO: 
-# Quiz show in TaskDetailView. +
-# Quiz detail. 
-# Quiz update. 
-# Quiz delete. 
-# Make only 1 quiz possible for 1 task.
-# UserResult for Quiz.
-# View UserResults for Course Admin
+    model = Quiz
+    template_name = 'quiz/user-detail.html'
+    
+    def get(self, request, course_id, task_id, user_id):
+        user = CustomUser.objects.get(id=user_id)
+        task = Task.objects.get(id=task_id)
+        quiz = Quiz.objects.get(task=task)
+        user_result = UserResult.objects.get(user=user, quiz=quiz)
+        context = {
+            'user_results': ResultDetail.objects.filter(user_result=user_result)
+        }
+        return render(request, self.template_name, context)
