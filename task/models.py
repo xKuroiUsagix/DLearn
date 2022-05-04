@@ -19,10 +19,8 @@ class Task(models.Model):
     name = models.CharField(max_length=128, verbose_name=_('Name'))
     course = models.ForeignKey(Course, on_delete=CASCADE, verbose_name=_('Course'))
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
-    max_mark = models.PositiveIntegerField(null=True, blank=True, verbose_name=_('Max Mark'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
     do_up_to = models.DateTimeField(null=True, blank=True, verbose_name=_('Do Up To'))
-    has_quiz = models.BooleanField(default=False)
 
 
 class OwnerTaskFile(models.Model):

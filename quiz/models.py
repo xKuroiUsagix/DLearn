@@ -23,12 +23,14 @@ class Question(models.Model):
     
     quiz = models.ForeignKey(Quiz, on_delete=CASCADE)
     question = models.CharField(max_length=550)
+    price = models.FloatField(default=0)
     text_answer = models.BooleanField(default=False)
     
-    def create_question(self, quiz, question_text, text_answer=False, commit=True):
+    def create_question(self, quiz, question_text, price=0, text_answer=False, commit=True):
         self.quiz = quiz
         self.question_text = question_text
         self.text_answer = text_answer
+        self.price = price
         
         if commit:
             self.save()

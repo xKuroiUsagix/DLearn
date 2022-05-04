@@ -12,6 +12,12 @@
     {%  endif %}
 {% endif %}
 <h3>Quiz: <a href="{% url 'quiz:detail' task.course.id task.id %}">{{ quiz.id }}</a></h3>
+
+<form action="{% url 'task:detail' task.course.id task.id %}" method="POST">
+{% csrf_token %}
+    <input type="submit" value="Delete Quiz">
+</form>
+
 <h3>Included files:</h3>
 <ul>
     {% for file in files %}

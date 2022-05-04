@@ -1,7 +1,21 @@
 {% extends 'homepage/_base.html' %}
 {% block content %}
-{% for result in user_results %}
-{{ result.question.question }} <br>
-{{ result.option.option }} {{ result.option.is_right }} <br>
+{% comment %} {{ result.question.question }} <br> {% endcomment %}
+{% comment %} {{ result.option.option }} {{ result.option.is_right }} <br> {% endcomment %}
+{% for q in questions %}
+    {{ q.question }} <br>
+    {% for option in options %}
+        {% if option.question == q %}
+            {{ option.option }}
+
+            {% for result in user_results %}
+                {% if result.option == option %}
+                    {{ result.option.is_right }}
+                {% endif %}
+            {% endfor %}
+            <br>
+        {% endif %}
+    {% endfor %}
 {% endfor %}
+{{ final_mark }}
 {% endblock %}

@@ -1,5 +1,3 @@
-from msilib.schema import CustomAction
-from wsgiref.util import request_uri
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
@@ -30,6 +28,9 @@ class QuizCreateView(View):
     
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
+        task.has_quiz = True
+        task.save()
+        
         self.model = self.model()
         self.model.task = task
         self.model.save()
@@ -38,6 +39,7 @@ class QuizCreateView(View):
         text_answer_start = 'textOnlyFor_'
         option_start = 'optionForQuestion_'
         option_value_start = 'optionValueForQuestion_'
+        price_start = 'price_'
         question_counter = 1
         
         for name in request.POST.keys():
@@ -49,6 +51,7 @@ class QuizCreateView(View):
             question.quiz = self.model
             question.question = request.POST.get(f'{question_start}{i}')
             question.text_answer = bool(request.POST.get(f'{text_answer_start}{i}'))
+            question.price = request.POST.get(f'{price_start}{i}')
             question.save()
             
             option_counter = 1
@@ -123,7 +126,6 @@ class QuizDetailView(View):
         quiz = Quiz.objects.get(task=task_id)
         user_result = UserResult.objects.create(user=request.user, quiz=quiz)
         
-        print(request.POST.keys())
         for name in request.POST.keys():
             if name.startswith(option_start):
                 option_id = int(name[name.find('_') + 1:])
@@ -150,7 +152,43 @@ class UserDetailView(View):
         task = Task.objects.get(id=task_id)
         quiz = Quiz.objects.get(task=task)
         user_result = UserResult.objects.get(user=user, quiz=quiz)
+        user_results = ResultDetail.objects.filter(user_result=user_result)
+        questions = Question.objects.filter(quiz=quiz)
+        options = []
+        
+        for q in questions:
+            options.extend(Option.objects.filter(question=q))
+        
         context = {
-            'user_results': ResultDetail.objects.filter(user_result=user_result)
+            'user_results': user_results,
+            'questions': questions,
+            'options': options,
+            'final_mark': self.analyse_answers(questions, options, user_results)
         }
         return render(request, self.template_name, context)
+
+    def analyse_answers(self, questions, options, user_results):
+        def right_answers(options, question):
+            counter = 0
+            for option in options:
+                if option.question == question and option.is_right:
+                    counter += 1
+                    
+            return counter
+        
+        final_mark = 0
+        
+        for question in questions:
+            counter = 0
+            true_answers = right_answers(options, question)
+            
+            for result in user_results:
+                if result.question == question and result.is_right:
+                    counter += 1
+            
+            if question.price != 0:
+                one_aswer_value = true_answers / question.price
+                final_mark += counter * one_aswer_value
+        
+        return final_mark
+                    

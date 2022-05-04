@@ -40,6 +40,7 @@ function addQuestion() {
         <div class="row">
             <div class="col">
                 <input type="text" name="question_${questionCounter}" required>
+                <input type="number" name="price_${questionCounter}" required>
                 <input type="button" value="-" onclick="eraseQuestion('questionNumber_${questionCounter}');">
             </div>
             <div class="col">
