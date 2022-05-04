@@ -14,3 +14,7 @@
     width: 50%;
     margin-top: 4%;
 }
+
+.form-error {
+    color: red;
+}

@@ -1,7 +1,108 @@
+*{
+    list-style: none;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+html {
+    overflow-x: hidden;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    margin-top: 64px;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: black;
+    text-decoration: none;
+}
+
 .navbar-brand {
     font-size: 24px;
 }
 
-nav {
-    margin-bottom: 1%;
+.sidebar {
+    position: fixed;
+    width: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 93.5vh;
+    top: 0;
+    bottom: 0;
+    margin-top: 62px;
+    background-color: rgb(234, 239, 239);
+}
+
+.main-body {
+    box-shadow: 3px 3px 3px 3px gray;
+    min-height: 89vh;
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-right: 35px;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.menu-item {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+    text-align: center;
+}
+
+.menu-item:hover {
+    background-color: rgb(216, 214, 214);
+}
+
+.sidebar-header {
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+.course-button {
+    padding: 4px;
+    padding-left: 7px;
+    padding-right: 7px;
+    border-radius: 5px;
+    transition: 300ms;
+}
+
+.task-div {
+    height: 75px;
+    padding-bottom: 8px;
+    padding-top: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+    transition: 450ms;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.342);
+    background-color: rgb(240, 240, 240);
+}
+
+.task-div:hover {
+    background-color: rgb(216, 214, 214);
+}
+
+.btn-danger:hover {
+    background-color: rgb(138, 1, 1);
+}
+
+.btn-div {
+    padding: 6px;
+}
+
+.button-row {
+    float: right;
+    margin-right: 4px;
+}
+
+.course-header {
+    margin-bottom: 20px;
 }

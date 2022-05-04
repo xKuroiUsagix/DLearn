@@ -105,7 +105,9 @@ class OwnedCoursesView(View):
     def get(self, request):
         courses = self.model.objects.filter(owner=request.user)
         context = {
-            'courses': courses
+            'courses': courses,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         return render(request, self.template_name, context)
 
@@ -132,7 +134,9 @@ class JoinedCoursesView(View):
             courses.append(item.course)
         
         context = {
-            'courses': courses
+            'courses': courses,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         
         return render(request, self.template_name, context)
@@ -177,7 +181,9 @@ class CourseDetailView(View):
             'tasks': tasks,
             'course': course,
             'is_owner': is_owner,
-            'joined_users': joined_users
+            'joined_users': joined_users,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user),
         }
         
         return render(request, self.template_name, context)
@@ -214,7 +220,9 @@ class CourseUpdateView(View):
         course = get_object_or_404(self.model, id=pk)
         context = {
             'course': course,
-            'form': self.form(instance=course)
+            'form': self.form(instance=course),
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         return render(request, self.template_name, context)
     
@@ -223,7 +231,9 @@ class CourseUpdateView(View):
         form = self.form(request.POST, instance=course)
         context = {
             'course': course,
-            'form': form
+            'form': form,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         
         if not form.is_valid():

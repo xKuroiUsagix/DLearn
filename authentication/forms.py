@@ -18,10 +18,10 @@ def set_default_attrs(**kwargs):
 class RegistrationForm(forms.ModelForm):
     
     password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
-        attrs=set_default_attrs(placeholder='Password')
+        attrs=set_default_attrs(placeholder='Пароль')
     ))
     confirm_password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
-        attrs=set_default_attrs(placeholder='Confirm Password')
+        attrs=set_default_attrs(placeholder='Повторіть Праоль')
     ))
     
     class Meta:
@@ -34,9 +34,9 @@ class RegistrationForm(forms.ModelForm):
             'last_name',
         ]
         widgets = {
-            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Email')),
-            'first_name': forms.TextInput(attrs=set_default_attrs(placeholder='First Name')),
-            'last_name': forms.TextInput(attrs=set_default_attrs(placeholder='Last Name')),
+            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Емейл')),
+            'first_name': forms.TextInput(attrs=set_default_attrs(placeholder='Ім\'я')),
+            'last_name': forms.TextInput(attrs=set_default_attrs(placeholder='Прізвище')),
         }
         
     def clean(self):
@@ -78,8 +78,13 @@ class RegistrationForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     
-    password = forms.CharField(max_length=30, widget=forms.PasswordInput())
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput(
+        attrs=set_default_attrs(placeholder='Пароль')
+    ))
     
     class Meta:
         model = CustomUser
         fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Емейл'))
+        }

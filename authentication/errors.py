@@ -3,10 +3,10 @@ from django.utils.translation import gettext_lazy as _
 
 class ErrorMessages:
     
-    PASSWORD_VALIDATION_ERROR = _('Passwrod should contains at least 1 character, at least 1 number')
-    PASSWORD_NOT_MATCH_ERROR = _('Password and Confirm Password don\'t match')
+    PASSWORD_VALIDATION_ERROR = _('*пароль повинен мати хоча би 1 букву та 1 цифру')
+    PASSWORD_NOT_MATCH_ERROR = _('*паролі не одинакові')
     BAD_PASSWORD_ERROR = _('Bad password')
-    BAD_PASSWORD_OR_JOINCODE_ERROR = _('Bad course Join Code or Password')
+    BAD_PASSWORD_OR_JOINCODE_ERROR = _('*не правильний код приєднання або пароль')
     
     SUPERUSER_ROLE_ERROR = _('Superuser must have role set to 1')
     SUPERUSER_IS_SUPERUSER_ERROR = _('Superuser must have is_superuser set to True')

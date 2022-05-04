@@ -29,13 +29,13 @@
         </form>
     {% endif %}
     {% endfor %}
-    {% if not is_owner %}
+    {% comment %} {% if not is_owner %}
         <h3>Import Your Files:</h3>
         <form action="{% url 'task:done' course_id task.id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="file" name="file" multiple>
             <input type="submit" value="Done">
         </form>
-    {% endif %}
+    {% endif %} {% endcomment %}
 </ul>
 {% endblock content %}

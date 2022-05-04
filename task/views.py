@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from django.http.response import HttpResponseForbidden
 
-from course.models import Course
+from course.models import Course, UserCourse
 from dlearn.settings import MEDIA_ROOT
 from quiz.models import Quiz
 from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
@@ -35,7 +35,9 @@ class TaskCreateView(View):
         
         context = {
             'course': course,
-            'form': self.form
+            'form': self.form,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         return render(request, self.template_name, context)
     
@@ -104,7 +106,9 @@ class TaskDetailView(View):
             'task': task,
             'quiz': quiz,
             'is_owner': task.course.owner == request.user,
-            'files': owner_files
+            'files': owner_files,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         return render(request, self.tempalte_name, context)
 

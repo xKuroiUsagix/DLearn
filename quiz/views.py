@@ -28,6 +28,9 @@ class QuizCreateView(View):
     
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
+        if task.has_quiz:
+            return redirect(f'/course/{course_id}/task/{task_id}/')
+        
         task.has_quiz = True
         task.save()
         
@@ -116,7 +119,9 @@ class QuizDetailView(View):
             'task_id': task_id,
             'is_owner': course.owner == request.user,
             'users_done': users_done,
-            'users_not_done': users_not_done
+            'users_not_done': users_not_done,
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         return render(request, self.template_name, context)
     
@@ -163,7 +168,9 @@ class UserDetailView(View):
             'user_results': user_results,
             'questions': questions,
             'options': options,
-            'final_mark': self.analyse_answers(questions, options, user_results)
+            'final_mark': self.analyse_answers(questions, options, user_results),
+            'my_courses': UserCourse.objects.filter(user=request.user),
+            'created_courses': Course.objects.filter(owner=request.user)
         }
         return render(request, self.template_name, context)
 
@@ -185,7 +192,9 @@ class UserDetailView(View):
             for result in user_results:
                 if result.question == question and result.is_right:
                     counter += 1
-            
+                    print('true')
+                print(result.is_right)
+            print(counter)
             if question.price != 0:
                 one_aswer_value = true_answers / question.price
                 final_mark += counter * one_aswer_value

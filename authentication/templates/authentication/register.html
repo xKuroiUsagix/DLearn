@@ -11,35 +11,38 @@
         <form action="{% url 'authentication:register' %}" method="POST">
             {% csrf_token %}
             <div class="form-group text-center">
-                <h3><b>Create Your DLearn Account</b></h3>
+                <h3><b>Створіть ваш DLearn акаунт</b></h3>
             </div>
-            {{ form.errors.password }}
             <div class="form-group row">
                 <div class="form-group col-md-6">
-                    {{ form.first_name.label }}:
+                    Ім'я
                     {{ form.first_name }}
                 </div>
                 <div class="form-group col-md-6">
-                    {{ form.last_name.label }}:
+                    Прізвище:
                     {{ form.last_name }}
                 </div>
             </div>
             <div class="form-group">
-                {{ form.email.label }}:
+                Емейл:
                 {{ form.email }}
+                {% if form.errors.email %}
+                    <small class="form-error">*користувач з таким емейлом уже існує</small>
+                {% endif %}
             </div>
             <div class="form-group row">
                 <div class="form-group col-md-6">
-                    {{ form.password.label }}:
+                    Пароль:
                     {{ form.password }}
                 </div>
                 <div class="form-group col-md-6">
-                    {{ form.confirm_password.label }}:
+                    Повторіть праоль:
                     {{ form.confirm_password }}
                 </div>
+                <small class="form-error">{{ form.errors.password }}</small>
             </div>
             <div class="form-group text-center">
-                <input class="form-control btn btn-success form-button" type="submit" value="Register">
+                <input class="form-control btn btn-success form-button" type="submit" value="Створити акаунт">
             </div>
         </form>
     </div>
