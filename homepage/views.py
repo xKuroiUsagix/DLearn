@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 
-from course.models import UserCourse, Course
+from .side_functions import context_add_courses
 
 
 class IndexView(View):
@@ -16,8 +16,9 @@ class IndexView(View):
     template_name = 'homepage/index.html'
     
     def get(self, request):
-        context = {
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
-        }
+        context = {}
+        
+        if request.user.is_authenticated:
+            context = context_add_courses(context, request.user)
+
         return render(request, self.template_name, context)
