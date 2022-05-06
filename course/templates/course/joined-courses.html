@@ -1,9 +1,0 @@
-{% extends 'homepage/_base.html' %}
-{% block content %}
-<h3>You belong to this courses:</h3>
-<ul>
-    {% for course in courses %}
-        <li><a href="{% url 'course:detail' course.id %}">{{ course.name }}</a></li>
-    {% endfor %}
-</ul>
-{% endblock content %}

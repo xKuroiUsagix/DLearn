@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from authentication.errors import ErrorMessages
 from authentication.models import CustomUser
 from task.models import Task
+from homepage.side_functions import context_add_courses
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
@@ -27,7 +28,12 @@ class CourseCreateView(View):
     form = CourseCreateForm
     
     def get(self, request):
-        return render(request, self.template_name, {'form': self.form})
+        context = {
+            'form': self.form
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.template_name, context)
 
     def post(self, request):
         form = self.form(request.POST)
@@ -36,8 +42,14 @@ class CourseCreateView(View):
             course = form.save(commit=False)
             course.owner = request.user
             course.save()
-            return redirect(f'/course/owned-courses')
-        return render(request, self.template_name, {'form': form})
+            return redirect(f'/course/{course.id}/')
+        
+        context = {
+            'form': form
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.template_name, context)
 
 
 class CourseJoinView(View):
@@ -58,7 +70,12 @@ class CourseJoinView(View):
     form = CourseJoinForm
     
     def get(self, request):
-        return render(request, self.template_name, {'form': self.form})
+        context = {
+            'form': self.form
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.template_name, context)
     
     def post(self, request):
         form = self.form(request.POST)
@@ -76,7 +93,7 @@ class CourseJoinView(View):
         if UserCourse.objects.filter(user=request.user, course=course):
             form.errors['join_code'] = form.error_class([ErrorMessages.USER_ALREADY_JOINED_ERROR])
             return render(request, self.template_name, {'form': form})
-        if Course.objects.filter(owner=request.user):
+        if course.owner == request.user:
             form.errors['join_code'] = form.error_class([ErrorMessages.USER_IS_OWNER_ERROR])
             return render(request, self.template_name, {'form': form})
         
@@ -85,61 +102,7 @@ class CourseJoinView(View):
         user_course.course = course
         user_course.save()
         
-        return redirect(f'/course/joined-courses/')
-
-
-class OwnedCoursesView(View):
-    """
-        OwnedCoursesView provides operations for user to see his created courses.
-        
-        Attributes:
-        ----------
-        param model: Describes the Course model in database
-        type model: Course
-        param template_name: Describes template name for render
-        type template_name: str
-    """
-    model = Course
-    template_name = 'course/owner-courses.html'
-
-    def get(self, request):
-        courses = self.model.objects.filter(owner=request.user)
-        context = {
-            'courses': courses,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
-        }
-        return render(request, self.template_name, context)
-
-
-class JoinedCoursesView(View):
-    """
-        JoinedCoursesView provides operations for user to see his joined courses.
-        
-        Attributes:
-        ----------
-        param model: Describes the UserCourse model in database
-        type model: UserCourse
-        param template_name: Describes template name for render
-        type template_name: str
-    """
-    model = UserCourse
-    template_name = 'course/joined-courses.html'
-    
-    def get(self, request):
-        user_courses = self.model.objects.filter(user=request.user)
-        courses = []
-        
-        for item in user_courses:
-            courses.append(item.course)
-        
-        context = {
-            'courses': courses,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
-        }
-        
-        return render(request, self.template_name, context)
+        return redirect(f'/')
 
 
 class CourseDetailView(View):
@@ -152,8 +115,6 @@ class CourseDetailView(View):
         Abilities for owner:
             - Modify the course information
             - Delete the course
-            - See the list of joined users
-            - Kick joined users from the course
             - Create tasks for joined users
         
         Abilities for joined user:
@@ -181,10 +142,9 @@ class CourseDetailView(View):
             'tasks': tasks,
             'course': course,
             'is_owner': is_owner,
-            'joined_users': joined_users,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user),
+            'joined_users': joined_users
         }
+        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
     
@@ -220,10 +180,10 @@ class CourseUpdateView(View):
         course = get_object_or_404(self.model, id=pk)
         context = {
             'course': course,
-            'form': self.form(instance=course),
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
+            'form': self.form(instance=course)
         }
+        context = context_add_courses(context, request.user)
+            
         return render(request, self.template_name, context)
     
     def post(self, request, pk, *args, **kwargs):
@@ -231,10 +191,9 @@ class CourseUpdateView(View):
         form = self.form(request.POST, instance=course)
         context = {
             'course': course,
-            'form': form,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
+            'form': form
         }
+        context = context_add_courses(context, request.user)
         
         if not form.is_valid():
             return render(request, self.template_name, context)
@@ -252,9 +211,37 @@ class CourseUpdateView(View):
         return redirect(f'/course/{course.id}/')
 
 
+class UserCourseView(View):
+    """
+        UserCourseView provides operations for owner to see users joined to the course.
+        Attributes:
+        ----------
+        param model: Describes the UserCourse model in database
+        type model: UserCourse
+    """
+    model = UserCourse
+    template_name = 'course/course_users.html'
+    
+    def get(self, request, course_id):
+        course = get_object_or_404(Course, id=course_id)
+        users_course = UserCourse.objects.filter(course=course)
+        users = []
+        
+        for user_course in users_course:
+            users.append(user_course.user)
+        
+        context = {
+            'course': course,
+            'users': users
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.template_name, context)
+
+
 class KickUserView(View):
     """
-        KickUserView provides operations for owner to kick the user from his course.
+        KickUserView provides ability to kick users from course.
         Attributes:
         ----------
         param model: Describes the UserCourse model in database
@@ -267,8 +254,7 @@ class KickUserView(View):
         user = get_object_or_404(CustomUser, id=user_id)
         user_course = get_object_or_404(self.model, course=course, user=user)
         user_course.delete()
-        return redirect(f'/course/{course.id}/')
-
+        return redirect(f'/course/{course.id}/users/')
  
 class LeaveCourseView(View):
     """
@@ -285,4 +271,4 @@ class LeaveCourseView(View):
         course = get_object_or_404(Course, id=course_id)
         user_course = get_object_or_404(self.model, user=request.user, course=course)
         user_course.delete()
-        return redirect('/course/joined-courses/')
+        return redirect('/')
