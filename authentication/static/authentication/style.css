@@ -18,3 +18,20 @@
 .form-error {
     color: red;
 }
+
+.form-div {
+    margin-top: 7%;
+}
+
+.course-update-div {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.task-form-fields form-group {
+    height: 100px;
+}
+
+.join-btn {
+    margin-top: 5%;
+}
