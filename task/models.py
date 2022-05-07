@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from django.db import models
 from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
@@ -8,10 +11,10 @@ from authentication.models import CustomUser
 
 
 def user_directory_path(instance, filename):
-    return MEDIA_ROOT / f'users/user_{instance.user.id}/task_{instance.task.id}/{filename}'
+    return MEDIA_ROOT / f'users/user_{instance.user.id}/task_{instance.task.id}/{uuid.uuid1()}/{filename}'
 
 def owner_directory_path(instance, filename):
-    return MEDIA_ROOT / f'owners/owner_{instance.owner.id}/task_{instance.task.id}/{filename}'
+    return MEDIA_ROOT / f'owners/owner_{instance.owner.id}/task_{instance.task.id}/{uuid.uuid1()}/{filename}'
 
 
 class Task(models.Model):
@@ -21,17 +24,17 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
     do_up_to = models.DateTimeField(null=True, blank=True, verbose_name=_('Do Up To'))
+    has_quiz = models.BooleanField(default=False, verbose_name=_('Has Quiz'))
 
 
 class OwnerTaskFile(models.Model):
     
     owner = models.ForeignKey(CustomUser, on_delete=CASCADE)
     task = models.ForeignKey(Task, on_delete=CASCADE)
-    media = models.FileField(upload_to=owner_directory_path, null=True, blank=True, verbose_name=_('Media'))
+    media = models.FileField(upload_to=owner_directory_path, null=True, blank=True, verbose_name=_('Media'), max_length=256)
     
     def __str__(self):
-        return self.media.url.split('/')[-1]
-
+        return os.path.basename(self.media.name)
 
 class UserTaskFile(models.Model):
     

@@ -7,6 +7,7 @@ from django.http.response import HttpResponseForbidden
 from course.models import Course, UserCourse
 from dlearn.settings import MEDIA_ROOT
 from quiz.models import Quiz
+from homepage.side_functions import context_add_courses
 from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
 from .forms import TaskForm
 
@@ -36,9 +37,9 @@ class TaskCreateView(View):
         context = {
             'course': course,
             'form': self.form,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
         }
+        context = context_add_courses(context, request.user)
+        
         return render(request, self.template_name, context)
     
     def post(self, request, course_id):
@@ -48,6 +49,7 @@ class TaskCreateView(View):
             'course': course,
             'form': form
         }
+        context = context_add_courses(context, request.user)
         
         if form.is_valid():
             task = form.save(commit=False)
@@ -75,7 +77,6 @@ class TaskDetailView(View):
         Abilities for owner:
             - Delete task
             - Modify task
-            - Set mark for each user that done this task
         
         Abilities for joined user:
             - See the task
@@ -106,10 +107,10 @@ class TaskDetailView(View):
             'task': task,
             'quiz': quiz,
             'is_owner': task.course.owner == request.user,
-            'files': owner_files,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
+            'files': owner_files
         }
+        context = context_add_courses(context, request.user)
+        
         return render(request, self.tempalte_name, context)
 
     def post(self, request, course_id, task_id):
@@ -147,24 +148,37 @@ class TaskUpdateView(View):
     def get(self, request, course_id, task_id):
         task = get_object_or_404(self.model, id=task_id)
         form = self.form(instance=task)
-        return render(request, self.template_name, {'form': form})
+        owner_files = OwnerTaskFile.objects.filter(task=task)
+        
+        context = {
+            'form': form,
+            'course_id': course_id,
+            'task_id': task_id,
+            'files': owner_files
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.template_name, context)
 
     def post(self, request, course_id, task_id):
         task = get_object_or_404(self.model, id=task_id)
         form = self.form(request.POST, request.FILES)
         owner_task_file = OwnerTaskFile.objects.filter(owner=request.user, task=task)
+        context = {
+            'form': form
+        }
+        context = context_add_courses(context, request.user)
         
         if not form.is_valid():
-            return render(request, self.template_name, {'form': form})
+            return render(request, self.template_name, context)
         
         if task.name != form.cleaned_data['name']:
             task.name = form.cleaned_data['name']
         if task.description != form.cleaned_data['description']:
             task.description = form.cleaned_data['description']
-        if task.mark != form.cleaned_data['mark']:
-            task.mark = form.cleaned_data['mark']
         if task.do_up_to != form.cleaned_data['do_up_to']:
             task.do_up_to = form.cleaned_data['do_up_to']
+        task.save()
         
         previous_media = [record.media for record in owner_task_file]
         for file in request.FILES.getlist('file'):
@@ -173,10 +187,9 @@ class TaskUpdateView(View):
                 new_record.task = task
                 new_record.owner = request.user
                 new_record.media = file
+                new_record.save()
         
-        for record in owner_task_file:
-            if record.media not in request.FILES.getlist('file'):
-                record.delete()
+        return redirect(f'/course/{course_id}/task/{task_id}/')
 
 
 class DeleteOwnerFileView(View):

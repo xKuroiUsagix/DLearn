@@ -1,8 +1,45 @@
 {% extends 'homepage/_base.html' %}
-{% block content %}
-<form action="{% url 'task:create' course.id %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit">
-</form>
-{% endblock content %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'task/style.css' %}">
+    <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
+{% endblock styles %}
+
+{% block content %} 
+<div class="form-group course-update-div">
+    <form action="{% url 'task:create' course.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group text-center">
+            <h3><b>{{ task.name }}</b></h3>
+        </div>
+        <div class="form-group row">
+            <div class="form-group col-md-6 task-form-fields">
+                <div class="form-group col-md-12">
+                    Назва:
+                    {{ form.name }}
+                </div>
+                <div class="form-group col-md-12">
+                    Зробити до <small>(дд/мм/рррр гг:хх)</small>:
+                    {{ form.do_up_to }}
+                </div>
+                <div class="form-group col-md-12">
+                    Файли:
+                    {{ form.file }}
+                </div>
+            </div>
+            <div class="form-group col-md-6 description-div">
+                Опис завдання:
+                {{ form.description }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <input class="form-control btn btn-success " type="submit" value="Створити завдання">
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,84 @@
+#description-div {
+    background-color: aliceblue;
+    width: 98%;
+    height: 35vh;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    word-wrap: break-word;
+    overflow: auto;
+}
+
+#file-div {
+    background-color: aliceblue;
+    width: 98%;
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    padding: 10px;
+    height: 35vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.headers {
+    margin-left: 20px;
+}
+
+.upper-row {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+    margin-bottom: 20px;
+}
+
+.file {
+    margin-bottom: 18px;
+}
+
+.file a {
+    color: gray;
+    transition: 350ms;
+}
+
+.file:hover {
+    text-decoration: underline;
+}
+
+.time-line {
+    float: right;
+    padding-bottom: 20px;
+    color: gray;
+}
+
+.btn-task {
+    float: right;
+    margin-right: 14px;
+    margin-top: 20px;
+}
+
+.btn-quiz {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.btn-quiz-delete {
+    margin-left: 50px;
+    margin-top: 20px;
+}
+
+.description-div textarea {
+    height: 69vh;
+}
+
+#file-div-edit {
+    width: 100%;
+    background-color: aliceblue;
+    border: 1px solid rgba(128, 128, 128, 0.35);
+    border-radius: 5px;
+    padding: 15px;
+    height: 47vh;
+}
+
+.description-div-no-files textarea {
+    height: 21vh;
+}
