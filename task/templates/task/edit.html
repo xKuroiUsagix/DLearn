@@ -1,12 +1,4 @@
 {% extends 'homepage/_base.html' %}
-
-{% comment %} {% block content %}
-<form action="{% url 'task:edit' course_id task_id %}" method="POST" enctype="multipart/form-data">
-{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit">
-</form>
-{% endblock content %} {% endcomment %}
 {% load static %}
 
 {% block styles %}

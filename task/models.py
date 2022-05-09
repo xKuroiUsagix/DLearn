@@ -40,7 +40,10 @@ class UserTaskFile(models.Model):
     
     user = models.ForeignKey(CustomUser, on_delete=CASCADE)
     task = models.ForeignKey(Task, on_delete=CASCADE)
-    media = models.FileField(upload_to=user_directory_path, null=True, blank=True, verbose_name=_('Media'))
+    media = models.FileField(upload_to=user_directory_path, null=True, blank=True, verbose_name=_('Media'), max_length=256)
+    
+    def __str__(self):
+        return os.path.basename(self.media.name)
 
 
 class UserTask(models.Model):
@@ -48,4 +51,4 @@ class UserTask(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=CASCADE, verbose_name=_('User'))
     task = models.ForeignKey(Task, on_delete=CASCADE, verbose_name=_('Task'))
     mark = models.PositiveIntegerField(null=True, blank=True, verbose_name=_('Mark'))
-    done_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Done At'))
+    done_at = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name=_('Done At'))

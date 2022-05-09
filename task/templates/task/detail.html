@@ -16,32 +16,38 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        {% if owner_files %}
+            <div class="col-md-6">
+        {% else %}
+            <div class="col-md-12">
+        {% endif %}
             <h3 class="headers">Опис:</h3>
             <div id="description-div">
                 {{ task.description }}
             </div>
         </div>
-        <div class="col-md-6 file-container">
-            <h3>Прикріплені файли:</h3>
-            <div id="file-div">
-                {% for file in files %}
-                    <div class="row">
-                        <div class="col-md-10 file">
-                            <a href="{{ file.media.url }}" download>{{ file }}</a>
+        {% if owner_files %}
+            <div class="col-md-6 file-container">
+                <h3>Прикріплені файли:</h3>
+                <div id="file-div">
+                    {% for file in owner_files %}
+                        <div class="row">
+                            <div class="col-md-10 file">
+                                <a href="{{ file.media.url }}" download>{{ file }}</a>
+                            </div>
+                            <div>
+                                {% if is_owner %}
+                                    <form action="{% url 'task:delete_owner_file' course_id task.id file.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <input class="btn btn-danger" type="submit" value="Видалити">
+                                    </form>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div>
-                            {% if is_owner %}
-                                <form action="{% url 'task:delete_file' course_id task.id file.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <input class="btn btn-danger" type="submit" value="Видалити">
-                                </form>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -69,20 +75,53 @@
             <a href="{% url 'task:edit' task.course.id task.id %}">
                 <button class="btn btn-info btn-task">Редагувати</button>
             </a>
+            <a href="{% url 'task:user_files' task.course.id task.id %}">
+                <button class="btn btn-info btn-task">Файли користувачів</button>
+            </a>
             {% if not quiz %}
                 <a href="{% url 'quiz:create' task.course.id task.id %}">
                     <button class="btn btn-info btn-task">Додати тестове завдання</button>
                 </a>
             {% endif %}
         </div>
+    </div>
 {% endif %}
-</div>
-    <!-- {% comment %} {% if not is_owner %}
-        <h3>Import Your Files:</h3>
-        <form action="{% url 'task:done' course_id task.id %}" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="file" multiple>
-            <input type="submit" value="Done">
-        </form>
-    {% endif %} {% endcomment %} -->
+{% if not is_owner %}
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="headers">Завантажте ваші файли:</h3>
+            <div class="col user-file-div">
+                <form action="{% url 'task:add_files' course_id task.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-10">
+                            <input class="form-control file-input" type="file" name="file" multiple>
+                        </div>
+                        <div class="col-md-2">
+                            <input class="btn btn-info btn-user-files" type="submit" value="Прикріпити">
+                        </div>
+                    </div>
+                </form>
+                {% for file in user_files %}
+                <div class="row">
+                    <div class="col-md-10 file user-file">
+                        <a href="{{ file.media.url }}" download>{{ file }}</a>
+                    </div>
+                    <form action="{% url 'task:delete_user_file' course_id task.id file.id %}" method="POST">
+                        {% csrf_token %}
+                        <input class="btn btn-danger file-delete-btn" type="submit" value="Видалити">
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% if quiz %}
+            <div class="col text-center quiz-div">
+                <a href="{% url 'quiz:detail' task.course.id task.id %}">
+                    <button class="btn btn-success btn-quiz-user">Тестове завдання</button>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
 {% endblock content %}

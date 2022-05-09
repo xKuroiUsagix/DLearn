@@ -71,17 +71,16 @@ class TaskCreateView(View):
 class TaskDetailView(View):
     """
         TaskDetailView provides operations for task detail information.
-        If the user is owner of the course to which task belong to,
-        than this user has additional abilities.
+        If the user is owner of the course - he has additional functions.
         
         Abilities for owner:
             - Delete task
             - Modify task
+            - Delete included files
         
         Abilities for joined user:
             - See the task
             - Add files to the task
-            - Note task as "done" 
         
         Attributes:
         ----------
@@ -96,6 +95,7 @@ class TaskDetailView(View):
     def get(self, request, course_id, task_id):
         task = get_object_or_404(self.model, id=task_id)
         owner_files = OwnerTaskFile.objects.filter(task=task)
+        user_files = UserTaskFile.objects.filter(task=task)
         
         try:
             quiz = Quiz.objects.get(task=task.id)
@@ -107,7 +107,8 @@ class TaskDetailView(View):
             'task': task,
             'quiz': quiz,
             'is_owner': task.course.owner == request.user,
-            'files': owner_files
+            'owner_files': owner_files,
+            'user_files': user_files
         }
         context = context_add_courses(context, request.user)
         
@@ -121,6 +122,7 @@ class TaskDetailView(View):
             quiz.delete()
         
         return redirect(f'/course/{course_id}/task/{task_id}/')
+
 
 class TaskDeleteView(View):
     """
@@ -140,6 +142,18 @@ class TaskDeleteView(View):
 
 
 class TaskUpdateView(View):
+    """
+        TaskUpdateView provides operations for course owner to update task info.
+        
+        Attributes:
+        ----------
+        param model: Describes the Task model in database
+        type model: Task
+        param template_name: Describes template name for render
+        type template_name: str
+        param form: Describes the form for Task
+        type form: TaskForm
+    """
     
     model = Task
     template_name = 'task/edit.html'
@@ -193,6 +207,14 @@ class TaskUpdateView(View):
 
 
 class DeleteOwnerFileView(View):
+    """
+        DeleteOwnerfileView provides operations for course owner to delete included files.
+        
+        Attributes:
+        ----------
+        param model: Describes the OwnerTaskFile model in database
+        type model: OwnerTaskFile
+    """
     
     model = OwnerTaskFile
     
@@ -205,26 +227,83 @@ class DeleteOwnerFileView(View):
         return redirect(f'/course/{course_id}/task/{task_id}/')
 
 
-class TaskDoneView(View):
+class DeleteUserFileView(View):
+    """
+        DeleteUserFileView provides operations for course user to delete his included files.
+        
+        Attributes:
+        ----------
+        param model: Describes the UserTaskFile model in database
+        type model: UserTaskFile
+    """
+    model = UserTaskFile
     
-    model = UserTask
+    def post(self, request, course_id, task_id, file_id):
+        user_file = self.model.objects.get(id=file_id);
+        if user_file.user != request.user:
+            return HttpResponseForbidden()
+        
+        user_file.delete()
+        return redirect(f'/course/{course_id}/task/{task_id}/')
+
+
+class AddUserFilesView(View):
+    """
+        AddUserFilesview provides operations for course user to add files as answer.
+        
+        Attributes:
+        ----------
+        param model: Describes the UserTaskFile model in database
+        type model: UserTaskFile
+    """
+    model = UserTaskFile
     
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
-        
-        try:
-            user_task = UserTask.objects.get(task=task, user=request.user)
-        except ObjectDoesNotExist:
-            user_task = UserTask()
-            user_task.task = task
-            user_task.user = request.user
-            user_task.save()
-        
+        user_task_files = self.model.objects.filter(task=task, user=request.user)
+            
+        previous_media = [record.media for record in user_task_files]
         for file in request.FILES.getlist('file'):
-            user_files = UserTaskFile()
-            user_files.media = file
-            user_files.user = request.user
-            user_files.task = task
-            user_files.save()
+            if file not in previous_media:
+                self.model.objects.create(
+                    media=file,
+                    user=request.user,
+                    task=task
+                )
         
         return redirect(f'/course/{course_id}/task/{task_id}/')         
+
+
+class UserFilesListView(View):
+    """
+        UserFilesListView provides operations for course owner to see all user files for this task.
+        
+        Attributes:
+        ----------
+        param model: Describes the UserTaskFile model in database
+        type model: UserTaskFile
+        param template_name: Describes template name for render
+        type template_name: str
+    """
+    model = UserTaskFile
+    tenplate_name = 'task/user-files.html'
+    
+    def get(self, request, course_id, task_id):
+        task = get_object_or_404(Task, id=task_id)
+        user_task_files = self.model.objects.filter(task=task)
+        user_files = {}
+        
+        for user_task_file in user_task_files:
+            user = f'{user_task_file.user.first_name} {user_task_file.user.last_name}'
+            
+            if user in user_files.keys():
+                user_files[user].append(user_task_file)
+            else:
+                user_files[user] = [user_task_file]
+        
+        context = {
+            'user_files': user_files
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.tenplate_name, context)

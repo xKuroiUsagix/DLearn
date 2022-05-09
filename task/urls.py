@@ -7,7 +7,9 @@ from .views import (
     TaskDeleteView,
     TaskUpdateView,
     DeleteOwnerFileView,
-    TaskDoneView,
+    DeleteUserFileView,
+    AddUserFilesView,
+    UserFilesListView,
 )
 
 
@@ -19,7 +21,12 @@ urlpatterns = [
     path('<int:course_id>/task/<int:task_id>/edit/', login_required(TaskUpdateView.as_view()), name='edit'),
     path('<int:course_id>/task/<int:task_id>/delete-owner-file/<int:file_id>/', 
          login_required(DeleteOwnerFileView.as_view()),
-         name='delete_file'
+         name='delete_owner_file'
     ),
-    path('<int:course_id>/task/<int:task_id>/done/', login_required(TaskDoneView.as_view()), name='done')
+    path('<int:course_id>/task/<int:task_id>/delete-user-file/<int:file_id>/',
+         login_required(DeleteUserFileView.as_view()),
+         name='delete_user_file'
+    ),
+    path('<int:course_id>/task/<int:task_id>/add-files/', login_required(AddUserFilesView.as_view()), name='add_files'),
+    path('<int:course_id>/task/<int:task_id>/user-files/', login_required(UserFilesListView.as_view()), name='user_files')
 ]

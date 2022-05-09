@@ -4,6 +4,7 @@
     height: 35vh;
     margin-left: 20px;
     margin-right: 20px;
+    margin-bottom: 20px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid rgba(128, 128, 128, 0.5);
@@ -81,4 +82,53 @@
 
 .description-div-no-files textarea {
     height: 21vh;
+    margin-bottom: 30px;
+}
+
+.user-file-div {
+    background-color: aliceblue;
+    margin: 20px;
+    margin-left: 20px;
+    padding: 12px;
+    height: 29vh;
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.btn-user-files {
+    float: right;
+}
+
+.file-delete-btn {
+    width: 115px;
+}
+
+.user-file {
+    margin-left: 10px;
+    margin-right: -10px;
+}
+
+.btn-quiz-user {
+    width: 90%;
+}
+
+.quiz-div {
+    margin-top: 54px;
+}
+
+.user-files-div {
+    background-color: aliceblue;
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    width: 30%;
+    height: 20vh;
+    margin-left: 2%;
+    margin-bottom: 1%;
+    overflow-y: auto;
+}
+
+.file-row {
+    padding-left: 30px;
 }
