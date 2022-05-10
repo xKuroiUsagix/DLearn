@@ -1,10 +1,11 @@
 from pathlib import Path
+from . import secrets 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6%alnub5qcv0upc9)ika-y1qs-g*((+ygc0a(acq(#-9a0(@vw'
+SECRET_KEY = secrets.secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -66,7 +67,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dlearn',
         'USER': 'postgres',
-        'PASSWORD': 'vetal26061',
+        'PASSWORD': secrets.db_password,
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
