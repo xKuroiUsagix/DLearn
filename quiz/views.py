@@ -5,6 +5,8 @@ from django.views import View
 from task.models import Task
 from authentication.models import CustomUser
 from course.models import Course, UserCourse
+from homepage.side_functions import context_add_courses
+
 from .models import Quiz, Question, Option, ResultDetail, UserResult
 
 
@@ -24,19 +26,20 @@ class QuizCreateView(View):
         context = {
             'task': task
         }
+        context = context_add_courses(context, request.user)
+        
         return render(request, self.template_name, context)
     
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
-        if task.has_quiz:
+        
+        try:
+            Quiz.objects.get(task=task)
             return redirect(f'/course/{course_id}/task/{task_id}/')
+        except:
+            pass
         
-        task.has_quiz = True
-        task.save()
-        
-        self.model = self.model()
-        self.model.task = task
-        self.model.save()
+        quiz = self.model.objects.create(task=task)
         
         question_start = 'question_'
         text_answer_start = 'textOnlyFor_'
@@ -51,7 +54,7 @@ class QuizCreateView(View):
         
         for i in range(1, question_counter):
             question = Question()
-            question.quiz = self.model
+            question.quiz = quiz
             question.question = request.POST.get(f'{question_start}{i}')
             question.text_answer = bool(request.POST.get(f'{text_answer_start}{i}'))
             question.price = request.POST.get(f'{price_start}{i}')
@@ -119,10 +122,10 @@ class QuizDetailView(View):
             'task_id': task_id,
             'is_owner': course.owner == request.user,
             'users_done': users_done,
-            'users_not_done': users_not_done,
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
+            'users_not_done': users_not_done
         }
+        context = context_add_courses(context, request.user)
+        
         return render(request, self.template_name, context)
     
     def post(self, request, course_id, task_id):
@@ -168,10 +171,10 @@ class UserDetailView(View):
             'user_results': user_results,
             'questions': questions,
             'options': options,
-            'final_mark': self.analyse_answers(questions, options, user_results),
-            'my_courses': UserCourse.objects.filter(user=request.user),
-            'created_courses': Course.objects.filter(owner=request.user)
+            'final_mark': self.analyse_answers(questions, options, user_results)
         }
+        context = context_add_courses(context, request.user)
+        
         return render(request, self.template_name, context)
 
     def analyse_answers(self, questions, options, user_results):
