@@ -53,12 +53,12 @@ class QuizCreateView(View):
                 question_counter += 1
         
         for i in range(1, question_counter):
-            question = Question()
-            question.quiz = quiz
-            question.question = request.POST.get(f'{question_start}{i}')
-            question.text_answer = bool(request.POST.get(f'{text_answer_start}{i}'))
-            question.price = request.POST.get(f'{price_start}{i}')
-            question.save()
+            question = Question.objects.create (
+                quiz=quiz,
+                question=request.POST.get(f'{question_start}{i}'),
+                text_answer=bool(request.POST.get(f'{text_answer_start}{i}')),
+                price=request.POST.get(f'{price_start}{i}')
+            )
             
             option_counter = 1
             for name in request.POST.keys():
@@ -66,11 +66,11 @@ class QuizCreateView(View):
                     option_counter += 1
             
             for j in range(1, option_counter):
-                option = Option()
-                option.option = request.POST.get(f'{option_start}{i}_{j}')
-                option.is_right = bool(request.POST.get(f'{option_value_start}{i}_{j}'))
-                option.question = question
-                option.save()
+                Option.objects.create(
+                    option=request.POST.get(f'{option_start}{i}_{j}'),
+                    is_right=bool(request.POST.get(f'{option_value_start}{i}_{j}')),
+                    question=question
+                )
         
         return redirect(f'/course/{course_id}/task/{task_id}')
 

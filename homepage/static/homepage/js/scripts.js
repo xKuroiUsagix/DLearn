@@ -22,7 +22,7 @@ function addOption(questionNumber) {
         <li class="var-li" id="question_${questionNumber}_option_${options + 1}">
             <div class="row">
                 <div class="col">
-                    <input class="form-control var-checkbox" type="checkbox" id="optionValueForQuestion_${questionNumber}_${options + 1}">
+                    <input class="form-control var-checkbox" type="checkbox" name="optionValueForQuestion_${questionNumber}_${options + 1}">
                 </div>
                 <div>
                     <input class="form-control" type="text" name="optionForQuestion_${questionNumber}_${options + 1}" placeholder="варіант" required>
