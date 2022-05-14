@@ -1,19 +1,6 @@
 {% extends 'homepage/_base.html' %}
+{% load static %}
+
 {% block content %}
-<br>
-Current user is 
-    {% if user.is_authenticated %}
-        {{ user.first_name }} {{ user.last_name }}
-    {% else %}
-        NotLogedIn
-    {% endif %}
-<ul>
-    <li><a href="{% url 'authentication:register' %}">Register</a></li>
-    <li><a href="{% url 'authentication:login' %}">Log In</a></li>
-    <li><a href="{% url 'authentication:logout' %}">Log Out</a></li>
-</ul>
-<ul>
-    <li><a href="{% url 'course:create' %}">Create course</a></li>
-    <li><a href="{% url 'course:join' %}">Join course</a></li>
-</ul>
+
 {% endblock content %}
