@@ -1,3 +1,4 @@
+from unittest import result
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
@@ -11,6 +12,16 @@ from .models import Quiz, Question, Option, ResultDetail, UserResult
 
 
 class QuizCreateView(View):
+    """
+        QuizCreateView provides operations for course owner to create quiz for task.
+        
+        Attributes:
+        ----------
+        param template_name: Describes html template for Quiz get view
+        type template_name: str
+        param model: Describes the Quiz model in database
+        type model: Quiz
+    """
     
     template_name = 'quiz/create.html'
     model = Quiz
@@ -76,6 +87,16 @@ class QuizCreateView(View):
 
 
 class QuizDetailView(View):
+    """
+    QuizDetailView has functionality for users to take quizes
+    
+    Attributes:
+        ----------
+        param template_name: Describes html file for detail
+        type template_name: str
+        param model: Describes the Quiz model in database
+        type model: Quiz
+    """
     
     model = Quiz
     template_name = 'quiz/detail.html'
@@ -138,6 +159,7 @@ class QuizDetailView(View):
             if name.startswith(option_start):
                 option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
                 option = Option.objects.get(id=option_id)
+                print("Option is Right? :", option.is_right)
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=option.question,
@@ -147,17 +169,91 @@ class QuizDetailView(View):
             elif name.startswith(text_start):
                 question_id = int(name[name.find('_') + 1:])
                 question = Question.objects.get(id=question_id)
-                text_anser = request.POST.get(name)
+                text_answer = request.POST.get(name)
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=question,
-                    text_answer=text_anser
+                    text_answer=text_answer
                 )
         
+        questions = Question.objects.filter(quiz=quiz, text_answer=False)
+        options = []
+        for question in questions:
+            options.extend(Option.objects.filter(question=question))
+        result_detail = ResultDetail.objects.filter(user_result=user_result)
+        self.set_questions_marks(questions, options, result_detail)
+        
         return redirect('/')
+    
+    def set_questions_marks(self, questions, options, result_detail):
+        """
+        This function analyse each question, option and result_detail
+        taken from user, then calculates mark for each question and set it to
+        result mark field.
+        
+        How does mark calculation made:
+            For each question function counts all true and false options
+            Then calculates all true and false options which user done
+            After this, we have true_percent and false_percent which calculated as:
+                true_percent = user_true_options / all_true_options
+                false_percent = user_false_options / all_false_options
+            Then from true_percent substracts false_percents, and result multiplies to question price
+            
+            For example:
+                if user choose all options in question:
+                    false_percent equals 1, and true_percent equals 1
+                    which means that ture_percent - false_percent equals 0
+                    so question mark will be 0
+                
+                if user choose 1 true option, 1 false option, and 1 option will be untoched (1 true option at all):
+                    false_percent equals 0.5, and true_percent equals 1
+                    which means that true_percent - false_percent equals = 0.5
+                    so question mark will be a half of question price
+
+        Args:
+            questions (list): All Questions from Quiz
+            options (list): All Options from Quiz
+            result_detail (ResultDetail): All ResultDetail for certain user which has done the quiz
+        """
+        for question in questions:
+            true_options, false_options = 0, 0
+            u_true_options, u_false_options = 0, 0
+            
+            for option in options:
+                if option.question == question:
+                    if option.is_right:
+                        true_options += 1
+                    else:
+                        false_options += 1
+            
+            for result in result_detail:
+                if result.question == question:
+                    if result.is_right:
+                        u_true_options += 1
+                    else:
+                        u_false_options += 1
+            
+            true_percent = u_true_options / true_options
+            false_percent = u_false_options / false_options
+            
+            for result in result_detail:
+                if result.question == question:
+                    mark = round(question.price * (true_percent - false_percent))
+                    result.mark = mark if mark > 0 else 0
+                    result.save()
 
 
 class UserDetailView(View):
+    """
+        UserDetailView provides operations for owner to see each user task results.
+        
+        Attributes:
+        ----------
+        param template_name: Describes html template for user-detail
+        type model: str
+        param model: Describes the Quiz model in database
+        type model: Quiz
+    """
     
     model = Quiz
     template_name = 'quiz/user-detail.html'
@@ -167,7 +263,7 @@ class UserDetailView(View):
         task = Task.objects.get(id=task_id)
         quiz = Quiz.objects.get(task=task)
         user_result = UserResult.objects.get(user=user, quiz=quiz)
-        user_results = ResultDetail.objects.filter(user_result=user_result)
+        result_detail = ResultDetail.objects.filter(user_result=user_result)
         questions = Question.objects.filter(quiz=quiz)
         options = []
         
@@ -175,39 +271,11 @@ class UserDetailView(View):
             options.extend(Option.objects.filter(question=q))
         
         context = {
-            'user_results': user_results,
+            'user_results': result_detail,
             'questions': questions,
             'options': options,
-            'final_mark': self.analyse_answers(questions, options, user_results)
+            'final_mark': self.analyse_answers(questions, options, result_detail)
         }
         context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
-
-    def analyse_answers(self, questions, options, user_results):
-        def right_answers(options, question):
-            counter = 0
-            for option in options:
-                if option.question == question and option.is_right:
-                    counter += 1
-                    
-            return counter
-        
-        final_mark = 0
-        
-        for question in questions:
-            counter = 0
-            true_answers = right_answers(options, question)
-            
-            for result in user_results:
-                if result.question == question and result.is_right:
-                    counter += 1
-                    print('true')
-                print(result.is_right)
-            print(counter)
-            if question.price != 0:
-                one_aswer_value = true_answers / question.price
-                final_mark += counter * one_aswer_value
-        
-        return final_mark
-                    
