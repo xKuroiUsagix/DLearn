@@ -24,7 +24,6 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
     do_up_to = models.DateTimeField(null=True, blank=True, verbose_name=_('Do Up To'))
-    has_quiz = models.BooleanField(default=False, verbose_name=_('Has Quiz'))
 
 
 class OwnerTaskFile(models.Model):
@@ -35,6 +34,7 @@ class OwnerTaskFile(models.Model):
     
     def __str__(self):
         return os.path.basename(self.media.name)
+
 
 class UserTaskFile(models.Model):
     

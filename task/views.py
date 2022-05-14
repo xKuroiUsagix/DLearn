@@ -98,7 +98,7 @@ class TaskDetailView(View):
         user_files = UserTaskFile.objects.filter(task=task)
         
         try:
-            quiz = Quiz.objects.get(task=task.id)
+            quiz = Quiz.objects.get(task=task)
         except ObjectDoesNotExist:
             quiz = None
         
@@ -117,9 +117,10 @@ class TaskDetailView(View):
     def post(self, request, course_id, task_id):
         task = get_object_or_404(self.model, id=task_id)
         
-        if task.has_quiz:
-            quiz = Quiz.objects.get(task=task)
-            quiz.delete()
+        try:
+            Quiz.objects.get(task=task).delete()
+        except ObjectDoesNotExist:
+            pass
         
         return redirect(f'/course/{course_id}/task/{task_id}/')
 
