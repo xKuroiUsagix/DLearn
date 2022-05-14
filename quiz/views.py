@@ -136,16 +136,23 @@ class QuizDetailView(View):
         
         for name in request.POST.keys():
             if name.startswith(option_start):
-                option_id = int(name[name.find('_') + 1:])
+                option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
                 option = Option.objects.get(id=option_id)
-                result_detail = ResultDetail.objects.create(user_result=user_result, question=option.question, option=option, is_right=option.is_right)
-                result_detail.save()
+                ResultDetail.objects.create(
+                    user_result=user_result,
+                    question=option.question,
+                    option=option,
+                    is_right=option.is_right
+                )
             elif name.startswith(text_start):
                 question_id = int(name[name.find('_') + 1:])
                 question = Question.objects.get(id=question_id)
                 text_anser = request.POST.get(name)
-                result_detail = ResultDetail.objects.create(user_result=user_result, question=question, text_answer=text_anser)
-                result_detail.save()
+                ResultDetail.objects.create(
+                    user_result=user_result,
+                    question=question,
+                    text_answer=text_anser
+                )
         
         return redirect('/')
 
