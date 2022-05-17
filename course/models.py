@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
-from django.db.models.deletion import CASCADE, DO_NOTHING
+from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
 
 from authentication.models import CustomUser
@@ -32,6 +32,9 @@ class Course(models.Model):
     created_at = models.DateField(auto_now_add=True, verbose_name=_('CreatedAt'))
     
     _password = None
+    
+    def __str__(self):
+        return self.name
     
     def set_password(self, raw_password):
         """Sets the course password

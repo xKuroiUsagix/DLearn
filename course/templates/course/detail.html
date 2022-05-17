@@ -1,17 +1,69 @@
 {% extends 'homepage/_base.html' %}
 {% block content %}
-<p>{{ course.name }}</p>
+<!-- <p>{{ course.name }}</p>
 <p>{{ course.group_name }}</p>
-<p>{{ course.owner.email }}</p>
-{% if is_owner %}
-<form action="{% url 'course:detail' course.id %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Delete" name="delete">
-</form>
+<p>{{ course.owner.email }}</p> -->
+
+<div class="text-center">
+    <h1 class="course-header">{{ course.name }}</h1>
+</div>
+
+{% if tasks %}
+    <div style="margin-bottom: 15px;">
+    {% for task in tasks %}
+    <div class="task-div">
+        <div class="row task">
+            <div class="col-3">
+                <a href="{% url 'task:detail' course.id task.id %}"><h3>{{ task.name }}</h3></a>
+            </div>
+            {% if task.do_up_to %}
+                <small>Do To {{ task.do_up_to }}</small>
+            {% endif %}
+            {% if is_owner %}
+                <div class="col">
+                <form action="{% url 'task:delete' course.id task.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" style="float: right" class="btn btn-danger course-button" value="Видалити"> 
+                </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    </div>
 {% else %}
-<form action="{% url 'course:detail' course.id %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Leave" name="leave">
-</form>
+
+Завдання відсутні <br>
 {% endif %}
+
+{% if is_owner %}
+    <div class="row button-row">
+        <div class="col btn-div">
+            <a href="{% url 'course:settings' course.id %}"><button class="btn btn-info course-button">Налаштування</button></a>
+        </div>
+        <div class="col btn-div">
+            <a href="{% url 'task:create' course.id %}"><button class="btn btn-info course-button">Додати Завдання</button></a>
+        </div>
+        <div class="col btn-div">
+            <a href="{% url 'course:users' course.id %}"><button class="btn btn-info course-button">Користувачі</button></a>
+        </div>
+        <div class="col btn-div">
+            <form action="{% url 'course:detail' course.id %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger course-button" value="Видалити Курс">
+            </form>
+        </div>
+    </div>
+
+{% else %}
+    <div class="row button-row">
+        <div class="col btn-div">
+            <form action="{% url 'course:leave' course.id %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger course-button" value="Leave">
+            </form>
+        </div>
+    </div>
+{% endif %}
+
 {% endblock content %}

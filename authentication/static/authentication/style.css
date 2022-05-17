@@ -1,0 +1,33 @@
+.form-container {
+    width: 40%;
+    padding: 2.5%;
+    padding-bottom: 1%;
+    box-shadow: 0px 0px 5px gray;
+}
+
+.form-control {
+    margin-bottom: 2%;
+}
+
+.form-button {
+    height: auto;
+    width: 50%;
+    margin-top: 4%;
+}
+
+.form-error {
+    color: red;
+}
+
+.form-div {
+    margin-top: 7%;
+}
+
+.course-update-div {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.join-btn {
+    margin-top: 5%;
+}

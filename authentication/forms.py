@@ -1,15 +1,28 @@
 from django.utils.translation import gettext_lazy as _
 from django import forms
 
+from datetime import datetime
+
+from .errors import ErrorMessages
 from .models import CustomUser
 from .validators import is_password_valid
 
 
+def set_default_attrs(**kwargs):
+    attrs = {'class': 'form-control'}
+    for k, v in kwargs.items():
+        attrs[k] = v
+    return attrs
+
+
 class RegistrationForm(forms.ModelForm):
     
-    password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
-    confirm_password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput())
-    patronymic = forms.CharField(max_length=30, required=False, widget=forms.TextInput())
+    password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
+        attrs=set_default_attrs(placeholder='Пароль')
+    ))
+    confirm_password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
+        attrs=set_default_attrs(placeholder='Повторіть Праоль')
+    ))
     
     class Meta:
         model = CustomUser
@@ -19,12 +32,11 @@ class RegistrationForm(forms.ModelForm):
             'confirm_password',
             'first_name',
             'last_name',
-            'patronymic',
         ]
         widgets = {
-            'email': forms.EmailInput(),
-            'first_name': forms.TextInput(),
-            'last_name': forms.TextInput(),
+            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Емейл')),
+            'first_name': forms.TextInput(attrs=set_default_attrs(placeholder='Ім\'я')),
+            'last_name': forms.TextInput(attrs=set_default_attrs(placeholder='Прізвище')),
         }
         
     def clean(self):
@@ -40,9 +52,11 @@ class RegistrationForm(forms.ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         
         if not is_password_valid(password):
-            raise forms.ValidationError(_('passwrod should contains at least 1 character, at least 1 number'))
+            self.errors['password'] = ErrorMessages.PASSWORD_VALIDATION_ERROR
+            return
         if password != confirm_password:
-            raise forms.ValidationError(_('password and confirm password don\'t match'))
+            self.errors['password'] = ErrorMessages.PASSWORD_NOT_MATCH_ERROR
+            return
     
     def save(self, commit=True):
         """Redefined method save from ModelForm
@@ -64,8 +78,13 @@ class RegistrationForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     
-    password = forms.CharField(max_length=30, widget=forms.PasswordInput())
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput(
+        attrs=set_default_attrs(placeholder='Пароль')
+    ))
     
     class Meta:
         model = CustomUser
         fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Емейл'))
+        }

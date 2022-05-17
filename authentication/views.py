@@ -4,6 +4,7 @@ from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
+from .errors import ErrorMessages
 from .models import CustomUser
 from .forms import RegistrationForm, LoginForm
 
@@ -11,19 +12,18 @@ from .forms import RegistrationForm, LoginForm
 class RegisterView(View):
     """
         RegisterView provides operations for user registration.
+        
         Attributes:
         ----------
         param template_name: Describes template name for render
         type template_name: str
         param form: Describes django-form for registration
-        type form: ModelForm
+        type form: RegistrationForm
     """
     template_name = 'authentication/register.html'
     form = RegistrationForm
     
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('/')
         return render(request, self.template_name, {'form': self.form})
 
     def post(self, request):
@@ -38,10 +38,13 @@ class RegisterView(View):
 class LoginView(View):
     """
         LoginView provides operations for user loging in.
+        
         Attributes:
         ----------
         param template_name: Describes template name for render
-        type template_name: 
+        type template_name: str
+        param form: Describes django-form for logining in
+        type form: LoginForm
     """
     template_name = 'authentication/login.html'
     form = LoginForm
@@ -57,8 +60,8 @@ class LoginView(View):
         except ObjectDoesNotExist:
             user = None
         
-        if not user or user.check_password(form.data['password']):
-            form.errors['email'] = form.error_class([_('No such user with this email and password')])
+        if not user or not user.check_password(form.data['password']):
+            form.errors['email'] = form.error_class([ErrorMessages.USER_NOT_FOUND_ERROR])
             return render(request, self.template_name, {'form': form})
         
         login(request, user)

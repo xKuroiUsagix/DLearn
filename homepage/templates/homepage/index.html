@@ -1,22 +1,59 @@
 {% extends 'homepage/_base.html' %}
-{% block content %}
-<br>
-Current user is 
-    {% if user.is_authenticated %}
-        {{ user.email }}
-    {% else %}
-        NotLogedIn
-    {% endif %}
+{% load static %}
 
-<ul>
-    <li><a href="{% url 'authentication:register' %}">Register</a></li>
-    <li><a href="{% url 'authentication:login' %}">Login</a></li>
-    <li><a href="{% url 'authentication:logout' %}">Logout</a></li>
-</ul>
-<ul>
-    <li><a href="{% url 'course:create' %}">Create course</a></li>
-    <li><a href="{% url 'course:join' %}">Join course</a></li>
-    <li><a href="{% url 'course:owned_courses' %}">My courses</a></li>
-    <li><a href="{% url 'course:joined_courses' %}">Joined courses</a></li>
-</ul>
+{% block content %}
+<div style="padding: 45px">
+<div class="card-deck">
+    <div class="card">
+      <img class="card-img-top" src="" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+    <div class="card">
+      <img class="card-img-top" src="..." alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+    <div class="card">
+      <img class="card-img-top" src="..." alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+    <div class="card">
+        <img class="card-img-top" src="..." alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
+      </div>
+      <div class="card">
+        <img class="card-img-top" src="..." alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
+      </div>    
+  </div>
+  </div>
 {% endblock content %}

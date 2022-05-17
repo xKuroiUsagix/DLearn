@@ -3,11 +3,14 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
 
+from .errors import ErrorMessages
+
+
 class UserManager(BaseUserManager):
     
     def create_user(self, email, password, **extra_fields):
         if not email:
-            raise ValuesView(_('The Email must be set'))
+            raise ValuesView(ErrorMessages.EMAIL_NOT_GIVEN_ERROR)
         
         email = self.normalize_email(email)
         if extra_fields.get('confirm_password') is not None:
@@ -23,7 +26,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('role', 1)
         
         if extra_fields.get('role') != 1:
-            raise ValueError(_('Superuser must have role set to 1'))
+            raise ValueError(ErrorMessages.SUPERUSER_ROLE_ERROR)
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser set to True'))
+            raise ValueError(ErrorMessages.SUPERUSER_IS_SUPERUSER_ERROR)
         return self.create_user(email, password, **extra_fields)

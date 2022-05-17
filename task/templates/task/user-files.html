@@ -1,0 +1,26 @@
+{% extends 'homepage/_base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'task/style.css' %}">
+{% endblock styles %}
+
+
+{% block content %}
+<div class="row file-row text-center">
+    {% for user, files in user_files.items %}
+
+    <div class="user-files-div">
+        <h3>{{ user }}:</h3>
+        <div>
+        {% for file in files %}
+            <div class="file">
+                <a href="{{ file.media.url }}" download>{{ file }}</a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    
+    {% endfor %}
+</div>
+{% endblock content %}

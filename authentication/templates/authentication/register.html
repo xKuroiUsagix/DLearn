@@ -1,11 +1,50 @@
 {% extends 'homepage/_base.html' %}
+{% load static %}
 
-{% block content %}
-<div>
-    <form action="{% url 'authentication:register' %}" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit">
-    </form>
+{% block styles %}
+<link rel="stylesheet" href="{% static 'authentication/style.css' %}">
+{% endblock styles %}
+
+{% block no_sidebar %}
+<div class="container form-container form-div">
+    <div class="form-group">
+        <form action="{% url 'authentication:register' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group text-center">
+                <h3><b>Створіть ваш DLearn акаунт</b></h3>
+            </div>
+            <div class="form-group row">
+                <div class="form-group col-md-6">
+                    Ім'я
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group col-md-6">
+                    Прізвище:
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div class="form-group">
+                Емейл:
+                {{ form.email }}
+                {% if form.errors.email %}
+                    <small class="form-error">*користувач з таким емейлом уже існує</small>
+                {% endif %}
+            </div>
+            <div class="form-group row">
+                <div class="form-group col-md-6">
+                    Пароль:
+                    {{ form.password }}
+                </div>
+                <div class="form-group col-md-6">
+                    Повторіть праоль:
+                    {{ form.confirm_password }}
+                </div>
+                <small class="form-error">{{ form.errors.password }}</small>
+            </div>
+            <div class="form-group text-center">
+                <input class="form-control btn btn-success form-button" type="submit" value="Створити акаунт">
+            </div>
+        </form>
+    </div>
 </div>
-{% endblock content %}
+{% endblock %}

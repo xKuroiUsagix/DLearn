@@ -1,0 +1,27 @@
+{% extends 'homepage/_base.html' %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="course-header">Користувачі курсу {{ course.name }}</h1>
+</div>
+
+{% if users %}
+<div class="task-div">
+    <div class="row task">
+        {% for user in users %}
+            <div class="col-8">
+                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+            </div>
+            <div class="col-4">
+                <form action="{% url 'course:kick_user' course.id user.id %}" method="POST">
+                {% csrf_token %}
+                    <input type="submit" class="btn btn-danger course-button" style="float: right" value="Виключити з курсу">
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<h3>Поки ніхто не долучився</h3>
+{% endif %}
+{% endblock content %}
