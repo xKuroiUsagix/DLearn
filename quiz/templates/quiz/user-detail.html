@@ -2,18 +2,30 @@
 {% block content %}
 {% comment %} {{ result.question.question }} <br> {% endcomment %}
 {% comment %} {{ result.option.option }} {{ result.option.is_right }} <br> {% endcomment %}
+{% block styles %}
+<style>
+    .main-body {
+        padding: 20px;
+    }
+</style>
+{% endblock styles %}
 {% for q in questions %}
     {{ q.question }} <br>
     {% for option in options %}
         {% if option.question == q %}
             {{ option.option }}
 
-            {% for result in user_results %}
+            {% for result in result_details %}
                 {% if result.option == option %}
-                    {{ result.option.is_right }}
+                    {{ result.option.is_right }} {{ result.mark }} / {{ q.price }} {{ q.id }}
                 {% endif %}
             {% endfor %}
             <br>
+        {% endif %}
+    {% endfor %}
+    {% for result in result_details %}
+        {% if result.question == q and result.text_answer %}
+            {{ result.text_answer }} <br>
         {% endif %}
     {% endfor %}
 {% endfor %}

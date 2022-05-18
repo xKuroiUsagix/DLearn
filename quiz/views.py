@@ -156,10 +156,10 @@ class QuizDetailView(View):
         user_result = UserResult.objects.create(user=request.user, quiz=quiz)
         
         for name in request.POST.keys():
+            option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
+            option = Option.objects.get(id=option_id)
+                
             if name.startswith(option_start):
-                option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
-                option = Option.objects.get(id=option_id)
-                print("Option is Right? :", option.is_right)
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=option.question,
@@ -167,9 +167,8 @@ class QuizDetailView(View):
                     is_right=option.is_right
                 )
             elif name.startswith(text_start):
-                question_id = int(name[name.find('_') + 1:])
-                question = Question.objects.get(id=question_id)
                 text_answer = request.POST.get(name)
+                
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=question,
@@ -178,8 +177,10 @@ class QuizDetailView(View):
         
         questions = Question.objects.filter(quiz=quiz, text_answer=False)
         options = []
+        
         for question in questions:
             options.extend(Option.objects.filter(question=question))
+        
         result_detail = ResultDetail.objects.filter(user_result=user_result)
         self.set_questions_marks(questions, options, result_detail)
         
@@ -263,19 +264,43 @@ class UserDetailView(View):
         task = Task.objects.get(id=task_id)
         quiz = Quiz.objects.get(task=task)
         user_result = UserResult.objects.get(user=user, quiz=quiz)
-        result_detail = ResultDetail.objects.filter(user_result=user_result)
+        result_details = ResultDetail.objects.filter(user_result=user_result)
         questions = Question.objects.filter(quiz=quiz)
         options = []
+        
+        user_result.mark = self.count_mark(result_details)
+        user_result.save()
         
         for q in questions:
             options.extend(Option.objects.filter(question=q))
         
         context = {
-            'user_results': result_detail,
+            'result_details': result_details,
             'questions': questions,
             'options': options,
-            'final_mark': self.analyse_answers(questions, options, result_detail)
+            'final_mark': user_result.mark
         }
-        context = context_add_courses(context, request.user)
+        # context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
+    
+    def count_mark(self, result_details):
+        """This method counts the quiz marks summary.
+
+        Args:
+            result_details (list): List of ResultDetail class objects
+
+        Returns:
+            int: final mark for user in quiz
+        """
+        previous_questions = set()
+        mark = 0
+        
+        for result in result_details:
+            if result.question in previous_questions:
+                continue
+            
+            mark += result.mark
+            previous_questions.add(result.question)
+            
+        return mark

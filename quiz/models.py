@@ -17,6 +17,7 @@ class UserResult(models.Model):
     
     user = models.ForeignKey(CustomUser, on_delete=CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=CASCADE)
+    mark = models.IntegerField(default=0)
 
 
 class Question(models.Model):
