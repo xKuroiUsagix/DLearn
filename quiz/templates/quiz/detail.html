@@ -27,7 +27,7 @@
             {% csrf_token %}
             {% for question in questions %}
                 <label>{{ question.question }}</label> <br>
-                {% if question.id in one_answer_questions %}
+                {% if question in one_answer_questions %}
                     <div>
                     {% for option in options %}
                         {% if option.question.id == question.id %}

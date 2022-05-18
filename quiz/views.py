@@ -1,3 +1,4 @@
+import queue
 from unittest import result
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
@@ -110,22 +111,15 @@ class QuizDetailView(View):
         questions = Question.objects.filter(quiz=quiz.id)
         course = Course.objects.get(id=course_id)
         users_course = UserCourse.objects.filter(course=course_id)
-        options = []
-        one_answer_questions = []
-        users_done = []
-        users_not_done = []
+        options, users_done, users_not_done, one_answer_questions = [], [], [], []
         
         for question in questions:
             current_options = Option.objects.filter(question=question.id)
             options.extend(current_options)
             
-            counter = 0
-            for option in current_options:
-                if option.is_right:
-                    counter += 1
-            
-            if counter > 1:
-                one_answer_questions.append(question.id)
+            if not self.is_question_one_optioned(question):
+                continue
+            one_answer_questions.append(question)
         
         for user_course in users_course:
             try:
@@ -155,11 +149,11 @@ class QuizDetailView(View):
         quiz = Quiz.objects.get(task=task_id)
         user_result = UserResult.objects.create(user=request.user, quiz=quiz)
         
-        for name in request.POST.keys():
-            option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
-            option = Option.objects.get(id=option_id)
-                
+        for name in request.POST.keys():                
             if name.startswith(option_start):
+                option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
+                option = Option.objects.get(id=option_id)
+            
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=option.question,
@@ -167,6 +161,8 @@ class QuizDetailView(View):
                     is_right=option.is_right
                 )
             elif name.startswith(text_start):
+                question_id = int(name[name.find('_') + 1:]) # Getting question_id from strings like: "questionName_{question_id}"
+                question = Question.objects.get(id=question_id)
                 text_answer = request.POST.get(name)
                 
                 ResultDetail.objects.create(
@@ -185,6 +181,25 @@ class QuizDetailView(View):
         self.set_questions_marks(questions, options, result_detail)
         
         return redirect('/')
+    
+    def is_question_one_optioned(self, question):
+        """This method checks each question's option and tells has it only one true asnwer or not.
+
+        Args:
+            question (Question): an object of Question class
+
+        Returns:
+            bool: whether question has only one option or more
+        """
+        options = Option.objects.filter(question=question)
+        true_options_counter = 0
+        
+        for option in options:
+            if option.is_right:
+                true_options_counter += 1
+        
+        return true_options_counter == 1
+                
     
     def set_questions_marks(self, questions, options, result_detail):
         """
