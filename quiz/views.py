@@ -290,14 +290,36 @@ class UserDetailView(View):
             options.extend(Option.objects.filter(question=q))
         
         context = {
+            'user': user,
+            'task_id': task.id,
+            'course_id': course_id, 
             'result_details': result_details,
             'questions': questions,
             'options': options,
             'final_mark': user_result.mark
         }
-        # context = context_add_courses(context, request.user)
+        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
+    
+    def post(self, request, course_id, task_id, user_id):
+        task_start = 'descriptionTask_'
+        
+        for name in request.POST.keys():
+            if name.startswith(task_start):
+                question_id = int(name[name.find('_') + 1:])
+                question = Question.objects.get(id=question_id)
+                
+                task = Task.objects.get(id=task_id)
+                quiz = Quiz.objects.get(task=task)
+                user = CustomUser.objects.get(id=user_id)
+                user_result = UserResult.objects.get(quiz=quiz, user=user)
+                
+                result_detail = ResultDetail.objects.get(user_result=user_result, question=question)
+                result_detail.mark = int(request.POST[name])
+                result_detail.save()
+        
+        return redirect(f'/{course_id}/task/{task_id}/quiz/user-detail/{user_id}')
     
     def count_mark(self, result_details):
         """This method counts the quiz marks summary.
