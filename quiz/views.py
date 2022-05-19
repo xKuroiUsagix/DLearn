@@ -23,16 +23,12 @@ class QuizCreateView(View):
         param model: Describes the Quiz model in database
         type model: Quiz
     """
-    
     template_name = 'quiz/create.html'
     model = Quiz
     
     def get(self, request, course_id, task_id):
-        try:
-            if Quiz.objects.get(task=task_id):
-                return redirect(f'/course/{course_id}/task/{task_id}/')
-        except ObjectDoesNotExist:
-            pass
+        if self.model.objects.filter(task=task_id):
+            return redirect(f'/course/{course_id}/task/{task_id}/')
             
         task = get_object_or_404(Task, id=task_id)
         context = {
@@ -45,11 +41,8 @@ class QuizCreateView(View):
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
         
-        try:
-            Quiz.objects.get(task=task)
+        if self.model.objects.filter(task=task):
             return redirect(f'/course/{course_id}/task/{task_id}/')
-        except:
-            pass
         
         quiz = self.model.objects.create(task=task)
         
@@ -98,7 +91,6 @@ class QuizDetailView(View):
         param model: Describes the Quiz model in database
         type model: Quiz
     """
-    
     model = Quiz
     template_name = 'quiz/detail.html'
     
@@ -146,7 +138,7 @@ class QuizDetailView(View):
     def post(self, request, course_id, task_id):
         option_start = 'option_'
         text_start = 'describe_'
-        quiz = Quiz.objects.get(task=task_id)
+        quiz = self.model.objects.get(task=task_id)
         user_result = UserResult.objects.create(user=request.user, quiz=quiz)
         
         for name in request.POST.keys():                
@@ -223,7 +215,7 @@ class QuizDetailView(View):
                 
                 if user choose 1 true option, 1 false option, and 1 option will be untoched (1 true option at all):
                     false_percent equals 0.5, and true_percent equals 1
-                    which means that true_percent - false_percent equals = 0.5
+                    which means that true_percent - false_percent equals 0.5
                     so question mark will be a half of question price
 
         Args:
@@ -270,14 +262,13 @@ class UserDetailView(View):
         param model: Describes the Quiz model in database
         type model: Quiz
     """
-    
     model = Quiz
     template_name = 'quiz/user-detail.html'
     
     def get(self, request, course_id, task_id, user_id):
         user = CustomUser.objects.get(id=user_id)
         task = Task.objects.get(id=task_id)
-        quiz = Quiz.objects.get(task=task)
+        quiz = self.model.objects.get(task=task)
         user_result = UserResult.objects.get(user=user, quiz=quiz)
         result_details = ResultDetail.objects.filter(user_result=user_result)
         questions = Question.objects.filter(quiz=quiz)
@@ -291,7 +282,7 @@ class UserDetailView(View):
         
         context = {
             'user': user,
-            'task_id': task.id,
+            'task_id': task_id,
             'course_id': course_id, 
             'result_details': result_details,
             'questions': questions,
@@ -319,7 +310,7 @@ class UserDetailView(View):
                 result_detail.mark = int(request.POST[name])
                 result_detail.save()
         
-        return redirect(f'/{course_id}/task/{task_id}/quiz/user-detail/{user_id}')
+        return redirect(f'/course/{course_id}/task/{task_id}/quiz/user-detail/{user_id}')
     
     def count_mark(self, result_details):
         """This method counts the quiz marks summary.
