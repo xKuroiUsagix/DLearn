@@ -84,6 +84,9 @@
             <a href="{% url 'task:user_files' task.course.id task.id %}">
                 <button class="btn btn-info btn-task">Файли користувачів</button>
             </a>
+            <a href="{% url 'task:user_rating' task.course.id task.id %}">
+                <button class="btn btn-info btn-task">Рейтинг</button>
+            </a>
             {% if not quiz %}
                 <a href="{% url 'quiz:create' task.course.id task.id %}">
                     <button class="btn btn-info btn-task">Додати тестове завдання</button>

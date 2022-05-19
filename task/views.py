@@ -7,7 +7,7 @@ from django.http.response import HttpResponseForbidden
 from course.models import Course
 from authentication.models import CustomUser
 from dlearn.settings import MEDIA_ROOT
-from quiz.models import Quiz
+from quiz.models import Quiz, UserResult
 from homepage.side_functions import context_add_courses
 
 from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
@@ -315,7 +315,7 @@ class UserFilesListView(View):
     tenplate_name = 'task/user-files.html'
     
     def get(self, request, course_id, task_id):
-        if not Course.objects.get(id=course_id) == request.user:
+        if not Course.objects.get(id=course_id).owner == request.user:
             return HttpResponseForbidden()
         
         task = get_object_or_404(Task, id=task_id)
@@ -340,7 +340,7 @@ class UserFilesListView(View):
         return render(request, self.tenplate_name, context)
     
     def post(self, request, course_id, task_id):
-        if not Course.objects.get(id=course_id) == request.user:
+        if not Course.objects.get(id=course_id).owner == request.user:
             return HttpResponseForbidden()
         
         task = Task.objects.get(id=task_id)
@@ -352,3 +352,42 @@ class UserFilesListView(View):
         user_task.save()
         
         return redirect(f'/course/{course_id}/task/{task_id}/user-files/')
+
+
+class UserRatingView(View):
+    template_name = 'task/users-rating.html'
+    
+    def get(self, request, course_id, task_id):
+        task = Task.objects.get(id=task_id)
+        users_task = UserTask.objects.filter(task=task)
+        users_marks = {}
+        
+        try:
+            quiz = Quiz.objects.get(task=task)
+        except ObjectDoesNotExist:
+            quiz = None
+        
+        if quiz:
+            users_results = UserResult.objects.filter(quiz=quiz)
+        
+        for user_task in users_task:
+            users_marks[user_task.user] = [user_task.mark]
+        
+        if quiz:
+            for user_result in users_results:
+                users_marks[user_result.user].append(user_result.mark)
+        else:
+            for user in users_marks:
+                users_marks[user].append(0)
+        
+        for user, marks in users_marks.items():
+            users_marks[user].append(sum(marks))    
+        
+        context = {
+            'task_id': task_id,
+            'course_id': course_id,
+            'users_marks': users_marks
+        }
+        context = context_add_courses(context, request.user)
+        
+        return render(request, self.template_name, context)
