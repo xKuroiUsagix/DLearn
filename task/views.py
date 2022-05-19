@@ -4,10 +4,12 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from django.http.response import HttpResponseForbidden
 
-from course.models import Course, UserCourse
+from course.models import Course
+from authentication.models import CustomUser
 from dlearn.settings import MEDIA_ROOT
 from quiz.models import Quiz
 from homepage.side_functions import context_add_courses
+
 from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
 from .forms import TaskForm
 
@@ -98,6 +100,11 @@ class TaskDetailView(View):
         user_files = UserTaskFile.objects.filter(task=task)
         
         try:
+            user_task = UserTask.objects.get(task=task, user=request.user)
+        except ObjectDoesNotExist:
+            user_task = None
+        
+        try:
             quiz = Quiz.objects.get(task=task)
         except ObjectDoesNotExist:
             quiz = None
@@ -106,6 +113,8 @@ class TaskDetailView(View):
             'course_id': course_id,
             'task': task,
             'quiz': quiz,
+            'mark': user_task.mark if user_task else None,
+            'is_examined': user_task.is_examined if user_task else None,
             'is_owner': task.course.owner == request.user,
             'owner_files': owner_files,
             'user_files': user_files
@@ -241,10 +250,17 @@ class DeleteUserFileView(View):
     
     def post(self, request, course_id, task_id, file_id):
         user_file = self.model.objects.get(id=file_id);
+        
         if user_file.user != request.user:
             return HttpResponseForbidden()
         
+        task = Task.objects.get(id=task_id)
+        user_task_files = UserTaskFile.objects.filter(user=request.user, task=task)
+        if not user_task_files:
+            UserTask.objects.get(user=request.user, task=task).delete()
+        
         user_file.delete()
+        
         return redirect(f'/course/{course_id}/task/{task_id}/')
 
 
@@ -262,6 +278,15 @@ class AddUserFilesView(View):
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
         user_task_files = self.model.objects.filter(task=task, user=request.user)
+        
+        
+        if UserTask.objects.filter(user=request.user, task=task):
+            UserTask.objects.get(user=request.user, task=task).delete()
+            
+        UserTask.objects.create(
+            task=task,
+            user=request.user
+        )
             
         previous_media = [record.media for record in user_task_files]
         for file in request.FILES.getlist('file'):
@@ -290,21 +315,40 @@ class UserFilesListView(View):
     tenplate_name = 'task/user-files.html'
     
     def get(self, request, course_id, task_id):
+        if not Course.objects.get(id=course_id) == request.user:
+            return HttpResponseForbidden()
+        
         task = get_object_or_404(Task, id=task_id)
+        users_task = UserTask.objects.filter(task=task)
         user_task_files = self.model.objects.filter(task=task)
         user_files = {}
         
         for user_task_file in user_task_files:
-            user = f'{user_task_file.user.first_name} {user_task_file.user.last_name}'
-            
-            if user in user_files.keys():
-                user_files[user].append(user_task_file)
+            if user_task_file.user in user_files.keys():
+                user_files[user_task_file.user].append(user_task_file)
             else:
-                user_files[user] = [user_task_file]
+                user_files[user_task_file.user] = [user_task_file]
         
         context = {
+            'task': task,
+            'course_id': course_id,
+            'users_task': users_task,
             'user_files': user_files
         }
         context = context_add_courses(context, request.user)
         
         return render(request, self.tenplate_name, context)
+    
+    def post(self, request, course_id, task_id):
+        if not Course.objects.get(id=course_id) == request.user:
+            return HttpResponseForbidden()
+        
+        task = Task.objects.get(id=task_id)
+        user = CustomUser.objects.get(id=int(request.POST.get('userID')))
+        
+        user_task = UserTask.objects.get(user=user, task=task)
+        user_task.is_examined = True
+        user_task.mark = int(request.POST.get('userMark'))
+        user_task.save()
+        
+        return redirect(f'/course/{course_id}/task/{task_id}/user-files/')

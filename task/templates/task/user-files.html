@@ -9,18 +9,30 @@
 {% block content %}
 <div class="row file-row text-center">
     {% for user, files in user_files.items %}
-
-    <div class="user-files-div">
-        <h3>{{ user }}:</h3>
-        <div>
-        {% for file in files %}
-            <div class="file">
-                <a href="{{ file.media.url }}" download>{{ file }}</a>
+        <div class="user-files-div">
+            <h3>{{ user.first_name }} {{ user.last_name }}:</h3>
+            <div>
+            {% for file in files %}
+                <div class="file">
+                    <a href="{{ file.media.url }}" download>{{ file }}</a>
+                </div>
+            {% endfor %}
             </div>
-        {% endfor %}
+            <div>
+                <form action="{% url 'task:user_files' course_id task.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="userID" value="{{ user.id }}">
+                    {% for user_task in users_task %}
+                        {% if user_task.user == user and user_task.is_examined %}
+                            <input type="number" min="0" max="{{ task.max_mark }}" value="{{ user_task.mark }}" name="userMark"> / {{ task.max_mark }}
+                        {% else %}
+                            <input type="number" min="0" max="{{ task.max_mark }}" name="userMark"> / {{ task.max_mark }}
+                        {% endif %}
+                    {% endfor %}
+                    <input type="submit" value="Оцінити">
+                </form>
+            </div>
         </div>
-    </div>
-    
     {% endfor %}
 </div>
 {% endblock content %}
