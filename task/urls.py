@@ -10,6 +10,7 @@ from .views import (
     DeleteUserFileView,
     AddUserFilesView,
     UserFilesListView,
+    UserRatingView
 )
 
 
@@ -28,5 +29,6 @@ urlpatterns = [
          name='delete_user_file'
     ),
     path('<int:course_id>/task/<int:task_id>/add-files/', login_required(AddUserFilesView.as_view()), name='add_files'),
-    path('<int:course_id>/task/<int:task_id>/user-files/', login_required(UserFilesListView.as_view()), name='user_files')
+    path('<int:course_id>/task/<int:task_id>/user-files/', login_required(UserFilesListView.as_view()), name='user_files'),
+    path('<int:course_id>/task/<int:task_id>/user-rating/', login_required(UserRatingView.as_view()), name='user_rating')
 ]

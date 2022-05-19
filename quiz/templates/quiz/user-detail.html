@@ -1,21 +1,52 @@
 {% extends 'homepage/_base.html' %}
+
+{% block styles %}
+<style>
+    .main-body {
+        padding: 20px;
+    }
+</style>
+{% endblock styles %}
+
 {% block content %}
+
 {% comment %} {{ result.question.question }} <br> {% endcomment %}
 {% comment %} {{ result.option.option }} {{ result.option.is_right }} <br> {% endcomment %}
-{% for q in questions %}
-    {{ q.question }} <br>
-    {% for option in options %}
-        {% if option.question == q %}
-            {{ option.option }}
 
-            {% for result in user_results %}
-                {% if result.option == option %}
-                    {{ result.option.is_right }}
+{% if is_owner %}
+    <form action="{% url 'quiz:user_detail' course_id task_id user.id %}" method="POST">
+    {% csrf_token %}
+{% endif %}
+    {% for q in questions %}
+        {{ q.question }} <br>
+        {% for option in options %}
+            {% if option.question == q %}
+                {{ option.option }}
+                {% for result in result_details %}
+                    {% if result.option == option %}
+                        {{ result.option.is_right }} {{ result.mark }} / {{ q.price }}
+                    {% endif %}
+                {% endfor %}
+                <br>
+            {% endif %}
+        {% endfor %}
+        {% for result in result_details %}
+            {% if result.question == q and result.text_answer %}
+                {{ result.text_answer }} <br>
+                {% if result.mark == 0 and is_owner %}
+                    <input type="number" min="0" max="{{ q.price }}" name="descriptionTask_{{ q.id }}" required> / {{ q.price }}<br>
+                {% elif result.mark == 0 and not is_owner %}
+                    не оцінено
+                {% else %}
+                    {{ result.mark }} / {{ q.price }}
                 {% endif %}
-            {% endfor %}
-            <br>
-        {% endif %}
+            {% endif %}
+        {% endfor %}
     {% endfor %}
-{% endfor %}
-{{ final_mark }}
+    
+    {% if is_owner %}
+        <input type="submit" value="Перевірено">
+    {% endif %}
+</form>
+Оцінка: {{ final_mark }}
 {% endblock %}

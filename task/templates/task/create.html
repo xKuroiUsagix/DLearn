@@ -19,9 +19,15 @@
                     Назва:
                     {{ form.name }}
                 </div>
-                <div class="form-group col-md-12">
-                    Зробити до <small>(дд/мм/рррр гг:хх)</small>:
-                    {{ form.do_up_to }}
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        Зробити до <small>(дд/мм/рррр гг:хх)</small>:
+                        {{ form.do_up_to }}
+                    </div>
+                    <div class="col-md-6">
+                        Оцінка за завдання:
+                        {{ form.max_mark }}
+                    </div>
                 </div>
                 <div class="form-group col-md-12">
                     Файли:

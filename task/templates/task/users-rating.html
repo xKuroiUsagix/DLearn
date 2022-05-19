@@ -1,0 +1,29 @@
+{% extends 'homepage/_base.html' %}
+{% load static %}
+
+{% block styles %}{% endblock styles %}
+
+{% block content %}
+    <table>
+        <tr>
+            <th>Студент</th>
+            <th>Завдання</th>
+            <th>Тести</th>
+            <th>Загальний результат</th>
+        </tr>
+    {% for user, marks in users_marks.items  %}
+        <tr>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ marks.0 }}</td>
+            <td>
+                {% if marks.1 %}
+                    {{ marks.1 }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>{{ marks.2 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock content %}

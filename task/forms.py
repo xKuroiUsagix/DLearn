@@ -22,4 +22,5 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'назва'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'опис завдання'}),
+            'max_mark': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'максимальний бал'})
         }

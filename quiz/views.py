@@ -1,3 +1,4 @@
+import queue
 from unittest import result
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
@@ -22,16 +23,12 @@ class QuizCreateView(View):
         param model: Describes the Quiz model in database
         type model: Quiz
     """
-    
     template_name = 'quiz/create.html'
     model = Quiz
     
     def get(self, request, course_id, task_id):
-        try:
-            if Quiz.objects.get(task=task_id):
-                return redirect(f'/course/{course_id}/task/{task_id}/')
-        except ObjectDoesNotExist:
-            pass
+        if self.model.objects.filter(task=task_id):
+            return redirect(f'/course/{course_id}/task/{task_id}/')
             
         task = get_object_or_404(Task, id=task_id)
         context = {
@@ -44,11 +41,8 @@ class QuizCreateView(View):
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
         
-        try:
-            Quiz.objects.get(task=task)
+        if self.model.objects.filter(task=task):
             return redirect(f'/course/{course_id}/task/{task_id}/')
-        except:
-            pass
         
         quiz = self.model.objects.create(task=task)
         
@@ -97,7 +91,6 @@ class QuizDetailView(View):
         param model: Describes the Quiz model in database
         type model: Quiz
     """
-    
     model = Quiz
     template_name = 'quiz/detail.html'
     
@@ -110,28 +103,25 @@ class QuizDetailView(View):
         questions = Question.objects.filter(quiz=quiz.id)
         course = Course.objects.get(id=course_id)
         users_course = UserCourse.objects.filter(course=course_id)
-        options = []
-        one_answer_questions = []
-        users_done = []
-        users_not_done = []
+        users = [user_course.user for user_course in users_course]
+        options, users_done, users_not_done, one_answer_questions = [], [], [], []
+        
+        if UserResult.objects.filter(user=request.user, quiz=quiz):
+            return redirect(f'/course/{course_id}/task/{task_id}/quiz/user-detail/{request.user.id}/')
         
         for question in questions:
             current_options = Option.objects.filter(question=question.id)
             options.extend(current_options)
             
-            counter = 0
-            for option in current_options:
-                if option.is_right:
-                    counter += 1
-            
-            if counter > 1:
-                one_answer_questions.append(question.id)
+            if not self.is_question_one_optioned(question):
+                continue
+            one_answer_questions.append(question)
         
-        for user_course in users_course:
+        for user in users:
             try:
-                users_done.append(UserResult.objects.get(user=user_course.user).user)
+                users_done.append(UserResult.objects.get(user=user, quiz=quiz).user)
             except ObjectDoesNotExist:
-                users_not_done.append(user_course.user)
+                users_not_done.append(user)
         
         context = {
             'quiz': quiz,
@@ -152,14 +142,14 @@ class QuizDetailView(View):
     def post(self, request, course_id, task_id):
         option_start = 'option_'
         text_start = 'describe_'
-        quiz = Quiz.objects.get(task=task_id)
+        quiz = self.model.objects.get(task=task_id)
         user_result = UserResult.objects.create(user=request.user, quiz=quiz)
         
-        for name in request.POST.keys():
+        for name in request.POST.keys():                
             if name.startswith(option_start):
                 option_id = int(name[name.find('_') + 1:]) # Getting option_id from strings like: "optionName_{option_id}"
                 option = Option.objects.get(id=option_id)
-                print("Option is Right? :", option.is_right)
+            
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=option.question,
@@ -167,9 +157,10 @@ class QuizDetailView(View):
                     is_right=option.is_right
                 )
             elif name.startswith(text_start):
-                question_id = int(name[name.find('_') + 1:])
+                question_id = int(name[name.find('_') + 1:]) # Getting question_id from strings like: "questionName_{question_id}"
                 question = Question.objects.get(id=question_id)
                 text_answer = request.POST.get(name)
+                
                 ResultDetail.objects.create(
                     user_result=user_result,
                     question=question,
@@ -178,12 +169,33 @@ class QuizDetailView(View):
         
         questions = Question.objects.filter(quiz=quiz, text_answer=False)
         options = []
+        
         for question in questions:
             options.extend(Option.objects.filter(question=question))
+        
         result_detail = ResultDetail.objects.filter(user_result=user_result)
         self.set_questions_marks(questions, options, result_detail)
         
         return redirect('/')
+    
+    def is_question_one_optioned(self, question):
+        """This method checks each question's option and tells has it only one true asnwer or not.
+
+        Args:
+            question (Question): an object of Question class
+
+        Returns:
+            bool: whether question has only one option or more
+        """
+        options = Option.objects.filter(question=question)
+        true_options_counter = 0
+        
+        for option in options:
+            if option.is_right:
+                true_options_counter += 1
+        
+        return true_options_counter == 1
+                
     
     def set_questions_marks(self, questions, options, result_detail):
         """
@@ -207,7 +219,7 @@ class QuizDetailView(View):
                 
                 if user choose 1 true option, 1 false option, and 1 option will be untoched (1 true option at all):
                     false_percent equals 0.5, and true_percent equals 1
-                    which means that true_percent - false_percent equals = 0.5
+                    which means that true_percent - false_percent equals 0.5
                     so question mark will be a half of question price
 
         Args:
@@ -254,28 +266,74 @@ class UserDetailView(View):
         param model: Describes the Quiz model in database
         type model: Quiz
     """
-    
     model = Quiz
     template_name = 'quiz/user-detail.html'
     
     def get(self, request, course_id, task_id, user_id):
         user = CustomUser.objects.get(id=user_id)
         task = Task.objects.get(id=task_id)
-        quiz = Quiz.objects.get(task=task)
+        quiz = self.model.objects.get(task=task)
         user_result = UserResult.objects.get(user=user, quiz=quiz)
-        result_detail = ResultDetail.objects.filter(user_result=user_result)
+        result_details = ResultDetail.objects.filter(user_result=user_result)
         questions = Question.objects.filter(quiz=quiz)
         options = []
+        
+        user_result.mark = self.count_mark(result_details)
+        user_result.save()
         
         for q in questions:
             options.extend(Option.objects.filter(question=q))
         
         context = {
-            'user_results': result_detail,
+            'user': user,
+            'is_owner': Course.objects.get(id=course_id).owner == request.user,
+            'task_id': task_id,
+            'course_id': course_id, 
+            'result_details': result_details,
             'questions': questions,
             'options': options,
-            'final_mark': self.analyse_answers(questions, options, result_detail)
+            'final_mark': user_result.mark
         }
         context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
+    
+    def post(self, request, course_id, task_id, user_id):
+        task_start = 'descriptionTask_'
+        
+        for name in request.POST.keys():
+            if name.startswith(task_start):
+                question_id = int(name[name.find('_') + 1:])
+                question = Question.objects.get(id=question_id)
+                
+                task = Task.objects.get(id=task_id)
+                quiz = Quiz.objects.get(task=task)
+                user = CustomUser.objects.get(id=user_id)
+                user_result = UserResult.objects.get(quiz=quiz, user=user)
+                
+                result_detail = ResultDetail.objects.get(user_result=user_result, question=question)
+                result_detail.mark = int(request.POST[name])
+                result_detail.save()
+        
+        return redirect(f'/course/{course_id}/task/{task_id}/quiz/user-detail/{user_id}')
+    
+    def count_mark(self, result_details):
+        """This method counts the quiz marks summary.
+
+        Args:
+            result_details (list): List of ResultDetail class objects
+
+        Returns:
+            int: final mark for user in quiz
+        """
+        previous_questions = set()
+        mark = 0
+        
+        for result in result_details:
+            if result.question in previous_questions:
+                continue
+            
+            mark += result.mark
+            previous_questions.add(result.question)
+            
+        return mark

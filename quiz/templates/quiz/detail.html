@@ -1,6 +1,8 @@
 {% extends 'homepage/_base.html' %}
+
 {% block content %}
 {% if is_owner %}
+
     <h1>Users which done quiz:</h1>
     <ul>
         {% for user in users_done %}
@@ -13,6 +15,7 @@
             {{ user.email }}
         {% endfor %}
     </ul>
+
 {% elif not is_ready %}
     <h3>Description: {{ quiz.description }}</h3>
     <form action="{% url 'quiz:detail' course_id task_id %}">
@@ -24,7 +27,7 @@
             {% csrf_token %}
             {% for question in questions %}
                 <label>{{ question.question }}</label> <br>
-                {% if question.id in one_answer_questions %}
+                {% if question in one_answer_questions %}
                     <div>
                     {% for option in options %}
                         {% if option.question.id == question.id %}
