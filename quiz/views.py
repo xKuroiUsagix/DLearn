@@ -103,7 +103,11 @@ class QuizDetailView(View):
         questions = Question.objects.filter(quiz=quiz.id)
         course = Course.objects.get(id=course_id)
         users_course = UserCourse.objects.filter(course=course_id)
+        users = [user_course.user for user_course in users_course]
         options, users_done, users_not_done, one_answer_questions = [], [], [], []
+        
+        if UserResult.objects.filter(user=request.user, quiz=quiz):
+            return redirect(f'/course/{course_id}/task/{task_id}/quiz/user-detail/{request.user.id}/')
         
         for question in questions:
             current_options = Option.objects.filter(question=question.id)
@@ -113,11 +117,11 @@ class QuizDetailView(View):
                 continue
             one_answer_questions.append(question)
         
-        for user_course in users_course:
+        for user in users:
             try:
-                users_done.append(UserResult.objects.get(user=user_course.user).user)
+                users_done.append(UserResult.objects.get(user=user, quiz=quiz).user)
             except ObjectDoesNotExist:
-                users_not_done.append(user_course.user)
+                users_not_done.append(user)
         
         context = {
             'quiz': quiz,
@@ -282,6 +286,7 @@ class UserDetailView(View):
         
         context = {
             'user': user,
+            'is_owner': Course.objects.get(id=course_id).owner == request.user,
             'task_id': task_id,
             'course_id': course_id, 
             'result_details': result_details,
