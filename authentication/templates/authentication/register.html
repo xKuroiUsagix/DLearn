@@ -6,43 +6,45 @@
 {% endblock styles %}
 
 {% block no_sidebar %}
-<div class="container form-container form-div">
+<div class="container login-form register-form">
     <div class="form-group">
         <form action="{% url 'authentication:register' %}" method="POST">
             {% csrf_token %}
             <div class="form-group text-center">
-                <h3><b>Створіть ваш DLearn акаунт</b></h3>
+                <h3 class="login-form-header">Створіть ваш DLearn акаунт</h3>
             </div>
             <div class="form-group row">
                 <div class="form-group col-md-6">
-                    Ім'я
-                    {{ form.first_name }}
+                    <img src="{% static 'homepage/open-iconic/svg/person.svg' %}" class="form-svg person-svg">{{ form.first_name }}
                 </div>
                 <div class="form-group col-md-6">
-                    Прізвище:
-                    {{ form.last_name }}
+                    <img src="{% static 'homepage/open-iconic/svg/person.svg' %}" class="form-svg person-svg">{{ form.last_name }}
                 </div>
             </div>
             <div class="form-group">
-                Емейл:
-                {{ form.email }}
+                <img src="{% static 'homepage/open-iconic/svg/envelope-closed.svg' %}" class="form-svg envelope-svg">{{ form.email }}
                 {% if form.errors.email %}
-                    <small class="form-error">*користувач з таким емейлом уже існує</small>
+                    <small class="form-error">
+                        <ul>
+                            <li>Користувач з таким емейлом уже існує</li>
+                        </ul>
+                    </small>
                 {% endif %}
             </div>
             <div class="form-group row">
                 <div class="form-group col-md-6">
-                    Пароль:
-                    {{ form.password }}
+                    <img src="{% static 'homepage/open-iconic/svg/lock-locked.svg' %}" class="form-svg lock-svg">{{ form.password }}
                 </div>
                 <div class="form-group col-md-6">
-                    Повторіть праоль:
-                    {{ form.confirm_password }}
+                    <img src="{% static 'homepage/open-iconic/svg/lock-locked.svg' %}" class="form-svg lock-svg">{{ form.confirm_password }}
                 </div>
                 <small class="form-error">{{ form.errors.password }}</small>
             </div>
             <div class="form-group text-center">
-                <input class="form-control btn btn-success form-button" type="submit" value="Створити акаунт">
+                <input class="form-btn" type="submit" value="Створити Акаунт">
+            </div>
+            <div class="text-center form-bottom-text">
+                <small>Вже зареєстровані? <a href="{% url 'authentication:login' %}" class="form-link">Зайдіть в аккаунт</a></small>
             </div>
         </form>
     </div>

@@ -9,7 +9,9 @@ from .validators import is_password_valid
 
 
 def set_default_attrs(**kwargs):
-    attrs = {'class': 'form-control'}
+    attrs = {
+        'class': 'form-control form-input'
+    }
     for k, v in kwargs.items():
         attrs[k] = v
     return attrs
@@ -21,7 +23,7 @@ class RegistrationForm(forms.ModelForm):
         attrs=set_default_attrs(placeholder='Пароль')
     ))
     confirm_password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
-        attrs=set_default_attrs(placeholder='Повторіть Праоль')
+        attrs=set_default_attrs(placeholder='Повторіть Пароль')
     ))
     
     class Meta:
@@ -86,5 +88,5 @@ class LoginForm(forms.ModelForm):
         model = CustomUser
         fields = ['email']
         widgets = {
-            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Емейл'))
+            'email': forms.EmailInput(attrs=set_default_attrs(placeholder='Електронна Адреса'))
         }

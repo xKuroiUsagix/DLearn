@@ -1,33 +1,127 @@
-.form-container {
-    width: 40%;
-    padding: 2.5%;
-    padding-bottom: 1%;
-    box-shadow: 0px 0px 5px gray;
+.login-form-header {
+    font-weight: 700;
+    font-size: 32px;
+    color: #66ffcc;
+    text-shadow: 0 0 1px #66ffcc;
+    margin-top: 3vh;
+    margin-bottom: 5vh;
 }
 
-.form-control {
-    margin-bottom: 2%;
+.form-input {
+    height: 5vh;
+    margin-top: 20px;
+    padding-left: 50px;
+    box-shadow: 0 1px 0 rgba(138, 138, 138, 0.7);
+    border: 1px solid rgba(138, 138, 138, 0.5);
 }
 
-.form-button {
-    height: auto;
-    width: 50%;
-    margin-top: 4%;
+.form-svg {
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 32px;
+    filter: invert(65%) sepia(0%) saturate(2543%) hue-rotate(60deg) brightness(89%) contrast(84%);
+}
+
+.envelope-svg {
+    width: 28px;
+    margin-left: 12px;
+}
+
+.person-svg {
+    margin-top: 28px;
+    width: 30px;
+}
+
+.lock-svg {
+    margin-top: 28px;
+    width: 35px;
+    margin-left: 8px;
+}
+
+.form-link {
+    color: #66ffcc;
+    text-shadow: 0 0 1px #66ffcc;
+    text-decoration: none;
+    margin-left: 2px;
+    transition: 100ms;
+}
+
+.form-link:hover {
+    color: #1dadaf;
+    text-shadow: 0 0 1px #1dadaf;
+    text-decoration: underline;
+}
+
+.form-btn {
+    width: 100%;
+    height: 5vh;
+    color: white;
+    text-shadow: 0 0 1px white;
+    box-shadow: 0px 3px 1px 0px #66ffcc;
+    background-color: #66ffcc;
+    border: none;
+    border-radius: 5px;
+    margin-top: 40px;
+    transition: 200ms;
+}
+
+.form-btn:hover {
+    background-color: #1fb7b9;
+    box-shadow: 0px 3px 1px 0px #1da9ac;
+}
+
+.form-bottom-text {
+    margin-top: 40px;
 }
 
 .form-error {
     color: red;
 }
 
-.form-div {
-    margin-top: 7%;
+.form-error ul {
+    margin-top: 2px;
+    margin-left: -30px;
+    margin-bottom: -10px;
+    color: red;
 }
 
-.course-update-div {
-    padding-left: 50px;
-    padding-right: 50px;
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    padding-top: 350px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
 }
 
-.join-btn {
-    margin-top: 5%;
+.modal-content {
+    margin-left: 75vh;
+    border-radius: 5px;
+    margin-top: -20vh;
+    padding: 20px;
+    padding-bottom: 50px;
+    width: 25%;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0px 0px 7px 2px #bebbc0;
+}
+
+.close {
+    color: #9e9ca0;
+    text-align: end;
+    transition: 200ms;
+    margin-top: -5px;
+}
+
+.register-form {
+    margin-top: 150px;
+    width: 35% !important;
+    box-shadow: 0px 0px 7px 2px #bebbc0;
+    border-radius: 5px;
+    padding: 25px;
 }

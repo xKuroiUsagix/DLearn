@@ -46,7 +46,7 @@ class LoginView(View):
         param form: Describes django-form for logining in
         type form: LoginForm
     """
-    template_name = 'authentication/login.html'
+    template_name = 'homepage/index.html'
     form = LoginForm
     
     def get(self, request):
@@ -62,7 +62,7 @@ class LoginView(View):
         
         if not user or not user.check_password(form.data['password']):
             form.errors['email'] = form.error_class([ErrorMessages.USER_NOT_FOUND_ERROR])
-            return render(request, self.template_name, {'form': form})
+            return render(request, self.template_name, {'form': form, 'is_error': True})
         
         login(request, user)
         user.is_active = True

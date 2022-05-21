@@ -1,26 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
+/* common classes */
 *{
     list-style: none;
     text-decoration: none;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
 }
 *:after,
 *:before {
     box-sizing: border-box;
 }
 
-html {
-    overflow-x: hidden;
-    font-family: 'Roboto', sans-serif;
-}
-
 body {
-    margin-top: 64px;
-    background-color: rgba(128, 128, 128, 0.15);
+    margin-top: 75px;
 }
 
 a {
@@ -32,20 +27,21 @@ a:hover {
     text-decoration: none;
 }
 
+/* navbar */
 .navbar-brand {
     font-size: 30px;
-    margin-right: 25vh;
-    font-family: 'Montserrat', sans-serif !important;
+    margin-right: 15vh;
 }
 
 .navbar {
     background-color: #adf6f2;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .nav-link {
-    font-family: 'Open Sans', sans-serif;
     text-transform: uppercase;
     color: rgb(70, 70, 70);
+    transition: 250ms;
 }
 
 .nav-link:hover {
@@ -56,7 +52,9 @@ a:hover {
     margin-left: 20px;
 }
 
-.sidebar {
+
+
+/* .sidebar {
     position: fixed;
     width: 20%;
     overflow-y: auto;
@@ -67,8 +65,9 @@ a:hover {
     margin-top: 71px;
     padding-left: 1px;
     background-color: #adcce9;
-}
+} */
 
+/* main body */
 .main-body {
     background-color: white;
     width: 80%;
@@ -81,7 +80,54 @@ a:hover {
     padding-right: 0;
 }
 
-.menu-item {
+/* homepage */
+.homepage-greet-row {
+    height: 80vh;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgb(82, 82, 82);
+    font-family: 'Roboto', sans-serif;
+    margin-top: 20vh;
+}
+
+.homepage-btn {
+    font-weight: 300;
+    border-radius: 5px;
+    background-color: #86E2FF;
+    width: 88%;
+    height: 35px;
+    margin-top: 20px;
+    border: none;
+    transition: 300ms;
+}
+
+.create-course-btn {
+    background-color: white;
+    border: 1px solid #86E2FF;
+    color: #77c5dd;
+    text-shadow: 0 0 1px #86E2FF;
+}
+
+.create-course-btn:hover {
+    background-color: #86E2FF;
+    color: black;
+}
+
+.add-course-btn:hover {
+    background-color: #6ebed6;
+}
+
+.homepage-greet-row::after {
+    content: "";
+    display: block;
+    background-color: rgba(128, 128, 128, 0.5);
+    width: 60%;
+    height: 1px;
+    margin-top: -14vh;
+    margin-left: 20%;
+}
+
+/* .menu-item {
     font-family: 'Open Sans', sans-serif;
     text-transform: uppercase;
     color: gray;
@@ -89,14 +135,14 @@ a:hover {
     text-align: center;
     font-size: 18px;
     transition: 250ms;
-}
+} */
 
-.menu-item:hover {
+/* .menu-item:hover {
     background-color: #88c4c1;
     color: #db545a !important;
-}
+} */
 
-.sidebar-header {
+/* .sidebar-header {
     font-size: 20px;
     padding-top: 10px;
     height: 6vh;
@@ -105,9 +151,9 @@ a:hover {
     background-color: #88c4c1;
     margin-bottom: 0;
     margin-top: 0;
-}
+} */
 
-.sidebar-header::after {
+/* .sidebar-header::after {
     content: "";
     display: block;
     background-color: #111111b0;
@@ -115,7 +161,9 @@ a:hover {
     height: 2px;
     margin-top: 3px;
     margin-left: 17%;
-}
+} */
+
+
 
 .course-button {
     padding: 4px;
