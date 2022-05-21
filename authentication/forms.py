@@ -20,7 +20,7 @@ def set_default_attrs(**kwargs):
 class RegistrationForm(forms.ModelForm):
     
     password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
-        attrs=set_default_attrs(placeholder='Пароль')
+        attrs=set_default_attrs(placeholder='Пароль', id='register_password')
     ))
     confirm_password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
         attrs=set_default_attrs(placeholder='Повторіть Пароль')

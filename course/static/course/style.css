@@ -1,0 +1,112 @@
+.course-form {
+    /* border-right: 1px solid rgb(141, 141, 141);
+    border-left: 1px solid rgb(141, 141, 141);
+    border: 1px solid rgb(141, 141, 141); */
+    border-radius: 5px;
+    padding: 25px;
+    margin-top: 95px;
+    padding-bottom: 30px;
+    height: auto;
+    box-shadow: 0 1px 4px 4px gray;
+}
+
+.course-form-image {
+    border: 5px dashed rgb(177, 177, 177); /* #66ffcc */
+}
+
+.course-create-header {
+    font-weight: 700;
+    font-size: 32px;
+    /* color: #66ffcc;
+    text-shadow: 0 0 1px #66ffcc; */
+    color: black;
+    margin-top: 1vh;
+    margin-bottom: 5vh;
+}
+
+.course-create-header::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: black;
+    width: 250px;
+    margin-top: 20px;
+    margin-left: 40%;
+}
+
+.course-form-input, #id_password, #id_confirm_password {
+    height: 5vh;
+    padding-left: 50px;
+}
+
+.course-line-draw {
+    border-bottom: 1px solid rgba(148, 148, 148, 0.5);
+    margin-top: 50px;
+}
+
+.line-draw-2 {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.course-create-button {
+    color: white;
+    text-shadow: 0 0 1px white;
+    box-shadow: 0px 3px 1px 0px #66ffcc;
+    font-size: 18px;
+    background-color: #66ffcc;
+    margin-top: 20px;
+    margin-left: 30%;
+    height: 5vh;
+    border: none;
+    transition: 250ms;
+    width: 40%;
+}
+
+.course-create-button:hover {
+    background-color: #1fb7b9;
+    box-shadow: 0px 3px 1px #1da9ac;
+}
+
+#image-input-label {
+    margin-left: -10px;
+    margin-top: 25px;
+}
+
+.book-svg, .people-svg, .key-svg {
+    width: 50px;
+    margin-top: 12px;
+    margin-left: 1px;
+}
+
+.course-lock-svg {
+    width: 38px;
+    margin: 0;
+    margin-left: 8px;
+    margin-bottom: 15px;
+    margin-top: 6px;
+}
+
+.image-right-col {
+    padding-right: 25px;
+}
+
+.form-error ul {
+    margin-top: 2px;
+    margin-left: -40px;
+    margin-bottom: -50px;
+    color: red;
+}
+
+.form-error {
+    margin-top: 2px;
+    margin-left: -10px;
+    margin-bottom: -50px;
+    color: red;
+}
+
+.form-password-error li {
+    margin-left: -30px;
+    margin-bottom: -50px;
+    color: red;
+}
