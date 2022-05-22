@@ -1,9 +1,20 @@
+from email.policy import default
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
 
+from dlearn.settings import MEDIA_ROOT
 from authentication.models import CustomUser
+
+import uuid
+
+
+DEFAULT_IMAGE_PATH = MEDIA_ROOT / f'default/default_image.png'
+
+
+def course_directory_path(instance, filename):
+    return MEDIA_ROOT / f'courses/course_{instance.id}/{uuid.uuid1()}/{filename}'
 
 
 class Course(models.Model):
@@ -28,6 +39,7 @@ class Course(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=CASCADE, verbose_name=_('Owner'))
     group_name = models.CharField(max_length=60, null=True, blank=True, verbose_name=_('GroupName'))
     join_code = models.CharField(max_length=20, unique=True, verbose_name=_('JoinCode'))
+    image = models.ImageField(upload_to=course_directory_path, null=False, blank=False, max_length=256, default=DEFAULT_IMAGE_PATH)
     password = models.CharField(max_length=128,  verbose_name=_('Password'))
     created_at = models.DateField(auto_now_add=True, verbose_name=_('CreatedAt'))
     

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
 {% endblock styles %}
 
-{% block no_sidebar %}
+{% block content %}
 <div class="container login-form register-form">
     <div class="form-group">
         <form action="{% url 'authentication:register' %}" method="POST">

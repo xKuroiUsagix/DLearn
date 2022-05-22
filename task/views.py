@@ -8,7 +8,6 @@ from course.models import Course
 from authentication.models import CustomUser
 from dlearn.settings import MEDIA_ROOT
 from quiz.models import Quiz, UserResult
-from homepage.side_functions import context_add_courses
 
 from .models import Task, UserTask, OwnerTaskFile, UserTaskFile
 from .forms import TaskForm
@@ -40,7 +39,6 @@ class TaskCreateView(View):
             'course': course,
             'form': self.form,
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
     
@@ -51,7 +49,6 @@ class TaskCreateView(View):
             'course': course,
             'form': form
         }
-        context = context_add_courses(context, request.user)
         
         if form.is_valid():
             task = form.save(commit=False)
@@ -119,7 +116,6 @@ class TaskDetailView(View):
             'owner_files': owner_files,
             'user_files': user_files
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.tempalte_name, context)
 
@@ -180,7 +176,6 @@ class TaskUpdateView(View):
             'task_id': task_id,
             'files': owner_files
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
 
@@ -188,13 +183,9 @@ class TaskUpdateView(View):
         task = get_object_or_404(self.model, id=task_id)
         form = self.form(request.POST, request.FILES)
         owner_task_file = OwnerTaskFile.objects.filter(owner=request.user, task=task)
-        context = {
-            'form': form
-        }
-        context = context_add_courses(context, request.user)
-        
+
         if not form.is_valid():
-            return render(request, self.template_name, context)
+            return render(request, self.template_name, {'form': form})
         
         if task.name != form.cleaned_data['name']:
             task.name = form.cleaned_data['name']
@@ -335,7 +326,6 @@ class UserFilesListView(View):
             'users_task': users_task,
             'user_files': user_files
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.tenplate_name, context)
     
@@ -388,6 +378,5 @@ class UserRatingView(View):
             'course_id': course_id,
             'users_marks': users_marks
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)

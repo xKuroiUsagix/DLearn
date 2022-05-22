@@ -7,7 +7,6 @@ from django.views import View
 from task.models import Task
 from authentication.models import CustomUser
 from course.models import Course, UserCourse
-from homepage.side_functions import context_add_courses
 
 from .models import Quiz, Question, Option, ResultDetail, UserResult
 
@@ -31,12 +30,8 @@ class QuizCreateView(View):
             return redirect(f'/course/{course_id}/task/{task_id}/')
             
         task = get_object_or_404(Task, id=task_id)
-        context = {
-            'task': task
-        }
-        context = context_add_courses(context, request.user)
-        
-        return render(request, self.template_name, context)
+
+        return render(request, self.template_name, {'task': task})
     
     def post(self, request, course_id, task_id):
         task = get_object_or_404(Task, id=task_id)
@@ -135,7 +130,6 @@ class QuizDetailView(View):
             'users_done': users_done,
             'users_not_done': users_not_done
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
     
@@ -294,7 +288,6 @@ class UserDetailView(View):
             'options': options,
             'final_mark': user_result.mark
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
     

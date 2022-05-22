@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.utils import ErrorList
 from django.utils.translation import gettext_lazy as _
 
 from authentication.validators import is_password_valid
@@ -8,19 +9,45 @@ from .models import Course
 
 class CourseCreateForm(forms.ModelForm):
     
-    name = forms.CharField(max_length=128, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'назва'}))
-    password = forms.CharField(max_length=20, min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'пароль'}))
-    confirm_password = forms.CharField(max_length=20, min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'повторіть пароль'}))
-    group_name = forms.CharField(max_length=60, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'група'}))
-    join_code = forms.CharField(max_length=20, min_length=5, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'код долучення'}))
+    confirm_password = forms.CharField(max_length=20, min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Повторіть Пароль'}))
     
     class Meta:
         model = Course
         fields = [
             'name',
+            'password',
             'group_name',
             'join_code',
+            'image'
         ]
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control form-control course-form-input',
+                'placeholder': 'Назва Курсу',
+                'maxlength': '128'
+            }),
+            'password': forms.PasswordInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Пароль',
+                'minlength': '6',
+                'maxlength': '20'
+            }),
+            'group_name': forms.TextInput(attrs={
+                'class': 'form-control course-form-input',
+                'placeholder': 'Група',
+                'maxlength': '60',
+            }),
+            'join_code': forms.TextInput(attrs={
+                'class': 'form-control course-form-input',
+                'placeholder': 'Код Долучення',
+                'minlength': '5',
+                'maxlength': '20',
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Зображення Курсу',
+            })
+        }
         
     def clean(self):
         """Redefined clean method to validate password and cofirm_password
@@ -34,9 +61,12 @@ class CourseCreateForm(forms.ModelForm):
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
 
+        
         if not is_password_valid(password):
             raise forms.ValidationError(ErrorMessages.PASSWORD_VALIDATION_ERROR)
         if password != confirm_password:
+            errors = self._errors.setdefault('password', ErrorList())
+            errors.append(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
             raise forms.ValidationError(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
         
     def save(self, commit=True):
@@ -56,6 +86,67 @@ class CourseCreateForm(forms.ModelForm):
         return course
 
 
+class CourseUpdateForm(forms.ModelForm):
+    
+    password = forms.CharField(required=False,
+                               min_length=6,
+                               max_length=20,
+                               widget=forms.PasswordInput(attrs={
+                                   'class': 'form-control course-form-input',
+                                   'placeholder': 'Новий пароль'
+                               }))
+    confirm_password = forms.CharField( min_length=6, 
+                                        max_length=20, 
+                                        required=False, 
+                                        widget=forms.PasswordInput(attrs={
+                                            'class': 'form-control course-form-input', 
+                                            'placeholder': 'Повторіть пароль'
+                                        }))
+    
+    class Meta:
+        model = Course
+        fields = [
+            'name',
+            'group_name',
+            'join_code',
+            'image',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control form-control course-form-input',
+                'placeholder': 'Назва Курсу',
+                'maxlength': '128'
+            }),
+            'group_name': forms.TextInput(attrs={
+                'class': 'form-control course-form-input',
+                'placeholder': 'Група',
+                'maxlength': '60',
+            }),
+            'join_code': forms.TextInput(attrs={
+                'class': 'form-control course-form-input',
+                'placeholder': 'Код Долучення',
+                'minlength': '5',
+                'maxlength': '20',
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Зображення Курсу',
+            })
+        }
+    
+    def clean(self):
+        cleaned_data = super(CourseUpdateForm, self).clean()
+
+        if cleaned_data['password'] and cleaned_data['password'] != cleaned_data['confirm_password']:
+            errors = self._errors.setdefault('password', ErrorList())
+            errors.append(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
+            raise forms.ValidationError(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
+        if cleaned_data['password'] and not is_password_valid(cleaned_data['new_password']):
+            errors = self._errors.setdefault('password', ErrorList())
+            errors.append(ErrorMessages.PASSWORD_VALIDATION_ERROR)
+            raise forms.ValidationError(ErrorMessages.PASSWORD_VALIDATION_ERROR)
+
+
 class CourseJoinForm(forms.ModelForm):
     
     password = forms.CharField(max_length=20, min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'пароль'}))
@@ -69,33 +160,3 @@ class CourseJoinForm(forms.ModelForm):
         widgets = {
             'join_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'код долучення'})
         }
-
-
-class CourseUpdateForm(forms.ModelForm):
-    
-    password = forms.CharField(min_length=6, max_length=20, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'пароль'}))
-    new_password = forms.CharField(min_length=6, max_length=20, required=False, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'новий пароль'}))
-    confirm_password = forms.CharField(min_length=6, max_length=20, required=False, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'повторіть пароль'}))
-    
-    class Meta:
-        model = Course
-        fields = [
-            'name',
-            'group_name',
-            'join_code',
-        ]
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'назва'}),
-            'group_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'група'}),
-            'join_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'код долучення'})
-        }
-    
-    def clean(self):
-        cleaned_data = super(CourseUpdateForm, self).clean()
-
-        if not self.instance.check_password(cleaned_data['password']):
-            raise forms.ValidationError(ErrorMessages.BAD_PASSWORD_ERROR)
-        if cleaned_data['new_password'] and cleaned_data['new_password'] != cleaned_data['confirm_password']:
-            raise forms.ValidationError(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
-        if cleaned_data['new_password'] and not is_password_valid(cleaned_data['new_password']):
-            raise forms.ValidationError(ErrorMessages.PASSWORD_VALIDATION_ERROR)

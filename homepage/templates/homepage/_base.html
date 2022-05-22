@@ -29,7 +29,7 @@
                         <a class="nav-link" href="{% url 'course:join' %}">додати курс</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">створені курси</a>
+                        <a class="nav-link" href="{% url 'course:list' %}">створені курси</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">додані курси</a>
@@ -83,45 +83,14 @@
         </div>
     </div>
 
-    {% comment %} {% if user.is_authenticated %}
-    <div class="row">
-        <div class="col">
-            <div class="sidebar">
-                <h5 class="text-center sidebar-header">СТВОРЕНІ КУРСИ</h5>
-                <ul>
-                    
-                    {% for course in created_courses %}
-                        <a href="{% url 'course:detail' course.id %}">
-                            <div class="menu-item">
-                                <li>{{ course.name }}</li>
-                            </div>
-                        </a>
-                    {% endfor %}
-                    
-                </ul>
-
-                <h5 class="text-center sidebar-header">МОЇ КУРСИ</h5>
-                <ul>
-                    {% for course in my_courses %}
-                        <a href="{% url 'course:detail' course.id %}">
-                            <div class="menu-item">
-                                <li>{{ course.name }}</li>
-                            </div>
-                        </a>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <div class="main-body"> {% endcomment %}
-        {% block content %}
-        {% endblock content %}
-        {% comment %} </div>        
+    <div class="wrapper">
+    {% block content %}{% endblock %}
     </div>
-    {% else %} {% endcomment %}
 
-        {% block no_sidebar %}{% endblock no_sidebar %}
+    <div class="container-fulid">
+        <footer class="text-center">&copy; Всі права захищенно</footer>
+    </div>
 
-    {% comment %} {% endif %} {% endcomment %}
     <script>
         let modal = document.getElementById('modal');
         let btn = document.getElementById('openModal');
@@ -133,6 +102,23 @@
 
         span.onclick = function() {
             modal.style.display = 'none';
+        }
+
+        function showPassword() {
+            let password = document.getElementsByClassName('form-input')[5];
+            let confirmPassword = document.getElementsByClassName('form-input')[6];
+            let cehckbox = document.getElementById('show_password');
+        
+            console.log(confirmPassword);
+
+            if (cehckbox.checked) {
+                password.type = "text";
+                confirmPassword.type = "text";
+            }
+            else {
+                password.type = "password";
+                confirmPassword.type = "password";
+            }
         }
     </script>
 </body>

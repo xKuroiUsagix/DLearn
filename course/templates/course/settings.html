@@ -1,53 +1,20 @@
-{% extends 'homepage/_base.html' %}
+{% extends 'course/create.html' %}
 {% load static %}
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
-{% endblock styles %}
+<!-- This page extends from course create form and changes 3 small blocks -->
 
-{% block content %}
+{% block course_header %}Редагування курсу{% endblock course_header %}
 
-<div class="form-group course-update-div">
-    <form action="{% url 'course:settings' course.id %}" method="POST">
-        {% csrf_token %}
-        <div class="form-group text-center">
-            <h3><b>{{ course.name }}</b></h3>
-        </div>
-        <div class="form-group row">
-            <div class="form-group col-md-4">
-                Назва:
-                {{ form.name }}
-            </div>
-            <div class="form-group col-md-4">
-                Назва групи:
-                {{ form.group_name }}
-            </div>
-            <div class="form-group col-md-4">
-                Код долучення:
-                {{ form.join_code }}
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="form-group col-md-4">
-                Пароль:
-                {{ form.password }}
-            </div>
-            <div class="form-group col-md-4">
-                Новий пароль:
-                {{ form.new_password }}
-            </div>
-            <div class="form-group col-md-4">
-                Повторіть праоль:
-                {{ form.confirm_password }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-                <input class="form-control btn btn-success " type="submit" value="Зберегти зміни">
-            </div>
-        </div>
-    </form>
-</div>
+{% block course_form %}
+    <form action={% url 'course:settings' course.id %} method="POST" enctype="multipart/form-data">
+{% endblock course_form %}
 
-{% endblock content %}
+{% block image_src %}
+    {% if course.image %}
+        src="{{ course.image.url }}"
+    {% else %}
+        src="{% static 'course/images/default_image.png' %}"
+    {% endif %}
+{% endblock image_src %}
+
+{% block course_button %}"Зберегти зміни"{% endblock course_button %}

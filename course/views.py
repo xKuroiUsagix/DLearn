@@ -28,12 +28,7 @@ class CourseCreateView(View):
     form = CourseCreateForm
     
     def get(self, request):
-        context = {
-            'form': self.form
-        }
-        context = context_add_courses(context, request.user)
-        
-        return render(request, self.template_name, context)
+        return render(request, self.template_name, {'form': self.form})
 
     def post(self, request):
         form = self.form(request.POST)
@@ -41,15 +36,22 @@ class CourseCreateView(View):
         if form.is_valid():
             course = form.save(commit=False)
             course.owner = request.user
+            course.image = request.FILES.get('image')
             course.save()
             return redirect(f'/course/{course.id}/')
         
+        return render(request, self.template_name, {'form': form})
+
+
+class CourseListView(View):
+    
+    tempalte_name = 'course/list.html'
+    
+    def get(self, request):
         context = {
-            'form': form
+            'courses': Course.objects.filter(owner=request.user)
         }
-        context = context_add_courses(context, request.user)
-        
-        return render(request, self.template_name, context)
+        return render(request, self.tempalte_name, context)
 
 
 class CourseJoinView(View):
@@ -70,12 +72,7 @@ class CourseJoinView(View):
     form = CourseJoinForm
     
     def get(self, request):
-        context = {
-            'form': self.form
-        }
-        context = context_add_courses(context, request.user)
-        
-        return render(request, self.template_name, context)
+        return render(request, self.template_name, {'form': self.form})
     
     def post(self, request):
         form = self.form(request.POST)
@@ -144,7 +141,6 @@ class CourseDetailView(View):
             'is_owner': is_owner,
             'joined_users': joined_users
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
     
@@ -155,7 +151,7 @@ class CourseDetailView(View):
             return HttpResponseForbidden()
         
         course.delete()
-        return redirect('/course/owned-courses/')
+        return redirect('/course/my-courses/')
         
      
 class CourseUpdateView(View):
@@ -176,36 +172,37 @@ class CourseUpdateView(View):
     form = CourseUpdateForm
     template_name = 'course/settings.html'
     
-    def get(self, request, pk, *args, **kwargs):
+    def get(self, request, pk):
         course = get_object_or_404(self.model, id=pk)
         context = {
             'course': course,
             'form': self.form(instance=course)
         }
-        context = context_add_courses(context, request.user)
             
         return render(request, self.template_name, context)
     
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, pk):
         course = get_object_or_404(self.model, id=pk)
         form = self.form(request.POST, instance=course)
+        form.fields.get('password')
         context = {
             'course': course,
             'form': form
         }
-        context = context_add_courses(context, request.user)
         
         if not form.is_valid():
             return render(request, self.template_name, context)
         
         if form.data['name'] != course.name:
             course.name = form.data['name']
-        if form.data['new_password']:
-            course.set_password(form.data['new_password'])
+        if form.data.get('new_password'):
+            course.set_password(form.data.get('new_password'))
         if form.data['join_code'] != course.join_code:
             course.join_code = form.data['join_code']
         if form.data['group_name'] != course.group_name:
             course.group_name = form.data['group_name']
+        if request.FILES.get('image'):
+            course.image = request.FILES.get('image')
         
         course.save()
         return redirect(f'/course/{course.id}/')
@@ -234,7 +231,6 @@ class UserCourseView(View):
             'course': course,
             'users': users
         }
-        context = context_add_courses(context, request.user)
         
         return render(request, self.template_name, context)
 
