@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 from authentication.errors import ErrorMessages
 from authentication.models import CustomUser
 from task.models import Task
-from homepage.side_functions import context_add_courses
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
