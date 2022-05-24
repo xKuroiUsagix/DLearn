@@ -245,3 +245,66 @@ button {
 .timespan-div {
     padding-top: 4px;
 }
+
+/* course users */
+.users-container {
+    box-shadow: 0 8px 16px 0 rgb(0, 0, 0, 0.5);
+    border-radius: 5px;
+    min-height: 90%;
+    margin-top: 25px;
+    padding: 18px 30px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.course-users-header {
+    font-family: 'Montserrat', sans-serif;
+    margin-top: 20px;
+}
+
+.course-users-header::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.6);
+    margin-top: 8px;
+    margin-bottom: 15px;
+}
+
+.users-table {
+    border: 1px solid rgb(153, 153, 153);
+    background-color: rgb(239, 239, 239);
+    border-radius: 5px;
+    border-collapse:collapse;
+}
+
+.users-table .table-row:hover {
+    background-color: #cef0fa;
+}
+
+.users-table td, th {
+    border: 1px solid rgb(153, 153, 153);
+}
+
+.users-table th {
+    font-size: 20px;
+    border: 1px solid rgb(153, 153, 153);
+}
+
+.button-data {
+    width: 10%;
+}
+
+.delete-user-btn {
+    color: red;
+    background-color: rgb(239, 239, 239, 0);
+    border: none;
+}
+
+.delete-user-btn:hover {
+    color: rgb(139, 46, 46);
+    text-decoration: underline;
+}
+
+.empty-row {
+    color:rgb(0, 0, 0, 0);
+}

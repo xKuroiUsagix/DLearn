@@ -1,27 +1,42 @@
 {% extends 'homepage/_base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'course/style.css' %}">
+{% endblock styles %}
 
 {% block content %}
-<div class="text-center">
-    <h1 class="course-header">Користувачі курсу {{ course.name }}</h1>
-</div>
 
-{% if users %}
-<div class="task-div">
-    <div class="row task">
-        {% for user in users %}
-            <div class="col-8">
-                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
-            </div>
-            <div class="col-4">
-                <form action="{% url 'course:kick_user' course.id user.id %}" method="POST">
-                {% csrf_token %}
-                    <input type="submit" class="btn btn-danger course-button" style="float: right" value="Виключити з курсу">
-                </form>
-            </div>
-        {% endfor %}
+<div class="container users-container">
+    <div class="row">
+        <h2 class="course-users-header text-center">Долучені до курсу</h2>
+    </div>
+    <div class="row text-center">
+        <table class="users-table">
+            <tr class="headers-row">
+                <th></th>
+                <th>Ім'я та Прізвище</th>
+                <th>Дата долучення</th>
+            </tr>
+            {% for user_course in users_course %}
+                <tr class="table-row">
+                    <td>{{ forloop.counter }}</td>
+                    <td class="table-username">{{ user_course.user.first_name }} {{ user_course.user.last_name }}</td>
+                    <td class="table-date">{{ user_course.joined_at.date }}</td>
+                    <td class="button-data">
+                        <form action="{% url 'course:kick_user' course.id user_course.user.id %}"></form>
+                        <input type="submit" class="delete-user-btn" value="Видалити">
+                    </td>
+                </tr>
+            {% empty %}
+                <tr class="empty-row">
+                    <td>_</td>
+                    <td>_</td>
+                    <td>_</td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
-{% else %}
-<h3>Поки ніхто не долучився</h3>
-{% endif %}
+
 {% endblock content %}

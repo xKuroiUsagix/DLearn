@@ -139,7 +139,7 @@ class CourseDetailView(View):
             return HttpResponseForbidden()
         
         course.delete()
-        return redirect('/course/my-courses/')
+        return redirect('/')
         
      
 class CourseUpdateView(View):
@@ -209,15 +209,9 @@ class UserCourseView(View):
     
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id)
-        users_course = UserCourse.objects.filter(course=course)
-        users = []
-        
-        for user_course in users_course:
-            users.append(user_course.user)
-        
         context = {
             'course': course,
-            'users': users
+            'users_course': UserCourse.objects.filter(course=course)
         }
         
         return render(request, self.template_name, context)
