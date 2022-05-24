@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'homepage/style.css' %}">
     <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
     <title>{% block title %}{% endblock title %}</title>
-    {% block styles %}{% endblock styles %} 
+    {% block styles %}{% endblock styles %}
 </head>
 <body>
     <nav class="navbar navbar-expand fixed-top">
@@ -20,23 +20,40 @@
                 <a class="navbar-brand" href="{% url 'home:index' %}">DLearn</a>
             </div>
             {% if user.is_authenticated %}
-            <div class="collapse navbar-collapse navbar-main">
-                <ul class="nav navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'course:create' %}">Створити курс</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'course:join' %}">додати курс</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'course:list' %}">створені курси</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">додані курси</a>
-                    </li>
-                </ul>
-            </div>
+                <div class="collapse navbar-collapse navbar-main">
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'course:create' %}">Створити курс</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'course:join' %}">додати курс</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link drop-button" onclick="showCreatedCourses()" href="#">
+                                створені курси
+                                <img class="icon" width="12" src="{% static 'homepage/open-iconic/svg/caret-bottom.svg' %}">
+                            </a>
+                            <div id="createdCoursesDropdown" class="dropdown-content">
+                                {% for course in created_courses %}
+                                    <a href="{% url 'course:detail' course.id %}">{{ course.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link drop-button" onclick="showAddedCourses()" href="#">
+                                додані курси
+                                <img class="icon" width="12" src="{% static 'homepage/open-iconic/svg/caret-bottom.svg' %}">
+                            </a>
+                            <div id="addedCoursesDropdown" class="dropdown-content">
+                                {% for course in added_courses %}
+                                    <a href="{% url 'course:detail' course.id %}">{{ course.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             {% endif %}
+
             <div class="collapse navbar-collapse justify-content-end">
                 <ul class="nav navbar-nav navbar-right">
                     
@@ -69,6 +86,7 @@
                     {% endif %}
                 </ul>
             </div>
+
         </div>
     </nav>
 
@@ -121,5 +139,6 @@
             }
         }
     </script>
+    <script src="{% static 'homepage/js/scripts.js' %}"></script>
 </body>
 </html>

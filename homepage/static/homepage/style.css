@@ -81,10 +81,6 @@ a:hover {
     color: #db545a !important;
 }
 
-.navbar-main {
-    margin-left: 20px;
-}
-
 /* homepage */
 .homepage-greet-row {
     height: 73vh;
@@ -137,50 +133,35 @@ a:hover {
     margin-left: 16%;
 }
 
-/* .footer-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-} */
-
-
-/* course
-.course-button {
-    padding: 4px;
-    padding-left: 7px;
-    padding-right: 7px;
-    border-radius: 5px;
-    transition: 300ms;
+/* dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-.task-div {
-    height: 75px;
-    padding-bottom: 8px;
-    padding-top: 18px;
-    padding-left: 10px;
-    padding-right: 10px;
-    transition: 450ms;
-    border-bottom: 1px solid rgba(128, 128, 128, 0.342);
-    background-color: rgb(240, 240, 240);
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    max-height: 220px;
+    overflow-y: scroll;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+ 
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid lightgray;
+}
+  
+.dropdown-content a:hover {
+    background-color: #86E2FF;
 }
 
-.task-div:hover {
-    background-color: rgb(216, 214, 214);
+.show {
+    display:block;
 }
-
-.btn-danger:hover {
-    background-color: rgb(138, 1, 1);
-}
-
-.btn-div {
-    padding: 6px;
-}
-
-.button-row {
-    float: right;
-    margin-right: 4px;
-}
-
-.course-header {
-    margin-bottom: 20px;
-} */

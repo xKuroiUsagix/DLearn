@@ -42,17 +42,6 @@ class CourseCreateView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class CourseListView(View):
-    
-    tempalte_name = 'course/list.html'
-    
-    def get(self, request):
-        context = {
-            'courses': Course.objects.filter(owner=request.user)
-        }
-        return render(request, self.tempalte_name, context)
-
-
 class CourseJoinView(View):
     """
         CourseJoinView provides operations for user to join courses.

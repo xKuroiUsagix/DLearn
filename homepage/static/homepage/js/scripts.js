@@ -32,7 +32,7 @@ function addOption(questionNumber) {
                 </div>
             </div>     
         </li>
-        `
+    `
     );
 }
 
@@ -117,4 +117,37 @@ function optionsValidation() {
         }
     }
     return true
+}
+
+function closePreviousDropdowns(currentDropdown) {
+    let dropdowns = document.getElementsByClassName("dropdown-content");
+    for (let i = 0; i < dropdowns.length; i++) {
+        if (dropdowns[i] != currentDropdown && dropdowns[i].classList.contains("show")) {
+            dropdowns[i].classList.remove("show");
+        }
+    }
+}
+
+function showCreatedCourses() {
+    let dropdown = document.getElementById("createdCoursesDropdown");
+    dropdown.classList.toggle("show");
+    closePreviousDropdowns(dropdown);
+}
+
+function showAddedCourses() {
+    let dropdown = document.getElementById("addedCoursesDropdown");
+    dropdown.classList.toggle("show");
+    closePreviousDropdowns(dropdown);
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches(".drop-button")) {
+        let dropdowns = document.getElementsByClassName("dropdown-content");
+        for (let i = 0; i < dropdowns.length; i++) {
+            let openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+                openDropdown.classList.remove("show")
+            }
+        }
+    }
 }

@@ -21,13 +21,4 @@ class IndexView(View):
         if not request.user.is_authenticated:
             return render(request, self.template_name, {'form': self.form})
         
-        context = {
-            'created_courses': Course.objects.filter(owner=request.user),
-            'joined_courses': []
-        }
-        user_courses = UserCourse.objects.filter(user=request.user)
-        
-        for user_course in user_courses:
-            context['joined_courses'].append(user_course.course)
-
-        return render(request, self.template_name, context)
+        return render(request, self.template_name)

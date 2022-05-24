@@ -1,7 +1,0 @@
-{% extends 'homepage/_base.html' %}
-
-{% block content %}
-{% for course in courses %}
-    <a href="{% url 'course:detail' course.id %}">{{ course.name }}</a>
-{% endfor %}
-{% endblock content %}
