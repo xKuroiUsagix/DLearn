@@ -119,9 +119,9 @@
 }
 
 .register-form {
-    margin-top: 150px;
+    margin-top: 50px;
     width: 35% !important;
-    box-shadow: 0px 0px 7px 2px #bebbc0;
+    box-shadow: 0px 8px 16px 3px #bebbc0;
     border-radius: 5px;
     padding: 25px;
 }
