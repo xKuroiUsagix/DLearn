@@ -50,7 +50,11 @@ class LoginView(View):
     form = LoginForm
     
     def get(self, request):
-        return render(request, self.template_name, {'form': self.form})
+        login_open = False
+        if request.GET.get('login_open') == 'open':
+            login_open = True
+        
+        return render(request, self.template_name, {'login_form': LoginForm, 'open': login_open})
     
     def post(self, request):
         form = self.form(request.POST)
@@ -62,7 +66,7 @@ class LoginView(View):
         
         if not user or not user.check_password(form.data['password']):
             form.errors['email'] = form.error_class([ErrorMessages.USER_NOT_FOUND_ERROR])
-            return render(request, self.template_name, {'form': form, 'is_error': True})
+            return render(request, self.template_name, {'login_form': form, 'login_error': True})
         
         login(request, user)
         user.is_active = True

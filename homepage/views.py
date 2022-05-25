@@ -19,6 +19,6 @@ class IndexView(View):
     
     def get(self, request):
         if not request.user.is_authenticated:
-            return render(request, self.template_name, {'form': self.form})
+            return render(request, self.template_name, {'login_form': self.form})
         
         return render(request, self.template_name)

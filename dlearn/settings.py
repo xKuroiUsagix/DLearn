@@ -120,7 +120,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authentication.CustomUser'
 
-LOGIN_URL = '/auth/login'
+LOGIN_URL = '/auth/login?login_open=open'
 LOGIN_REDIRECT_URL = LOGIN_URL
 
 MEDIA_ROOT = BASE_DIR / 'uploads/'

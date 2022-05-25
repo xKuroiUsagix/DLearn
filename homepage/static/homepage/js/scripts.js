@@ -151,3 +151,18 @@ window.onclick = function(event) {
         }
     }
 }
+
+function showPassword() {
+    let password = document.getElementById('register_password');
+    let confirmPassword = document.getElementById('register_confirm_password');
+    let cehckbox = document.getElementById('show_password');
+
+    if (cehckbox.checked) {
+        password.type = "text";
+        confirmPassword.type = "text";
+    }
+    else {
+        password.type = "password";
+        confirmPassword.type = "password";
+    }
+}

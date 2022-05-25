@@ -23,7 +23,7 @@ class RegistrationForm(forms.ModelForm):
         attrs=set_default_attrs(placeholder='Пароль', id='register_password')
     ))
     confirm_password = forms.CharField(min_length=6, max_length=30, required=True, widget=forms.PasswordInput(
-        attrs=set_default_attrs(placeholder='Повторіть Пароль')
+        attrs=set_default_attrs(placeholder='Повторіть Пароль', id='register_confirm_password')
     ))
     
     class Meta:

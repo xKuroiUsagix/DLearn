@@ -1,28 +1,21 @@
-{% extends 'homepage/_base.html' %}
 {% load static %}
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
-{% endblock styles %}
-
-{% block content %}
-
-<div class="form-group course-update-div">
+<div class="form-group">
+    <h3 class="text-center login-form-header">Додайте Курс</h3>
     <form action="{% url 'course:join' %}" method="POST">
         {% csrf_token %}
-        <div class="form-group row">
-            <div class="form-group col-md-4">
-                Код курсу:
-                {{ form.join_code }}
-            </div>
-            <div class="form-group col-md-4">
-                Пароль:
-                {{ form.password }}
-            </div>
-            <div class="form-group col-md-4">
-                <input class="form-control btn btn-success join-btn" type="submit" value="Приєднатися">
-            </div>
+        <div class="form-group">
+            <img src="{% static 'homepage/open-iconic/svg/key.svg' %}" class="form-svg join-key-svg">{{ join_form.join_code }}
+        </div>
+        <div class="form-group">
+            <img src="{% static 'homepage/open-iconic/svg/lock-locked.svg' %}" class="form-svg join-lock-svg">{{ join_form.password }}
+            <small class="form-error">{{ join_form.join_code.errors }}</small>
+        </div>
+        <div class="form-group">
+            <input class="form-control form-btn" type="submit" value="Приєднатися">
+        </div>
+        <div class="text-center form-bottom-text">
+            <small>Хочете власний курс? <a href="{% url 'course:create' %}" class="form-link">Створіть зараз</a></small>
         </div>
     </form>
 </div>
-{% endblock %}

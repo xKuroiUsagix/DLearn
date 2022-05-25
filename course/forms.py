@@ -137,19 +137,17 @@ class CourseUpdateForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(CourseUpdateForm, self).clean()
 
-        if cleaned_data['password'] and cleaned_data['password'] != cleaned_data['confirm_password']:
+        if cleaned_data['password'] != cleaned_data['confirm_password']:
             errors = self._errors.setdefault('password', ErrorList())
             errors.append(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
             raise forms.ValidationError(ErrorMessages.PASSWORD_NOT_MATCH_ERROR)
-        if cleaned_data['password'] and not is_password_valid(cleaned_data['new_password']):
+        if not is_password_valid(cleaned_data['password']):
             errors = self._errors.setdefault('password', ErrorList())
             errors.append(ErrorMessages.PASSWORD_VALIDATION_ERROR)
             raise forms.ValidationError(ErrorMessages.PASSWORD_VALIDATION_ERROR)
 
 
 class CourseJoinForm(forms.ModelForm):
-    
-    password = forms.CharField(max_length=20, min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'пароль'}))
     
     class Meta:
         model = Course
@@ -158,5 +156,12 @@ class CourseJoinForm(forms.ModelForm):
             'password'
         ]
         widgets = {
-            'join_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'код долучення'})
+            'password': forms.PasswordInput(attrs={
+                'class': 'form-control form-input',
+                'placeholder': 'Пароль Курсу'
+            }),
+            'join_code': forms.TextInput(attrs={
+                'class': 'form-control form-input',
+                'placeholder': 'Код Долучення'
+            })
         }

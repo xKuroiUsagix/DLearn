@@ -56,31 +56,34 @@ class CourseJoinView(View):
         type form: CourseJoinForm
     """
     model = Course
-    template_name = 'course/join.html'
+    template_name = 'homepage/index.html'
     form = CourseJoinForm
     
     def get(self, request):
-        return render(request, self.template_name, {'form': self.form})
+        return render(request, self.template_name, {'join_form': self.form})
     
     def post(self, request):
         form = self.form(request.POST)
         
         try:
             course = self.model.objects.get(join_code=form.data['join_code'])
+            print(course.password)
         except ObjectDoesNotExist:
             course = None
         
         # This validation done here because of some troubles in doing...
         # this in the CourseJoinForm
+        error_messages = []
         if not course or not course.check_password(form.data['password']):
-            form.errors['join_code'] = form.error_class([ErrorMessages.BAD_PASSWORD_OR_JOINCODE_ERROR])
-            return render(request, self.template_name, {'form': form})
+            error_messages.append(ErrorMessages.BAD_PASSWORD_OR_JOINCODE_ERROR)
         if UserCourse.objects.filter(user=request.user, course=course):
-            form.errors['join_code'] = form.error_class([ErrorMessages.USER_ALREADY_JOINED_ERROR])
-            return render(request, self.template_name, {'form': form})
+            error_messages.append(ErrorMessages.USER_ALREADY_JOINED_ERROR)
         if course.owner == request.user:
-            form.errors['join_code'] = form.error_class([ErrorMessages.USER_IS_OWNER_ERROR])
-            return render(request, self.template_name, {'form': form})
+            error_messages.append(ErrorMessages.USER_IS_OWNER_ERROR)
+        
+        if error_messages:
+            form.errors['join_code'] = form.error_class(error_messages)
+            return render(request, self.template_name, {'join_form': form, 'join_error': True})
         
         user_course = UserCourse()
         user_course.user = request.user
@@ -189,6 +192,8 @@ class CourseUpdateView(View):
             course.join_code = form.data['join_code']
         if form.data['group_name'] != course.group_name:
             course.group_name = form.data['group_name']
+        if form.data['password']:
+            course.set_password(form.data['password'])
         if request.FILES.get('image'):
             course.image = request.FILES.get('image')
         

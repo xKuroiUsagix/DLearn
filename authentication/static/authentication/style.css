@@ -38,6 +38,16 @@
     margin-left: 8px;
 }
 
+.join-key-svg {
+    margin-top: 6px;
+}
+
+.join-lock-svg {
+    width: 40px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
 .form-link {
     color: #66ffcc;
     text-shadow: 0 0 1px #66ffcc;

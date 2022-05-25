@@ -26,7 +26,7 @@
                             <a class="nav-link" href="{% url 'course:create' %}">Створити курс</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'course:join' %}">додати курс</a>
+                            <a class="nav-link" id="openJoinModal" href="#">додати курс</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link drop-button" onclick="showCreatedCourses()" href="#">
@@ -65,7 +65,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="openModal" href="#">
+                            <a class="nav-link" id="openLoginModal" href="#">
                                 <img class="icon" width="14px" src="{% static 'homepage/open-iconic/svg/account-login.svg' %}">
                                 Увійти
                             </a>
@@ -88,55 +88,68 @@
             </div>
         </div>
     </nav>
-
-    {% if is_error %}
-    <div class="modal" id="modal" style="display: block;">
-    {% else %}
-    <div class="modal" id="modal">
+    
+    <!-- login modal -->
+    {% if login_error or open %}<div class="modal" id="loginModal" style="display: block;">
+    {% else %}<div class="modal" id="loginModal">
     {% endif %}
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" id="closeLogin">&times;</span>
             {% include 'authentication/login.html' %}
         </div>
     </div>
 
+    <!-- join modal -->
+    {% if join_error %}<div class="modal" id="joinModal" style="display: block;">
+    {% else %}<div class="modal" id="joinModal">
+    {% endif %}
+        <div class="modal-content">
+            <span class="close" id="closeJoin">&times;</span>
+            {% include 'course/join.html' %}
+        </div>
+    </div>
+
     <div class="wrapper">
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     <div class="container-fulid">
         <footer class="text-center">&copy; 2022 Всі права захищенно</footer>
     </div>
 
+    <!-- scripts -->
     <script>
-        let modal = document.getElementById('modal');
-        let btn = document.getElementById('openModal');
-        let span = document.getElementsByClassName("close")[0];
+        let loginModal = document.getElementById("loginModal");
+        let loginBtn = document.getElementById("openLoginModal");
+        let loginClose = document.getElementById("closeLogin");
 
-        btn.onclick = function() {
-            modal.style.display = 'block';
+        let joinModal = document.getElementById("joinModal");
+        let joinBtn = document.getElementById("openJoinModal");
+        let joinClose = document.getElementById("closeJoin");
+
+        try {
+            loginBtn.onclick = function() {
+                loginModal.style.display = "block";
+            }
         }
-
-        span.onclick = function() {
-            modal.style.display = 'none';
-        }
-
-        function showPassword() {
-            let password = document.getElementsByClassName('form-input')[5];
-            let confirmPassword = document.getElementsByClassName('form-input')[6];
-            let cehckbox = document.getElementById('show_password');
+        catch {}
         
-            console.log(confirmPassword);
 
-            if (cehckbox.checked) {
-                password.type = "text";
-                confirmPassword.type = "text";
-            }
-            else {
-                password.type = "password";
-                confirmPassword.type = "password";
+        loginClose.onclick = function() {
+            loginModal.style.display = "none";
+        }
+
+        try {
+            joinBtn.onclick = function() {
+                joinModal.style.display = "block";
             }
         }
+        catch {}
+
+        joinClose.onclick = function() {
+            joinModal.style.display = "none";
+        }
+        
     </script>
     <script src="{% static 'homepage/js/scripts.js' %}"></script>
 </body>

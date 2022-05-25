@@ -1,8 +1,8 @@
 from course.models import Course, UserCourse
+from course.forms import CourseJoinForm
 
 
 def add_courses_to_context(request):
-    print("here")
     if not request.user.is_authenticated:
         return {}
     
@@ -11,5 +11,6 @@ def add_courses_to_context(request):
     
     return {
         'created_courses': Course.objects.filter(owner=request.user),
-        'added_courses': added_courses
+        'added_courses': added_courses,
+        'join_form': CourseJoinForm
     }
