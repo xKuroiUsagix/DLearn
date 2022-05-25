@@ -171,21 +171,28 @@ class TaskUpdateView(View):
         owner_files = OwnerTaskFile.objects.filter(task=task)
         
         context = {
-            'form': form,
+            'task_form': form,
             'course_id': course_id,
-            'task_id': task_id,
+            'task_id': task.id,
             'files': owner_files
         }
         
         return render(request, self.template_name, context)
 
     def post(self, request, course_id, task_id):
+        print('post in update')
         task = get_object_or_404(self.model, id=task_id)
         form = self.form(request.POST, request.FILES)
-        owner_task_file = OwnerTaskFile.objects.filter(owner=request.user, task=task)
+        owner_files = OwnerTaskFile.objects.filter(task=task)
+        context = {
+            'course_id': course_id,
+            'task_id': task_id,
+            'files': owner_files,
+        }
 
         if not form.is_valid():
-            return render(request, self.template_name, {'form': form})
+            context['task_form'] = form
+            return render(request, self.template_name, context)
         
         if task.name != form.cleaned_data['name']:
             task.name = form.cleaned_data['name']
@@ -195,7 +202,7 @@ class TaskUpdateView(View):
             task.do_up_to = form.cleaned_data['do_up_to']
         task.save()
         
-        previous_media = [record.media for record in owner_task_file]
+        previous_media = [record.media for record in owner_files]
         for file in request.FILES.getlist('file'):
             if file not in previous_media:
                 new_record = OwnerTaskFile()
