@@ -3,47 +3,39 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'task/style.css' %}">
-    <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
 {% endblock styles %}
 
-{% block content %} 
-<div class="form-group course-update-div">
+{% block content %}
+<div class="container task-create-container">
+    <div class="row">
+        <h2 class="task-form-header">Створення завдання для курсу <b>"{{ course.name }}"</b></h2>
+    </div>
     <form action="{% url 'task:create' course.id %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form-group text-center">
-            <h3><b>{{ task.name }}</b></h3>
+        <div class="form-group">
+            <label for="taskName">Назва завдання:</label>
+            {{ task_form.name }}
         </div>
         <div class="form-group row">
-            <div class="form-group col-md-6 task-form-fields">
-                <div class="form-group col-md-12">
-                    Назва:
-                    {{ form.name }}
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        Зробити до <small>(дд/мм/рррр гг:хх)</small>:
-                        {{ form.do_up_to }}
-                    </div>
-                    <div class="col-md-6">
-                        Оцінка за завдання:
-                        {{ form.max_mark }}
-                    </div>
-                </div>
-                <div class="form-group col-md-12">
-                    Файли:
-                    {{ form.file }}
-                </div>
+            <div class="col">
+                <label for="taskDateTime">Термін виконання:</label>
+                {{ task_form.do_up_to }}
+                <small class="form-error">{{ task_form.do_up_to.errors.0 }}</small>
             </div>
-            <div class="form-group col-md-6 description-div-no-files">
-                Опис завдання:
-                {{ form.description }}
+            <div class="col">
+                <label for="taskMaxMark">Максимальний бал:</label>
+                {{ task_form.max_mark }}
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6"></div>
-            <div class="col-md-6">
-                <input class="form-control btn btn-success " type="submit" value="Створити завдання">
-            </div>
+        <div class="form-group">
+            {{ task_form.description }}
+        </div>
+        <div class="form-group">
+            <label for="taskFiles">Завантажте файли для завдання:</label>
+            {{ task_form.file }}
+        </div>
+        <div class="form-group text-center">
+            <input class="task-create-button" type="submit" value="Створити завдання">
         </div>
     </form>
 </div>

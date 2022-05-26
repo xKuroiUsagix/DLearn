@@ -3,70 +3,70 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'task/style.css' %}">
-    <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
 {% endblock styles %}
 
-{% block content %} 
-{{ form.errors }}
-<div class="form-group course-update-div">
-    <form action="{% url 'task:update' course_id task_id %}" method="POST">
+{% block content %}
+<div class="container task-create-container">
+    <div class="row">
+        <h2 class="task-form-header">Редагування завдання <b>"{{ task.name }}"</b></h2>
+    </div>
+    <form action="{% url 'task:update' course_id task.id %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ task_form.as_p }}
-        <input type="submit">
-    </form>
-    {% comment %} <form action="{% url 'task:update' course_id=course.id task_id=task.id %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group text-center">
-            <h3><b>{{ task.name }}</b></h3>
+        <div class="form-group">
+            <label for="taskName">Назва завдання:</label>
+            {{ task_form.name }}
         </div>
         <div class="form-group row">
-            <div class="form-group col-md-6 task-form-fields">
-                <div class="form-group col-md-12">
-                    Назва:
-                    {{ form.name }}
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        Зробити до <small>(дд/мм/рррр гг:хх)</small>:
-                        {{ form.do_up_to }}
-                    </div>
-                    <div class="col-md-6">
-                        Оцінка за завдання:
-                        {{ form.max_mark }}
-                    </div>
-                </div>
-                <div class="form-group col-md-12">
-                    Файли:
-                    {{ form.file }}
-                    {% if files %}
-                        <div id="file-div-edit">
-                            {% for file in files %}
-                                <div class="row">
-                                    <div class="col-md-10 file">
-                                        <a href="{{ file.media.url }}" download>{{ file }}</a>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="col">
+                <label for="prevDateTime">Поточний термін виконання:</label>
+                <input class="form-control" id="prevDateTime" type="text" value="{{ task_form.do_up_to.value }}" disabled>
             </div>
-            {% if files %}
-                <div class="form-group col-md-6 description-div">
-            {% else %}
-                <div class="form-group col-md-6 description-div-no-files">
-            {% endif %}
-                Опис завдання:
-                {{ form.description }}
+            <div class="col">
+                <label for="taskDatetime">Оберіть новий термін виконання:</label>
+                {{ task_form.do_up_to }}
+                {% for error in task_form.do_up_to.errors %}
+                    <small class="form-error">{{ error }}</small>
+                {% endfor %}
+            </div>
+            <div class="col">
+                <label for="taskMaxMark">Максимальний бал:</label>
+                {{ task_form.max_mark }}
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6"></div>
-            <div class="col-md-6">
-                <input class="form-control btn btn-success " type="submit" value="Зберегти зміни">
+        <div class="form-group">
+            {{ task_form.description }}
+        </div>
+
+        {% if not files %}
+        <div class="form-group">
+            {{ task_form.file }}
+        </div>
+        {% else %}
+        <div class="form-group row files-row">
+            <div class="col files-container">
+                {% for file in files %}
+                    <div class="row file-item">  
+                        <div class="col-md-11">
+                            {{ file }}
+                        </div>    
+                        <div class="col-md-1">
+                            <a class="file-load-link" href="{{ file.media.url }}" download>
+                                <img src="{% static 'homepage/open-iconic/svg/data-transfer-download.svg' %}" class="download-svg">
+                            </a>
+                        </div>                  
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {{ task_form.file }}
             </div>
         </div>
-    </form> {% endcomment %}
+        {% endif %}
+
+        <div class="form-group text-center">
+            <input class="task-create-button" type="submit" value="Зберегти зміни">
+        </div>
+    </form>
 </div>
 
 {% endblock %}

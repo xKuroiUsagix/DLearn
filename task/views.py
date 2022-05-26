@@ -37,7 +37,7 @@ class TaskCreateView(View):
         
         context = {
             'course': course,
-            'form': self.form,
+            'task_form': self.form,
         }
         
         return render(request, self.template_name, context)
@@ -47,7 +47,7 @@ class TaskCreateView(View):
         course = get_object_or_404(Course, id=course_id)
         context = {
             'course': course,
-            'form': form
+            'task_form': form
         }
         
         if form.is_valid():
@@ -173,20 +173,19 @@ class TaskUpdateView(View):
         context = {
             'task_form': form,
             'course_id': course_id,
-            'task_id': task.id,
+            'task': task,
             'files': owner_files
         }
         
         return render(request, self.template_name, context)
 
     def post(self, request, course_id, task_id):
-        print('post in update')
         task = get_object_or_404(self.model, id=task_id)
         form = self.form(request.POST, request.FILES)
         owner_files = OwnerTaskFile.objects.filter(task=task)
         context = {
             'course_id': course_id,
-            'task_id': task_id,
+            'task': task,
             'files': owner_files,
         }
 
@@ -198,7 +197,9 @@ class TaskUpdateView(View):
             task.name = form.cleaned_data['name']
         if task.description != form.cleaned_data['description']:
             task.description = form.cleaned_data['description']
-        if task.do_up_to != form.cleaned_data['do_up_to']:
+        if task.max_mark != form.cleaned_data['max_mark']:
+            task.max_mark = form.cleaned_data['max_mark']
+        if form.cleaned_data['do_up_to']:
             task.do_up_to = form.cleaned_data['do_up_to']
         task.save()
         
