@@ -246,6 +246,15 @@ button {
     padding-top: 4px;
 }
 
+.user-leave-form {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-right: 5%;
+    height: 164px;
+    padding-bottom: 20px;
+}
+
 /* course users */
 .users-container {
     box-shadow: 0 8px 16px 0 rgb(0, 0, 0, 0.5);

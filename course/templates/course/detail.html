@@ -53,7 +53,7 @@
             {% else %}
             <div class="row">
                 <div class="col">
-                    <form action="{% url 'course:leave' course.id %}" method="POST">
+                    <form action="{% url 'course:leave' course.id %}" method="POST" class="user-leave-form">
                         {% csrf_token %}
                         <input type="submit" class="course-leave-button course-button" value="Покинути Курс">
                     </form>
