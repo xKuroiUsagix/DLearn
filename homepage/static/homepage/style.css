@@ -50,10 +50,6 @@ a {
     text-decoration: none;
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
 /* navbar */
 .navbar-brand {
     font-weight: 600;

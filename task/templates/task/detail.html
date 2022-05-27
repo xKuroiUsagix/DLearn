@@ -3,11 +3,185 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'task/style.css' %}">
-    <link rel="stylesheet" href="{% static 'authentication/style.css' %}">
 {% endblock styles %}
 
 {% block content %}
-<div>
+<div class="task-container">
+
+    <div class="row task-head-row">
+        <div class="col">
+            <h2 class="col task-header">{{ task.name }}</h2> 
+            <small class="task-time">
+                {% if user_files.0.too_late %}
+                    <span style="color: red">
+                        <b>Здано з запізенням</b>
+                    </span>
+                {% elif too_late %}
+                    <span style="color: red">
+                        <b>Не здано</b>
+                    </span>
+                {% elif not too_late and user_files %}
+                    <span>
+                        <b>Здано</b>
+                    </span>
+                {% else %}
+                    <b>Виконати до: <span>{{ task.do_up_to }} </span></b>
+                {% endif %}
+            </small>
+        </div>
+
+        <small class="col mark-container">
+            {% if is_examined and not task.max_mark %}
+                Оцінка: {{ mark }}
+            {% elif is_examined and task.max_mark %}
+                Оцінка: {{ mark }} / {{ task.max_mark }}
+            {% elif task.max_mark != 0 and not is_examined %}
+                Максимальний бал: {{ task.max_mark }}
+            {% else %}
+                Не оцінено
+            {% endif %}
+        </small>
+    </div>
+
+    <div class="row description-header">
+        <h5 class="col">Опис завдання:</h5>
+
+        {% if owner_files %}
+            <h5 class="col-md-3 files-header">Файли завдання:</h5>
+        {% endif %}
+
+        <h5 class="col-md-3 user-files-header">Ваші файли:</h5>
+    </div>
+    <div class="row task-central-row">
+        <div class="col task-description">
+            <p>{{ task.description }}</p>
+        </div>
+
+        {% if owner_files %}
+
+            <div class="col-md-3 owner-files-container">
+                {% for file in owner_files %}
+                    <div class="row task-file">
+                        <div class="col">
+                            {{ file }}
+                        </div>
+                        {% if not is_owner %}
+                            <div class="col-md-2">
+                        {% else %}
+                            <div class="col-md-1">
+                        {% endif %}
+                            <a class="file-load-link" href="{{ file.media.url }}" download>
+                                <img src="{% static 'homepage/open-iconic/svg/data-transfer-download.svg' %}" class="download-svg">
+                            </a>
+                        </div>
+
+                        {% if is_owner %}
+                            <div class="col-md-2">
+                                <form action="{% url 'task:delete_owner_file' course_id task.id file.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input class="file-delete-button" type="submit" value="&#10060;" title="Видалити файл">
+                                </form>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if not is_owner %}
+
+            <!-- user files -->
+            <div class="col-md-3">
+                <div class="col owner-files-container user-files-container">
+                    {% for file in user_files %}
+                        <div class="row task-file">
+                            <div class="col">
+                                {{ file }}
+                            </div>
+                            <div class="col-md-1">
+                                <a class="file-load-link" href="{{ file.media.url }}" download>
+                                    <img src="{% static 'homepage/open-iconic/svg/data-transfer-download.svg' %}" class="download-svg">
+                                </a>
+                            </div>
+                            <div class="col-md-2">
+                                <form action="{% url 'task:delete_user_file' course_id task.id file.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input class="file-delete-button" type="submit" value="&#10060;" title="Видалити файл">
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row user-files-input">
+                    <form action="{% url 'task:add_files' course_id task.id %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-9">
+                                <input class="form-control" type="file" name="file" multiple>
+                            </div>
+                            <div class="col load-files-container">
+                                <input class="load-files-button" type="submit" value="Прикріпити">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+    <div class="row buttons-container">
+        {% if is_owner %}
+            <div class="col">
+                <a href="{% url 'task:update' task.course.id task.id %}">
+                    <button class="task-button">Редагувати</button>
+                </a>
+                <a href="{% url 'task:user_files' task.course.id task.id %}">
+                    <button class="task-button">Файли користувачів</button>
+                </a>
+                <a href="{% url 'task:user_rating' task.course.id task.id %}">
+                    <button class="task-button">Рейтинг</button>
+                </a>
+
+                {% if not quiz %}
+                    <a href="{% url 'quiz:create' task.course.id task.id %}">
+                        <button class="task-button">Додати тестове завдання</button>
+                    </a>
+                {% endif %}
+            </div>
+
+            {% if quiz %}
+                <div class="col-md-3">
+                    <div class="row quiz-buttons-row">
+                        <div class="col btn-quiz">
+                            <a href="{% url 'quiz:detail' task.course.id task.id %}">
+                                <button class="quiz-button">Тестове завдання</button>
+                            </a>
+                        </div>
+        
+                        <div class="col">
+                            <form action="{% url 'task:detail' task.course.id task.id %}" method="POST">
+                            {% csrf_token %}
+                                <input class="delete-quiz-button" type="submit" value="Видалити тестове завдання">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% elif quiz %}
+            <div class="col quiz-div">
+                <a href="{% url 'quiz:detail' task.course.id task.id %}">
+                    <button class="btn btn-success btn-quiz-user">Тестове завдання</button>
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+    </div>
+</div>
+
+<!-- <div>
     <div class="col-md-12 upper-row">
         <div class="row">
             <div class="col-md-6"><h1>{{ task.name }}</h1></div>
@@ -59,6 +233,7 @@
 {% if is_owner %}
     <div class="row">
         <div class="col-md-6">
+
             {% if quiz %}
             <div class="row">
                 <div class="col-md-2 btn-quiz">
@@ -74,8 +249,10 @@
                     </form>
                 </div>
             </div>
-            {% endif %}
         </div>
+        {% endif %}
+        
+        
         <div class="col">
             <a href="{% url 'task:update' task.course.id task.id %}">
                 <button class="btn btn-info btn-task">Редагувати</button>
@@ -94,6 +271,7 @@
         </div>
     </div>
 {% endif %}
+
 {% if not is_owner %}
     <div class="row">
         <div class="col-md-6">
@@ -131,5 +309,6 @@
             </div>
         {% endif %}
     </div>
-{% endif %}
+{% endif %} -->
+
 {% endblock content %}

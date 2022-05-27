@@ -195,14 +195,14 @@ button {
 }
 
 .course-leave-button {
-    background-color: #ff4255;
-    border: 1px solid #ff4255;
+    background-color: rgb(220, 7, 7);
+    border: 1px solid rgb(220, 7, 7);
     color: white;
 }
 
 .course-leave-button:hover {
-    background-color: #c82333 !important;
-    border-color: #c82333 !important;
+    background-color: rgb(141, 1, 1) !important;
+    border-color: rgb(141, 1, 1) !important;
 }
 
 .course-button:hover {

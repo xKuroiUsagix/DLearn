@@ -15,10 +15,6 @@ class IndexView(View):
         type template_name: str
     """
     template_name = 'homepage/index.html'
-    form = LoginForm
     
     def get(self, request):
-        if not request.user.is_authenticated:
-            return render(request, self.template_name, {'login_form': self.form})
-        
         return render(request, self.template_name)

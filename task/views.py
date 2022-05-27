@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.http.response import HttpResponseForbidden
+from django.utils import timezone
 
 from course.models import Course
 from authentication.models import CustomUser
@@ -114,7 +115,8 @@ class TaskDetailView(View):
             'is_examined': user_task.is_examined if user_task else None,
             'is_owner': task.course.owner == request.user,
             'owner_files': owner_files,
-            'user_files': user_files
+            'user_files': user_files,
+            'too_late': timezone.now() > task.do_up_to
         }
         
         return render(request, self.tempalte_name, context)
@@ -293,7 +295,8 @@ class AddUserFilesView(View):
                 self.model.objects.create(
                     media=file,
                     user=request.user,
-                    task=task
+                    task=task,
+                    too_late=timezone.now() > task.do_up_to
                 )
         
         return redirect(f'/course/{course_id}/task/{task_id}/')         

@@ -42,6 +42,8 @@ class UserTaskFile(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=CASCADE)
     task = models.ForeignKey(Task, on_delete=CASCADE)
     media = models.FileField(upload_to=user_directory_path, null=True, blank=True, verbose_name=_('Media'), max_length=256)
+    done_at = models.DateTimeField(auto_now_add=True)
+    too_late = models.BooleanField(default=False)
     
     def __str__(self):
         return os.path.basename(self.media.name)

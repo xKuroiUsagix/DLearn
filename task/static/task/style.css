@@ -78,3 +78,196 @@
 .download-svg {
     width: 30px;
 }
+
+/* task detail */
+.task-container {
+    padding: 30px 25px;
+    justify-self: center;
+    margin: auto;
+    margin-top: 25px;
+    width: 90%;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 3px rgb(0, 0, 0, 0.2);
+}
+
+.mark-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: top;
+    font-size: 16px;
+    font-style: italic;
+}
+
+.task-header {
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 0;
+}
+
+.task-time {
+    padding-left: 2%;
+}
+
+.task-time span {
+    color: rgb(130, 194, 34);
+    font-style: italic;
+}
+
+.task-head-row {
+    margin-bottom: 20px;
+}
+
+.task-head-row::after {
+    content: "";
+    display: block;
+    background-color: rgb(73, 73, 73);
+    height: 1px;
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.task-central-row {
+    height: 250px;
+    padding: 5px;
+    margin-bottom: 25px;
+}
+
+.description-header h5 {
+    margin-left: 0;
+    padding-left: 5px;
+}
+
+.task-description {
+    padding: 0;
+}
+
+.task-description p {
+    border-radius: 5px;
+    border: 1px solid rgb(124, 124, 124);
+    background-color: #83fdff2f;
+    height: 100%;
+    padding: 5px 10px;
+    overflow-y: auto;
+}
+
+.owner-files-container {
+    background-color: #83fdff2f;
+    border-radius: 5px;
+    border: 1px solid rgb(124, 124, 124);
+    overflow-y: auto;
+    padding: 10px;
+    max-height: 250px;
+    margin-left: 10px;
+}
+
+.task-file {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin: auto;
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+.task-file:hover {
+    background-color: #adf6f2;
+}
+
+.file-delete-button {
+    border: none;
+    background-color: rgba(255, 255, 255, 0);
+    margin-left: 25%;
+    width: 35px;
+    height: 35px;
+    filter: invert(0%) sepia(36%) saturate(0%) hue-rotate(230deg) brightness(97%) contrast(106%);
+}
+
+.file-delete-button:hover {
+    filter: invert(15%) sepia(100%) saturate(5247%) hue-rotate(358deg) brightness(101%) contrast(119%);
+    background-color: rgba(255, 255, 255, 0) !important;
+}
+
+.buttons-container {
+    margin-top: 10px;
+    padding-bottom: 25px;
+}
+
+.task-button {
+    text-align: center;
+    border: 1px solid #24e9ff;
+    border-radius: 5px;
+    padding: 7px;
+    background-color:#24e9ff;
+    margin-right: 5px;
+    font-family: 'Roboto';
+}
+
+.task-button:hover {
+    background-color: #19a5b4;
+    border-color: #19a5b4;
+}
+
+.delete-quiz-button, .quiz-button {
+    padding: 7px;
+    border: 1px solid;
+    border-radius: 5px;
+}
+
+.delete-quiz-button {
+    background-color: #dc0707;
+    border-color: #dc0707;
+    color: white;
+}
+
+.delete-quiz-button:hover {
+    background-color: rgb(141, 1, 1);
+    border-color: rgb(141, 1, 1);
+}
+
+.quiz-button {
+    background-color: rgb(73, 226, 59);
+    border-color: rgb(73, 226, 59);
+    width: 100%;
+    color: white;
+}
+
+.quiz-button:hover {
+    background-color: rgb(62, 179, 51);
+    border-color: rgb(62, 179, 51);
+}
+
+.user-files-container {
+    min-height: 80%;
+    max-height: 195px;
+}
+
+.user-files-input {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.load-files-button {
+    padding: 5px;
+    width: 100%;
+    background-color: #24e9ff;
+    border-radius: 5px;
+    border: 1px solid #24e9ff;
+}
+
+.load-files-button:hover {
+    background-color: #19a5b4;
+    border-color: #19a5b4;
+}
+
+.load-files-container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.user-files-header {
+    padding-left: 20px !important;
+}
