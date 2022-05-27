@@ -6,32 +6,70 @@
 {% endblock styles %}
 
 {% block content %}
-<div class="row file-row text-center">
+<div class="container task-user-files">
+    <h2 class="text-center">Прикріпленні файли користувачів</h2>
+
     {% for user, files in user_files.items %}
-        <div class="user-files-div">
-            <h3>{{ user.first_name }} {{ user.last_name }}:</h3>
-            <div>
-            {% for file in files %}
-                <div class="file">
-                    <a href="{{ file.media.url }}" download>{{ file }}</a>
+        <div class="row file-row">
+            <div class="row file-header-row">
+                <div class="col">
+                    <h4 class="each-file-header">{{ user.first_name }} {{user.last_name}}</h4>
+                    <small>Вкладені файли: {{ files|length }}</small>
                 </div>
-            {% endfor %}
+                <div class="col dropdown-svg-container">
+                    <img src="{% static 'homepage/open-iconic/svg/chevron-bottom.svg' %}" onclick="showDropdown('idFiles{{ user.id }}')" class="dropdown-svg">
+                </div>
             </div>
-            <div>
-                <form action="{% url 'task:user_files' course_id task.id %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="userID" value="{{ user.id }}">
-                    {% for user_task in users_task %}
-                        {% if user_task.user == user and user_task.is_examined %}
-                            <input type="number" min="0" max="{{ task.max_mark }}" value="{{ user_task.mark }}" name="userMark"> / {{ task.max_mark }}
-                        {% else %}
-                            <input type="number" min="0" max="{{ task.max_mark }}" name="userMark"> / {{ task.max_mark }}
-                        {% endif %}
-                    {% endfor %}
-                    <input type="submit" value="Оцінити">
-                </form>
+            <div class="classFiles" id="idFiles{{ user.id }}">
+                <div class="row attached-files-container">
+                    <div class="col-md-9 userfiles-container">
+                        {% for file in files %}
+                            <a href="{{ file.media.url }}" class="file" download>{{ file }}</a>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-3">
+                        <form action="{% url 'task:user_files' course_id task.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="userID" value="{{ user.id }}">
+                            <div class="form-group row set-mark-row">
+                                <div class="col set-mark-container">
+                                    {% for user_task in users_task %}
+                                        {% if user_task.user == user and user_task.is_examined %}
+                                            <input type="number" min="0" max="{{ task.max_mark }}" value="{{ user_task.mark }}" name="userMark" required> 
+                                        {% else %}
+                                            <input type="number" min="0" max="{{ task.max_mark }}" name="userMark" class="form-control" required>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-2 max-mark-container">
+                                    <span class="max-mark">| {{ task.max_mark }}</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="submit" class="set-mark-button" value="Оцінити">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
+
         </div>
+    {% empty %}
+        <p class="no-files-text">Поки що немає завантажених файлів</p>
     {% endfor %}
 </div>
+
+<script>
+    function showDropdown(idFileContainer) {
+        fileContainer = document.getElementById(idFileContainer);
+
+        if (fileContainer.classList.contains('show-dropdown')) {
+            fileContainer.classList.remove('show-dropdown');
+        }
+        else {
+            fileContainer.classList.add('show-dropdown');
+        }
+    }
+</script>
 {% endblock content %}

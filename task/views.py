@@ -116,7 +116,7 @@ class TaskDetailView(View):
             'is_owner': task.course.owner == request.user,
             'owner_files': owner_files,
             'user_files': user_files,
-            'too_late': timezone.now() > task.do_up_to
+            'too_late': timezone.now() > task.do_up_to if task.do_up_to else None
         }
         
         return render(request, self.tempalte_name, context)
@@ -288,7 +288,7 @@ class AddUserFilesView(View):
             task=task,
             user=request.user
         )
-            
+        
         previous_media = [record.media for record in user_task_files]
         for file in request.FILES.getlist('file'):
             if file not in previous_media:
@@ -296,7 +296,7 @@ class AddUserFilesView(View):
                     media=file,
                     user=request.user,
                     task=task,
-                    too_late=timezone.now() > task.do_up_to
+                    too_late=timezone.now() > task.do_up_to if task.do_up_to else None
                 )
         
         return redirect(f'/course/{course_id}/task/{task_id}/')         

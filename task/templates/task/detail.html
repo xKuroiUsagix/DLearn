@@ -10,7 +10,7 @@
 
     <div class="row task-head-row">
         <div class="col">
-            <h2 class="col task-header">{{ task.name }}</h2> 
+            <h2 class="col task-header">{{ task.name }}</h2>
             <small class="task-time">
                 {% if user_files.0.too_late %}
                     <span style="color: red">
@@ -50,7 +50,9 @@
             <h5 class="col-md-3 files-header">Файли завдання:</h5>
         {% endif %}
 
-        <h5 class="col-md-3 user-files-header">Ваші файли:</h5>
+        {% if user_files and not is_owner %}
+            <h5 class="col-md-3 user-files-header">Ваші файли:</h5>
+        {% endif %}
     </div>
     <div class="row task-central-row">
         <div class="col task-description">
@@ -79,7 +81,9 @@
                             <div class="col-md-2">
                                 <form action="{% url 'task:delete_owner_file' course_id task.id file.id %}" method="POST">
                                     {% csrf_token %}
-                                    <input class="file-delete-button" type="submit" value="&#10060;" title="Видалити файл">
+                                    <button type="submit" class="file-delete-button">
+                                        <img src="{% static 'homepage/open-iconic/svg/circle-x.svg' %}" class="delete-file-svg">
+                                    </button>
                                 </form>
                             </div>
                         {% endif %}
@@ -107,7 +111,10 @@
                             <div class="col-md-2">
                                 <form action="{% url 'task:delete_user_file' course_id task.id file.id %}" method="POST">
                                     {% csrf_token %}
-                                    <input class="file-delete-button" type="submit" value="&#10060;" title="Видалити файл">
+                                    <!-- <input class="file-delete-button" type="submit" value="&#10060;" title="Видалити файл"> -->
+                                    <button type="submit" class="file-delete-button">
+                                        <img src="{% static 'homepage/open-iconic/svg/circle-x.svg' %}" class="delete-file-svg">
+                                    </button>
                                 </form>
                             </div>
                         </div>
