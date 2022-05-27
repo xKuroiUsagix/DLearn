@@ -1,29 +1,201 @@
 {% extends 'homepage/_base.html' %}
 {% load static %}
 
-{% block styles %}{% endblock styles %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'task/style.css' %}">
+{% endblock styles %}
 
 {% block content %}
+<div class="container rating-container">
+    <div class="row header-container">
+        <h3 class="rating-header">Результати завдання</h3>
+    </div>
     <table>
         <tr>
+            <th></th>
             <th>Студент</th>
             <th>Завдання</th>
             <th>Тести</th>
             <th>Загальний результат</th>
         </tr>
-    {% for user, marks in users_marks.items  %}
-        <tr>
-            <td>{{ user.first_name }} {{ user.last_name }}</td>
-            <td>{{ marks.0 }}</td>
-            <td>
-                {% if marks.1 %}
-                    {{ marks.1 }}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td>{{ marks.2 }}</td>
-        </tr>
-    {% endfor %}
+
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+        {% for user, marks in users_marks.items %}
+            <tr>
+                <td class="table-counter">{{ forloop.counter }}</td>
+                <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+
+                {% for mark in marks %}
+                    <td class="mark">{{ mark }}</td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+
     </table>
+</div>
 {% endblock content %}

@@ -1,3 +1,4 @@
+from email.policy import default
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 from django.shortcuts import get_object_or_404
@@ -363,31 +364,34 @@ class UserRatingView(View):
         users_task = UserTask.objects.filter(task=task)
         users_marks = {}
         
+        for user_task in users_task:
+            users_marks[user_task.user] = [user_task.mark]
+        
         try:
             quiz = Quiz.objects.get(task=task)
         except ObjectDoesNotExist:
             quiz = None
         
-        if quiz:
-            users_results = UserResult.objects.filter(quiz=quiz)
-        
-        for user_task in users_task:
-            users_marks[user_task.user] = [user_task.mark]
-        
-        if quiz:
-            for user_result in users_results:
-                users_marks[user_result.user].append(user_result.mark)
-        else:
-            for user in users_marks:
-                users_marks[user].append(0)
-        
         for user, marks in users_marks.items():
-            users_marks[user].append(sum(marks))    
+            try:
+                marks.append(UserResult.objects.get(quiz=quiz, user=user).mark)
+            except ObjectDoesNotExist:
+                marks.append(0)
+
+        for user, marks in users_marks.items():
+            marks.append(self.get_sum(marks))
         
         context = {
-            'task_id': task_id,
+            'task': task,
             'course_id': course_id,
-            'users_marks': users_marks
+            'users_marks': users_marks,
+            'quiz': quiz
         }
         
         return render(request, self.template_name, context)
+
+    def get_sum(self, marks):
+        summary = 0
+        for mark in marks:
+            summary += mark if mark else 0
+        return summary

@@ -54,5 +54,5 @@ class UserTask(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=CASCADE, verbose_name=_('User'))
     task = models.ForeignKey(Task, on_delete=CASCADE, verbose_name=_('Task'))
     is_examined = models.BooleanField(default=False)
-    mark = models.PositiveIntegerField(null=True, blank=True, verbose_name=_('Mark'))
+    mark = models.PositiveIntegerField(default=0, null=True, blank=True, verbose_name=_('Mark'))
     done_at = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name=_('Done At'))

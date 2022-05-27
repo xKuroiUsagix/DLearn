@@ -426,3 +426,70 @@
     align-items: center;
     font-family: 'Roboto', sans-serif;
 }
+
+.rating-container {
+    box-shadow: 0 8px 16px 3px rgb(0, 0, 0, 0.2);
+    min-height: 90%;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.rating-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.header-container {
+    display: flex;
+}
+
+.header-container::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: black;
+    width: 80%;
+    margin-top: 10px;
+    margin-bottom: 25px;
+    justify-self: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rating-container table {
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+}
+
+.rating-container table, td, th {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+.rating-container td, th {
+    padding: 7px;
+}
+
+.table-username {
+    text-transform: capitalize;
+    background-color: #9DE0DD;
+}
+
+.table-counter {
+    width: 3%;
+    text-align: center;
+    background-color: #9DE0DD;
+}
+
+.rating-container th {
+    text-align: center;
+    background-color: #adf6f2;
+}
+
+.mark {
+    background-color: #e0faf8;
+}
