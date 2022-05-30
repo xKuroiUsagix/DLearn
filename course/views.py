@@ -60,7 +60,7 @@ class CourseJoinView(View):
     form = CourseJoinForm
     
     def get(self, request):
-        return render(request, self.template_name, {'join_form': self.form})
+        return render(request, self.template_name, {'join_form': self.form, 'join_open': True})
     
     def post(self, request):
         form = self.form(request.POST)
@@ -83,7 +83,7 @@ class CourseJoinView(View):
         
         if error_messages:
             form.errors['join_code'] = form.error_class(error_messages)
-            return render(request, self.template_name, {'join_form': form, 'join_error': True})
+            return render(request, self.template_name, {'join_form': form, 'join_error': True, 'join_open': True})
         
         user_course = UserCourse()
         user_course.user = request.user

@@ -100,7 +100,7 @@
     </div>
 
     <!-- join modal -->
-    {% if join_error %}<div class="modal" id="joinModal" style="display: block;">
+    {% if join_error or join_open %}<div class="modal" id="joinModal" style="display: block;">
     {% else %}<div class="modal" id="joinModal">
     {% endif %}
         <div class="modal-content">
