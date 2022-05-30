@@ -6,47 +6,43 @@
 {% endblock styles %}
 
 {% block content %}
-<div>
-    <div class="col">
-        <h2 class="text-center header">Тестове завдання</h2>
-        <form action="{% url 'quiz:create' task.course.id task.id %}" onsubmit="return optionsValidation()" method="POST">
-            {% csrf_token %}
-            <div class="container" id="questionsContainer">
-                <ol id="questionsList">
-                    <li>
-                        <div class="row quiz-row">
-                            <div class="col-md-6">
-                                <label for="question_1">Питання:</label>
-                                <input class="form-control" type="text" name="question_1" placeholder="питання" required>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="price_1">Оцінка:</label>
-                                <input class="form-control" type="number" name="price_1" placeholder="бали" required>
-                            </div>
-                            <div class="col-md">
-                                <div class="row btn-var-div">
-                            
-                                    <input class="btn btn-info" type="button" id="addOptionId" name="optionForQuestion_1" value="Додати варіант" onclick="addOption(1);">
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="textOnly_1" name="textOnlyFor_1" onchange="eraseOptions('questionOptions_1')">
-                                        <label class="form-check-label" for="textOnly_1">Описове завдання</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <ul id="questionOptions_1"></ul>
-                        </div>
-                    </li>
-                </ol>
-                <div class="bottom-div">
-                    <input class="btn btn-info" type="button" id="addQuestionId" value="Додати питання" onclick="addQuestion();">
+<div class="container quiz-create-container">
+    <h2 class="quiz-header">Тестове завдання</h2>
+    <form action="{% url 'quiz:create' task.course.id task.id %}" onsubmit="return optionsValidation()" method="POST">
+        {% csrf_token %}
+        <ol id="questionsList">
+            <li>
+                <div class="row quiz-row">
+                    <div class="col">
+                        <label for="question_1">Питання:</label>
+                        <input class="form-control" type="text" name="question_1" placeholder="Питання" required>
+                    </div>
+                    <div class="col-md-2 mark-container">
+                        <label for="price_1">Оцінка:</label>
+                        <input class="form-control" type="number" name="price_1" placeholder="Бали" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input class="quiz-button" type="button" id="addOptionId" name="optionForQuestion_1" value="Додати варіант" onclick="addOption(1);">
+                    </div>
+                    <div class="col-md-2 description-check-container">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" id="textOnly_1" name="textOnlyFor_1" onchange="eraseOptions('questionOptions_1')">
+                            Описове завдання
+                        </label>
+                    </div>
                 </div>
-                <input class="btn btn-success quiz-create-btn" type="submit" value="Створити тестове завдання">
-            </div>
-        </form>
-    </div>
+                <div class="row">
+                    <ul id="questionOptions_1"></ul>
+                </div>
+            </li>
+        </ol>
+        <div class="bottom-div">
+            <input class="quiz-button add-question-btn" type="button" id="addQuestionId" value="Нове питання" onclick="addQuestion();">
+        </div>
+        <div class="row create-quiz-btn-row">
+            <input class="quiz-create-btn" type="submit" value="Створити тестове завдання">
+        </div>
+    </form>
 </div>  
 <script src="{% static 'homepage/js/scripts.js' %}"></script>
 {% endblock content %}

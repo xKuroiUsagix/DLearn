@@ -179,7 +179,7 @@
         {% elif quiz %}
             <div class="col quiz-div">
                 <a href="{% url 'quiz:detail' task.course.id task.id %}">
-                    <button class="btn btn-success btn-quiz-user">Тестове завдання</button>
+                    <button class="quiz-button" style="width: 10%">Тестове завдання</button>
                 </a>
             </div>
         {% endif %}

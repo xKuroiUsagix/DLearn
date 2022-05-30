@@ -19,18 +19,16 @@ function addOption(questionNumber) {
 
     questionOptionsUL.insertAdjacentHTML('beforeend',
         `
-        <li class="var-li" id="question_${questionNumber}_option_${options + 1}">
-            <div class="row">
-                <div class="col">
-                    <input class="form-control var-checkbox" type="checkbox" name="optionValueForQuestion_${questionNumber}_${options + 1}">
-                </div>
-                <div>
-                    <input class="form-control" type="text" name="optionForQuestion_${questionNumber}_${options + 1}" placeholder="варіант" required>
-                </div>
-                <div>
-                    <input class="btn btn-danger btn-delete-var" type="button" value="-" onclick="eraseOption('question_${questionNumber}_option_${options + 1}');">
-                </div>
-            </div>     
+        <li class="option-li" id="question_${questionNumber}_option_${options + 1}">
+            <div class="option-check">
+                <input class="var-checkbox" type="checkbox" name="optionValueForQuestion_${questionNumber}_${options + 1}">
+            </div>
+            <div class="option-value">
+                <input class="form-control" type="text" name="optionForQuestion_${questionNumber}_${options + 1}" placeholder="Варіант" required>
+            </div>
+            <div>
+                <input class="btn-danger option-delete-btn" type="button" value="-" onclick="eraseOption('question_${questionNumber}_option_${options + 1}');">
+            </div>   
         </li>
     `
     );
@@ -48,31 +46,27 @@ function addQuestion() {
     `
     <li id="questionNumber_${questionCounter}">
         <div class="row quiz-row">
-            <div class="col-md-6">
+            <div class="col">
                 <label for="question_${questionCounter}">Питання:</label>
-                <input class="form-control" type="text" name="question_${questionCounter}" placeholder="питання" required>
+                <input class="form-control" type="text" name="question_${questionCounter}" placeholder="Питання" required>
+            </div>
+            <div class="col-md-2 mark-container">
+                <div class="row">
+                    <div class="col">
+                        <label for="price_${questionCounter}">Оцінка:</label>
+                        <input class="form-control" type="number" name="price_${questionCounter}" placeholder="Бали" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="btn-danger question-delete-btn" type="button" value="-" onclick="eraseQuestion('questionNumber_${questionCounter}');">
+                    </div>
+                </div>
             </div>
             <div class="col-md-2">
-                <div class="row">
-                    <div class="col-md-10">
-                        <label for="price_${questionCounter}">Оцінка:</label>
-                        <input class="form-control" type="number" name="price_${questionCounter}" placeholder="бали" required>
-                    </div>
-                    <div class="col-md-1">
-                        <input class="btn btn-danger btn-delete-question" type="button" value="-" onclick="eraseQuestion('questionNumber_${questionCounter}');">
-                    </div>
-                </div>
+                <input class="quiz-button" type="button" id="addOptionId" name="optionForQuestion_${questionCounter}" value="Додати варіант" onclick="addOption(${questionCounter});">
             </div>
-            <div class="col">
-                <div class="row btn-var-div">
-            
-                    <input class="btn btn-info" type="button" id="addOptionId" name="optionForQuestion_${questionCounter}" value="Додати варіант" onclick="addOption(${questionCounter});">
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="textOnly_${questionCounter}" name="textOnlyFor_${questionCounter}" onchange="eraseOptions('questionOptions_${questionCounter}')">
-                        <label class="form-check-label" for="textOnly_${questionCounter}">Описове завдання</label>
-                    </div>
-                </div>
+            <div class="col-md-2 description-check-container">
+                <input class="form-check-input" type="checkbox" id="textOnly_${questionCounter}" name="textOnlyFor_${questionCounter}" onchange="eraseOptions('questionOptions_${questionCounter}')">
+                <label class="form-check-label" for="textOnly_${questionCounter}">Описове завдання</label>
             </div>
         </div>
         <div class="row">

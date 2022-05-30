@@ -99,18 +99,16 @@ class QuizDetailView(View):
         course = Course.objects.get(id=course_id)
         users_course = UserCourse.objects.filter(course=course_id)
         users = [user_course.user for user_course in users_course]
-        options, users_done, users_not_done, one_answer_questions = [], [], [], []
+        max_mark = 0
+        options, users_done, users_not_done = [], [], []
         
         if UserResult.objects.filter(user=request.user, quiz=quiz):
             return redirect(f'/course/{course_id}/task/{task_id}/quiz/user-detail/{request.user.id}/')
         
         for question in questions:
+            max_mark += question.price
             current_options = Option.objects.filter(question=question.id)
             options.extend(current_options)
-            
-            if not self.is_question_one_optioned(question):
-                continue
-            one_answer_questions.append(question)
         
         for user in users:
             try:
@@ -118,17 +116,19 @@ class QuizDetailView(View):
             except ObjectDoesNotExist:
                 users_not_done.append(user)
         
+        
         context = {
             'quiz': quiz,
             'questions': questions,
-            'one_answer_questions': one_answer_questions,
             'options': options,
             'is_ready': is_ready,
             'course_id': course_id,
             'task_id': task_id,
             'is_owner': course.owner == request.user,
             'users_done': users_done,
-            'users_not_done': users_not_done
+            'users_not_done': users_not_done,
+            'max_mark': int(max_mark),
+            'users_results': UserResult.objects.filter(quiz=quiz)
         }
         
         return render(request, self.template_name, context)
@@ -170,7 +170,7 @@ class QuizDetailView(View):
         result_detail = ResultDetail.objects.filter(user_result=user_result)
         self.set_questions_marks(questions, options, result_detail)
         
-        return redirect('/')
+        return redirect(f'/course/{course_id}/task/{task_id}/quiz/user-detail/{request.user.id}')
     
     def is_question_one_optioned(self, question):
         """This method checks each question's option and tells has it only one true asnwer or not.
@@ -279,14 +279,16 @@ class UserDetailView(View):
             options.extend(Option.objects.filter(question=q))
         
         context = {
-            'user': user,
+            'quiz': quiz,
+            'quiz_user': user,
             'is_owner': Course.objects.get(id=course_id).owner == request.user,
             'task_id': task_id,
             'course_id': course_id, 
             'result_details': result_details,
             'questions': questions,
             'options': options,
-            'final_mark': user_result.mark
+            'final_mark': user_result.mark,
+            'text_answers': [result_detail.text_answer for result_detail in result_details]
         }
         
         return render(request, self.template_name, context)

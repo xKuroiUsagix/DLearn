@@ -1,54 +1,91 @@
 {% extends 'homepage/_base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'quiz/styles.css' %}">
+{% endblock styles %}
 
 {% block content %}
+
 {% if is_owner %}
 
-    <h1>Users which done quiz:</h1>
-    <ul>
-        {% for user in users_done %}
-            {{ user.email }} <a href="{% url 'quiz:user_detail' course_id task_id user.id %}"><button>Result Details</button></a>
+<div class="container owner-detail-container">
+    <h4 class="quiz-header">Тестове завдання {{ quiz.task.name }}</h4>
+    <table>
+        <tr>
+            <th>Студент</th>
+            <th>Результат</th>
+            <th></th>
+        </tr>
+
+        {% for user_result in users_results %}
+        <tr>
+            <td class="td-username">{{ user_result.user.first_name }} {{ user_result.user.last_name }}</td>
+            <td>{{ user_result.mark }}/{{ max_mark }}</td>
+            <td>
+                <a href="{% url 'quiz:user_detail' course_id task_id user_result.user.id %}" class="user-detail-link">Переглянути</a>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-    <h1>Users which not done quiz:</h1>
-    <ul>
+
         {% for user in users_not_done %}
-            {{ user.email }}
+        <tr>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
         {% endfor %}
-    </ul>
+
+    </table>
+</div>
 
 {% elif not is_ready %}
-    <h3>Description: {{ quiz.description }}</h3>
+
+<div class="get-ready-container">
+    <h4 class="quiz-header">Тестове завдання {{ quiz.task.name }}</h4>
+    <p>
+        Кількість запитань: <b>{{ questions|length }}</b><br>
+        Максимальний бал: <b>{{ max_mark }}</b>
+    </p>
     <form action="{% url 'quiz:detail' course_id task_id %}">
-        <input type="submit" value="Ready!" name="ready">
+        <input type="submit" value="Почати" name="ready">
     </form>
+</div>
 {% else %}
-    <div>
-        <form action="{% url 'quiz:detail' course_id task_id %}" method="POST">
-            {% csrf_token %}
-            {% for question in questions %}
-                <label>{{ question.question }}</label> <br>
-                {% if question in one_answer_questions %}
-                    <div>
-                    {% for option in options %}
-                        {% if option.question.id == question.id %}
-                            {{ option.option }}<input type="radio" id="optionChoice_{{ option.id }}" name="option_{{ option.id }}"><br>
-                        {% endif %}
-                    {% endfor %}
-                    </div>
-                {% else %}
-                    {% for option in options %}
-                        {% if option.question.id == question.id %}
-                            {{ option.option }} <input type="checkbox" name="option_{{ option.id }}"><br>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                {% if question.text_answer %}
-                    <textarea name="describe_{{ question.id }}" id="describe_{{ question.id }}" cols="30" rows="6"></textarea>
-                {% endif %}
-                <br>
-            {% endfor %}
-            <input type="submit">
-        </form>
-    </div>
+<div class="container quiz-detail-container">
+    <h3 class="quiz-header">Тестове завдання {{ quiz.task.name }}</h3>
+    <form action="{% url 'quiz:detail' course_id task_id %}" method="POST">
+        {% csrf_token %}
+        <div class="questions-container">
+        {% for question in questions %}
+            <h6 class="question-text">{{ forloop.counter }}. {{ question.question }}</h6>
+
+            {% if not question.text_answer %}
+
+            <ol type="a" class="options-list">
+
+                {% for option in options %}
+                    {% if option.question.id == question.id %}
+                            <div class="options-container">
+                                <input type="checkbox" name="option_{{ option.id }}">
+                                <li>{{ option.option }}</li><br>
+                            </div>
+                    {% endif %}
+                {% endfor %}
+
+            </ol>
+
+            {% else %}
+            <textarea class="question-textarea" name="describe_{{ question.id }}" id="describe_{{ question.id }}" cols="30" rows="6" placeholder="Ваша відповідь"></textarea>
+            {% endif %}
+
+            <br>
+        {% endfor %}
+        </div>
+        <div class="send-button-container">
+            <input class="quiz-send-button quiz-button" type="submit" value="Відправити">
+        </div>
+    </form>
+</div>
 {% endif %}
 {% endblock content %}

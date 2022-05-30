@@ -1,40 +1,58 @@
 {% extends 'homepage/_base.html' %}
+{% load static %}
 
 {% block styles %}
-<style>
-    .main-body {
-        padding: 20px;
-    }
-</style>
+    <link rel="stylesheet" href="{% static 'quiz/styles.css' %}">
 {% endblock styles %}
 
 {% block content %}
 
-{% comment %} {{ result.question.question }} <br> {% endcomment %}
-{% comment %} {{ result.option.option }} {{ result.option.is_right }} <br> {% endcomment %}
-
+<div class="container user-result-container">
+    <h4 class="quiz-header quiz-detail-header">
+        Тестове завдання {{ quiz.task.name }}
+        <div>
+            <small>
+                Виконав: <span>{{ quiz_user.first_name }} {{ quiz_user.last_name }}</span>
+            </small>
+            <small>
+                <small> Оцінка: <span>{{ final_mark }}</span></small>
+            </small>
+        </div>
+    </h4>
 {% if is_owner %}
-    <form action="{% url 'quiz:user_detail' course_id task_id user.id %}" method="POST">
+    <form action="{% url 'quiz:user_detail' course_id task_id quiz_user.id %}" method="POST">
     {% csrf_token %}
 {% endif %}
+
     {% for q in questions %}
-        {{ q.question }} <br>
-        {% for option in options %}
-            {% if option.question == q %}
-                {{ option.option }}
-                {% for result in result_details %}
-                    {% if result.option == option %}
-                        {{ result.option.is_right }} {{ result.mark }} / {{ q.price }}
-                    {% endif %}
-                {% endfor %}
-                <br>
-            {% endif %}
-        {% endfor %}
+    <div class="questions-container">
+        <p>{{ forloop.counter }}. {{ q.question }}</p>
+        <ol class="options-list">
+            {% for option in options %}
+                {% if option.question == q %}
+                <div class="user-options-container">
+                    <input type="checkbox" id="checkbox_{{ option.id }}" disabled>
+                    <li>
+                        <span id="option_{{ option.id }}">{{ option.option }}</span>
+                    {% for result in result_details %}
+                        {% if result.option == option %}
+                            <input type="hidden" name="userAnswer" value="{{ result.option.is_right }}, {{ option.id }}">
+                        {% endif %}
+                    {% endfor %}
+                    </li>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </ol>
+
         {% for result in result_details %}
             {% if result.question == q and result.text_answer %}
-                {{ result.text_answer }} <br>
+                <textarea class="question-textarea" cols="30" rows="5" disabled>
+                    {{ result.text_answer }}
+                </textarea>
                 {% if result.mark == 0 and is_owner %}
-                    <input type="number" min="0" max="{{ q.price }}" name="descriptionTask_{{ q.id }}" required> / {{ q.price }}<br>
+                    <label for="descriptionTask_{{ q.id }}">Оцініть завдання:</label><br>
+                    <input type="number" class="text-answer-mark" min="0" max="{{ q.price }}" name="descriptionTask_{{ q.id }}" placeholder="Ваша оцінка" required> / {{ q.price }}<br>
                 {% elif result.mark == 0 and not is_owner %}
                     не оцінено
                 {% else %}
@@ -42,11 +60,37 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
+    </div>
     {% endfor %}
     
-    {% if is_owner %}
-        <input type="submit" value="Перевірено">
+    {% if is_owner and text_answer %}
+        <div class="quiz-detail-submit-div">
+            <input type="submit" value="Перевірено" class="quiz-send-button quiz-button">
+        </div>
     {% endif %}
+
 </form>
-Оцінка: {{ final_mark }}
+</div>
+
+<script>
+    window.addEventListener("load", function(event) {
+        userAnswers = document.getElementsByName("userAnswer");
+        
+        for (let i = 0; i < userAnswers.length; i++) {
+            userAnswer = userAnswers[i].value.split(", ");
+            currentCheckbox = document.getElementById(`checkbox_${parseInt(userAnswer[1])}`);
+            currentOption = document.getElementById(`option_${parseInt(userAnswer[1])}`);
+            currentCheckbox.checked = true;
+            
+            if (userAnswer[0] === "True") {
+                currentOption.classList.add("option-true");
+            }
+            else {
+                currentOption.classList.add("option-false");
+            }
+
+            console.log(currentCheckbox);
+        }
+    });
+</script>
 {% endblock %}
