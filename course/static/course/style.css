@@ -158,6 +158,11 @@ button {
 
 .course-owner-label, .course-group-label {
     font-weight: 500;
+    margin-left: 20px;
+}
+
+.course-group-label {
+    margin-left: -15px;
 }
 
 .course-owner::after, .course-group::after {
@@ -280,10 +285,10 @@ button {
 }
 
 .users-table {
-    border: 1px solid rgb(153, 153, 153);
-    background-color: rgb(239, 239, 239);
     border-radius: 5px;
     border-collapse:collapse;
+    display: block;
+    overflow: auto;
 }
 
 .users-table .table-row:hover {
@@ -291,7 +296,13 @@ button {
 }
 
 .users-table td, th {
+    padding: 5px;
     border: 1px solid rgb(153, 153, 153);
+    min-width: 200px;
+}
+
+.table-counter {
+    min-width: 50px !important;
 }
 
 .users-table th {

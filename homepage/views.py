@@ -1,8 +1,5 @@
 from django.shortcuts import render
 from django.views import View
-from authentication.forms import LoginForm
-
-from course.models import UserCourse, Course
 
 
 class IndexView(View):

@@ -9,23 +9,40 @@
 
 <div class="container users-container">
     <div class="row">
-        <h2 class="course-users-header text-center">Долучені до курсу</h2>
+        <h2 class="course-users-header text-center">Рейтинг студентів</h2>
     </div>
     <div class="row text-center">
         <table class="users-table">
             <tr class="headers-row">
-                <th></th>
-                <th>Ім'я та Прізвище</th>
-                <th>Дата долучення</th>
+                <th rowspan="2" class="table-counter"></th>
+                <th rowspan="2">Ім'я та Прізвище</th>
+                {% for task in tasks %}
+                    <th colspan="2">{{ task.name }}</th>
+                {% endfor %}
+                <th rowspan="2"></th>
             </tr>
-            {% for user_course in users_course %}
+            <tr>
+                {% for task in tasks %}
+                    <th>Завдання</th>
+                    <th>Тести</th>
+                {% endfor %}
+            </tr>
+            {% for user, marks in user_marks.items %}
                 <tr class="table-row">
-                    <td>{{ forloop.counter }}</td>
-                    <td class="table-username">{{ user_course.user.first_name }} {{ user_course.user.last_name }}</td>
-                    <td class="table-date">{{ user_course.joined_at.date }}</td>
+                    <td class="table-counter">{{ forloop.counter }}</td>
+                    <td class="table-username">{{ user.first_name }} {{ user.last_name }}</td>
+                    {% for mark in marks %}
+                        {% if mark is None %}
+                            <td>-</td>
+                        {% else %}
+                            <td>{{ mark }}</td>
+                        {% endif %}
+                    {% endfor %}
                     <td class="button-data">
-                        <form action="{% url 'course:kick_user' course.id user_course.user.id %}"></form>
-                        <input type="submit" class="delete-user-btn" value="Видалити">
+                        <form action="{% url 'course:kick_user' course.id user.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="submit" class="delete-user-btn" value="Видалити">
+                        </form>
                     </td>
                 </tr>
             {% empty %}

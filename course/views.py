@@ -1,3 +1,4 @@
+from tkinter import ON
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.shortcuts import get_object_or_404
@@ -7,7 +8,8 @@ from django.utils.translation import gettext_lazy as _
 
 from authentication.errors import ErrorMessages
 from authentication.models import CustomUser
-from task.models import Task
+from task.models import Task, UserTask
+from quiz.models import Quiz, UserResult
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
@@ -78,7 +80,7 @@ class CourseJoinView(View):
             error_messages.append(ErrorMessages.BAD_PASSWORD_OR_JOINCODE_ERROR)
         if UserCourse.objects.filter(user=request.user, course=course):
             error_messages.append(ErrorMessages.USER_ALREADY_JOINED_ERROR)
-        if course.owner == request.user:
+        if course and course.owner == request.user:
             error_messages.append(ErrorMessages.USER_IS_OWNER_ERROR)
         
         if error_messages:
@@ -214,9 +216,47 @@ class UserCourseView(View):
     
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id)
+        course_tasks = Task.objects.filter(course=course)
+        users_course = UserCourse.objects.filter(course=course)
+        user_task_quiz = {}
+        task_quiz = {}
+        
+        for user_course in users_course:
+            user_task_quiz[user_course.user] = []
+            
+        for task in course_tasks:
+            try:
+                task_quiz[task] = Quiz.objects.get(task=task)
+            except ObjectDoesNotExist:
+                task_quiz[task] = '-'
+        
+        for user in user_task_quiz.keys():
+            for task, quiz in task_quiz.items():
+                print(task)
+                try:
+                    user_task_quiz[user].append(
+                        UserTask.objects.get(user=user, task=task).mark
+                    )
+                except ObjectDoesNotExist:
+                    user_task_quiz[user].append('-')
+                
+                if quiz == '-':
+                    user_task_quiz[user].append('-')
+                else:
+                    try:
+                        user_task_quiz[user].append(
+                            UserResult.objects.get(user=user, quiz=quiz).mark
+                        )
+                    except ObjectDoesNotExist:
+                        user_task_quiz[user].append('-')
+        
+        print(user_task_quiz)
+        
         context = {
             'course': course,
-            'users_course': UserCourse.objects.filter(course=course)
+            'tasks': course_tasks,
+            'user_marks': user_task_quiz,
+            'users_course': users_course
         }
         
         return render(request, self.template_name, context)

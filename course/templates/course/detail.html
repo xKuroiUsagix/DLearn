@@ -41,7 +41,7 @@
                     <a href="{% url 'task:create' course.id %}"><button class="course-button">Додати Завдання</button></a>
                 </div>
                 <div class="col course-button-col">
-                    <a href="{% url 'course:users' course.id %}"><button class="course-button">Користувачі</button></a>
+                    <a href="{% url 'course:users' course.id %}"><button class="course-button">Рейтинг</button></a>
                 </div>
                 <div class="col course-button-col">
                     <form action="{% url 'course:detail' course.id %}" method="POST">
