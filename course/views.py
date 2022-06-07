@@ -232,7 +232,6 @@ class UserCourseView(View):
         
         for user in user_task_quiz.keys():
             for task, quiz in task_quiz.items():
-                print(task)
                 try:
                     user_task_quiz[user].append(
                         UserTask.objects.get(user=user, task=task).mark
@@ -249,8 +248,6 @@ class UserCourseView(View):
                         )
                     except ObjectDoesNotExist:
                         user_task_quiz[user].append('-')
-        
-        print(user_task_quiz)
         
         context = {
             'course': course,
