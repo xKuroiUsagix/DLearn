@@ -1,7 +1,7 @@
 {% load static %}
 
 <div class="container login-form">
-    <h3 class="text-center login-form-header">Увідіть до Аккаунту</h3>
+    <h3 class="text-center login-form-header">Увійдіть до Акаунту</h3>
     <form action="{% url 'authentication:login' %}" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -16,7 +16,7 @@
             <input type="submit" class="form-btn" value="Увійти">
         </div>
         <div class="text-center form-bottom-text">
-            <small>Ще нема аккаунту? <a href="{% url 'authentication:register' %}" class="form-link">Створіть зараз</a></small>
+            <small>Ще нема акаунту? <a href="{% url 'authentication:register' %}" class="form-link">Створіть зараз</a></small>
         </div>
     </form>
 </div>

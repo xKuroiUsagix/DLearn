@@ -25,6 +25,9 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
     do_up_to = models.DateTimeField(null=True, blank=True, verbose_name=_('Do Up To'))
+    
+    class Meta:
+        ordering = ['created_at']
 
 
 class OwnerTaskFile(models.Model):
