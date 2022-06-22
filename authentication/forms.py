@@ -1,8 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django import forms
 
-from datetime import datetime
-
 from .errors import ErrorMessages
 from .models import CustomUser
 from .validators import is_password_valid
