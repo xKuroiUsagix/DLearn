@@ -1,190 +1,124 @@
-from tkinter import ON
-from django.http.response import HttpResponseForbidden
-from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect
+from django.contrib import auth
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.views.generic import (
+    FormView,
+    UpdateView,
+    DetailView,
+    ListView
+)
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    UserPassesTestMixin
+)
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext_lazy as _
 
 from authentication.errors import ErrorMessages
-from authentication.models import CustomUser
 from task.models import Task, UserTask
 from quiz.models import Quiz, UserResult
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 
 
-class CourseCreateView(View):
-    """
-        CourseCreateView provides operations for user to create own courses.
-        
-        Attributes:
-        ----------
-        param template_name: Describes template name for render
-        type template_name: str
-        param form: Describes django-form for course creation
-        type form: CourseCreateForm
-    """
+User = auth.get_user_model()
+
+
+class CourseCreateView(LoginRequiredMixin, FormView):
     template_name = 'course/create.html'
-    form = CourseCreateForm
-    
-    def get(self, request):
-        return render(request, self.template_name, {'form': self.form})
+    form_class = CourseCreateForm
 
-    def post(self, request):
-        form = self.form(request.POST)
+    def form_valid(self, form):
+        course = form.save(commit=False)
+        course.owner = self.request.user
+        course.image = self.request.FILES.get('image')
+        course.save()
         
-        if form.is_valid():
-            course = form.save(commit=False)
-            course.owner = request.user
-            course.image = request.FILES.get('image')
-            course.save()
-            return redirect(f'/course/{course.id}/')
-        
-        return render(request, self.template_name, {'form': form})
+        return HttpResponseRedirect(f'/course/{course.id}/')
 
 
-class CourseJoinView(View):
-    """
-        CourseJoinView provides operations for user to join courses.
-        
-        Attributes:
-        ----------
-        param model: Describes the Course model in database
-        type model: Course
-        param template_name: Describes template name for render
-        type template_name: str
-        param form: Describes django-form for course joining
-        type form: CourseJoinForm
-    """
-    model = Course
+class CourseJoinView(LoginRequiredMixin, FormView):
     template_name = 'homepage/index.html'
-    form = CourseJoinForm
+    form_class = CourseJoinForm
     
-    def get(self, request):
-        return render(request, self.template_name, {'join_form': self.form, 'join_open': True})
-    
-    def post(self, request):
-        form = self.form(request.POST)
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
         
         try:
-            course = self.model.objects.get(join_code=form.data['join_code'])
-            print(course.password)
+            self.course = Course.objects.get(join_code=form.data['join_code'])
         except ObjectDoesNotExist:
-            course = None
+            self.course = None
         
-        # This validation done here because of some troubles in doing...
-        # this in the CourseJoinForm
+        if self.is_form_valid(form):
+            return self.form_valid(form)
+        return self.form_invalid(form)
+    
+    def form_valid(self, form):
+        user_course = UserCourse()
+        user_course.user = self.request.user
+        user_course.course = self.course
+        user_course.save()
+        return HttpResponseRedirect(f'/course/{self.course.id}')
+    
+    def form_invalid(self, form):
+        context_data = self.get_context_data(form=form, join_error=True, join_open=True)
+        return self.render_to_response(context_data)
+    
+    def is_form_valid(self, form):
         error_messages = []
-        if not course or not course.check_password(form.data['password']):
+        
+        if not self.course or not self.course.check_password(form.data['password']):
             error_messages.append(ErrorMessages.BAD_PASSWORD_OR_JOINCODE_ERROR)
-        if UserCourse.objects.filter(user=request.user, course=course):
+        if UserCourse.objects.filter(user=self.request.user, course=self.course):
             error_messages.append(ErrorMessages.USER_ALREADY_JOINED_ERROR)
-        if course and course.owner == request.user:
+        if self.course and self.course.owner == self.request.user:
             error_messages.append(ErrorMessages.USER_IS_OWNER_ERROR)
         
         if error_messages:
             form.errors['join_code'] = form.error_class(error_messages)
-            return render(request, self.template_name, {'join_form': form, 'join_error': True, 'join_open': True})
-        
-        user_course = UserCourse()
-        user_course.user = request.user
-        user_course.course = course
-        user_course.save()
-        
-        return redirect(f'/')
+            return False
+        return True
+    
+    def get_context_data(self, **kwargs):
+        context_data = super(CourseJoinView, self).get_context_data(**kwargs)
+        context_data['join_form'] = context_data.get('form')
+        context_data['join_open'] = True
+        return context_data
 
 
-class CourseDetailView(View):
-    """
-        CourseDetailView provides operations for user to see course details.
-        The details that user can see depends on user status in this course.
-        If the user is owner of this course he will see some additional info in the template
-        and also has ability to administrate his course.
-        
-        Abilities for owner:
-            - Modify the course information
-            - Delete the course
-            - Create tasks for joined users
-        
-        Abilities for joined user:
-            - Leave the course
-            - See tasks created by owner
-        
-        Attributes:
-        ----------
-        param model: Describes the Course model in database
-        type model: Course
-        param template_name: Describes template name for render
-        type template_name: str
-    """
-    model = Course
+class CourseDetailView(LoginRequiredMixin, DetailView):
     template_name = 'course/detail.html'
-    
-    def get(self, request, pk):
-        course = get_object_or_404(self.model, id=pk)
-        tasks = Task.objects.filter(course=course)
-        is_owner = course.owner == request.user
-        user_course = UserCourse.objects.filter(course=course)
-        joined_users = [record.user for record in user_course]
-        
-        context = {
-            'tasks': tasks,
-            'course': course,
-            'is_owner': is_owner,
-            'joined_users': joined_users
-        }
-        
-        return render(request, self.template_name, context)
-    
-    def post(self, request, pk):
-        course = get_object_or_404(self.model, id=pk)
-        
-        if course.owner != request.user:
-            return HttpResponseForbidden()
-        
-        course.delete()
-        return redirect('/')
-        
-     
-class CourseUpdateView(View):
-    """
-        CourseUpdateView provides operations for owner to change his course information.
-        Owner can change every field in the course.
-        
-        Attributes:
-        ----------
-        param model: Describes the Course model in database
-        type model: Course
-        param template_name: Describes template name for render
-        type template_name: str
-        param form: Describes the form for updating course infromation
-        type form: CourseUpdateForm
-    """
+    pk_url_kwarg = 'course_id'
     model = Course
-    form = CourseUpdateForm
+    
+    def get_context_data(self, **kwargs):
+        context_data = super(CourseDetailView, self).get_context_data(**kwargs)
+        course = self.get_object(queryset=self.model.objects.select_related('owner'))
+        context_data['tasks'] = Task.objects.filter(course=course)
+        context_data['is_owner'] = course.owner == self.request.user
+        return context_data
+
+
+class CourseDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
+    success_url = '/'
+    model = Course
+    
+    def post(self, request, course_id):
+        self.model.objects.get(id=course_id).delete()
+        return HttpResponseRedirect(self.success_url)
+
+    def test_func(self):
+        return bool(self.request.POST.get('is_owner'))
+
+
+class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'course/settings.html'
+    pk_url_kwarg = 'course_id'
+    model = Course
+    form_class = CourseUpdateForm
     
-    def get(self, request, pk):
-        course = get_object_or_404(self.model, id=pk)
-        context = {
-            'course': course,
-            'form': self.form(instance=course)
-        }
-            
-        return render(request, self.template_name, context)
-    
-    def post(self, request, pk):
-        course = get_object_or_404(self.model, id=pk)
-        form = self.form(request.POST, instance=course)
-        form.fields.get('password')
-        context = {
-            'course': course,
-            'form': form
-        }
-        
-        if not form.is_valid():
-            return render(request, self.template_name, context)
+    def form_valid(self, form):
+        course = self.get_object()
         
         if form.data['name'] != course.name:
             course.name = form.data['name']
@@ -196,14 +130,17 @@ class CourseUpdateView(View):
             course.group_name = form.data['group_name']
         if form.data['password']:
             course.set_password(form.data['password'])
-        if request.FILES.get('image'):
-            course.image = request.FILES.get('image')
+        if self.request.FILES.get('image'):
+            course.image = self.request.FILES.get('image')
         
         course.save()
-        return redirect(f'/course/{course.id}/')
+        return HttpResponseRedirect(f'/course/{course.id}/')
+    
+    def test_func(self):
+        return self.get_object().owner == self.request.user
 
 
-class UserCourseView(View):
+class UserCourseView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """
         UserCourseView provides operations for owner to see users joined to the course.
         Attributes:
@@ -212,83 +149,98 @@ class UserCourseView(View):
         type model: UserCourse
     """
     model = UserCourse
+    course = None
+    pk_url_kwarg = 'course_id'
+    context_object_name = 'users_course'
     template_name = 'course/course_users.html'
+
+    def get_queryset(self):
+        if self.queryset:
+            return self.queryset
+        
+        self.queryset = self.get_course_object().users.all()
+        return self.queryset
     
-    def get(self, request, course_id):
-        course = get_object_or_404(Course, id=course_id)
-        course_tasks = Task.objects.filter(course=course)
-        users_course = UserCourse.objects.filter(course=course)
-        user_task_quiz = {}
+    def get_course_object(self):
+        if self.course:
+            return self.course
+        
+        self.course = get_object_or_404(Course, id=self.kwargs.get(self.pk_url_kwarg))
+        return self.course
+    
+    def get_context_data(self, **kwargs):
+        context_data = super(UserCourseView, self).get_context_data(**kwargs)
+        course_tasks = Task.objects.select_related('course').filter(course=self.course)
+        context_data['course'] = self.course
+        context_data['tasks'] = course_tasks
+        context_data['users_marks'] = self.get_users_marks(course_tasks)
+        return context_data
+    
+    def get_users_marks(self, course_tasks):
+        users_marks = {}
         task_quiz = {}
         
-        for user_course in users_course:
-            user_task_quiz[user_course.user] = []
-            
+        for user in self.queryset:
+            users_marks[user] = []
+        
         for task in course_tasks:
             try:
                 task_quiz[task] = Quiz.objects.get(task=task)
             except ObjectDoesNotExist:
                 task_quiz[task] = '-'
         
-        for user in user_task_quiz.keys():
+        for user in users_marks.keys():
             for task, quiz in task_quiz.items():
                 try:
-                    user_task_quiz[user].append(
-                        UserTask.objects.get(user=user, task=task).mark
+                    users_marks.append(
+                        UserTask.objects.get(user=user, task=task)
                     )
                 except ObjectDoesNotExist:
-                    user_task_quiz[user].append('-')
+                    users_marks.append('-')
                 
                 if quiz == '-':
-                    user_task_quiz[user].append('-')
+                    users_marks.append('-')
                 else:
                     try:
-                        user_task_quiz[user].append(
+                        users_marks[user].append (
                             UserResult.objects.get(user=user, quiz=quiz).mark
                         )
                     except ObjectDoesNotExist:
-                        user_task_quiz[user].append('-')
+                        users_marks.append('-')
         
-        context = {
-            'course': course,
-            'tasks': course_tasks,
-            'user_marks': user_task_quiz,
-            'users_course': users_course
-        }
-        
-        return render(request, self.template_name, context)
+        return users_marks
+    
+    def test_func(self):
+        return self.get_course_object().owner == self.request.user
 
 
-class KickUserView(View):
-    """
-        KickUserView provides ability to kick users from course.
-        Attributes:
-        ----------
-        param model: Describes the UserCourse model in database
-        type model: UserCourse
-    """
+class KickUserView(LoginRequiredMixin, UserPassesTestMixin, View):
     model = UserCourse
+    course = None
+    course_url_kwarg = 'course_id'
     
     def post(self, request, course_id, user_id):
         course = get_object_or_404(Course, id=course_id)
-        user = get_object_or_404(CustomUser, id=user_id)
+        user = get_object_or_404(User, id=user_id)
         user_course = get_object_or_404(self.model, course=course, user=user)
         user_course.delete()
-        return redirect(f'/course/{course.id}/users/')
- 
-class LeaveCourseView(View):
-    """
-        LeaveCourseView provides operations for the user to leave the course.
+        return HttpResponseRedirect(f'/course/{course.id}/users/')
+
+    def get_course_object(self):
+        if self.course:
+            return self.course
+        self.course = get_object_or_404(Course, id=self.kwargs.get(self.course_url_kwarg))
+        return self.course
         
-        Attributes:
-        ----------
-        param model: Describes the UserCourse model in database
-        type model: UserCourse
-    """
+    def test_func(self):
+        return self.get_course_object().owner == self.request.user
+ 
+class LeaveCourseView(LoginRequiredMixin, View):
     model = UserCourse
+    success_url = '/'
     
     def post(self, request, course_id):
         course = get_object_or_404(Course, id=course_id)
         user_course = get_object_or_404(self.model, user=request.user, course=course)
         user_course.delete()
-        return redirect('/')
+        return HttpResponseRedirect(self.success_url)
