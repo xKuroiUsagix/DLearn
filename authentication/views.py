@@ -69,7 +69,6 @@ class LoginView(View):
             return render(request, self.template_name, {'login_form': form, 'login_error': True})
         
         login(request, user)
-        user.is_active = True
         user.save()
 
         return redirect('/')
@@ -81,7 +80,6 @@ class LogoutView(View):
     """
     def get(self, request):
         if request.user.is_authenticated:
-            request.user.is_active = False
             request.user.save()
             logout(request)
         return redirect('/')
