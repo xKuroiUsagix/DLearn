@@ -11,25 +11,33 @@ SECRET_KEY = secrets.secret_key
 DEBUG = True
 
 ALLOWED_HOSTS = []
+INTERNAL_IPS = ['127.0.0.1']
 
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    
+    # created apps
     'authentication',
     'course',
     'homepage',
     'task',
     'quiz',
+    
+    # third-party apps
+    'debug_toolbar',
+    
+    # django apps
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles'
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -37,7 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware'
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'dlearn.urls'
@@ -114,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -126,3 +135,5 @@ LOGIN_REDIRECT_URL = LOGIN_URL
 
 MEDIA_ROOT = BASE_DIR / 'uploads/'
 MEDIA_URL = '/media/'
+
+SHOW_TOOLBAR_CALLBACK = True

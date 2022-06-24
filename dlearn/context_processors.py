@@ -1,7 +1,11 @@
+from django.contrib import auth
+
 from course.models import Course, UserCourse
 from course.forms import CourseJoinForm
-
 from authentication.forms import LoginForm
+
+
+User = auth.get_user_model()
 
 
 def add_courses_to_context(request):
@@ -10,11 +14,8 @@ def add_courses_to_context(request):
             'login_form': LoginForm
         }
     
-    user_courses = UserCourse.objects.filter(user=request.user)
-    added_courses = [user_course.course for user_course in user_courses]
-    
     return {
-        'created_courses': Course.objects.filter(owner=request.user),
-        'added_courses': added_courses,
+        'created_courses': Course.objects.filter(owner=request.user).select_related('owner'),
+        'joined_courses': request.user.courses.all(),
         'join_form': CourseJoinForm
     }
