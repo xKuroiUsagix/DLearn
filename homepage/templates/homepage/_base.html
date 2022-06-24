@@ -45,7 +45,7 @@
                                 <img class="icon" width="12" src="{% static 'homepage/open-iconic/svg/caret-bottom.svg' %}">
                             </a>
                             <div id="addedCoursesDropdown" class="dropdown-content">
-                                {% for course in added_courses %}
+                                {% for course in joined_courses %}
                                     <a href="{% url 'course:detail' course.id %}">{{ course.name }}</a>
                                 {% endfor %}
                             </div>
