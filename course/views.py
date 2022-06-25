@@ -113,7 +113,7 @@ class CourseDetailView(LoginRequiredMixin, DetailView):
 class CourseDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
     """
     A view for course deletion for authenticated user
-    if the last one is an owner of the course and rendering
+    if the last one is an owner of this course and rendering
     a template response.
     """
     success_url = '/'
@@ -130,7 +130,7 @@ class CourseDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
 class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """
     A view for displaying CourseUpdateForm for authenticated users
-    if the last one is an owner of the course. 
+    if the last one is an owner of this course. 
     """
     template_name = 'course/settings.html'
     pk_url_kwarg = 'course_id'
@@ -163,7 +163,7 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class UserCourseView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """
     A view for rendering course users template for authenticated users
-    if the last one is an owner of the course.
+    if the last one is an owner of this course.
     """
     model = UserCourse
     pk_url_kwarg = 'course_id'
@@ -237,7 +237,7 @@ class UserCourseView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class KickUserView(LoginRequiredMixin, UserPassesTestMixin, View):
     """
     A view for kicking users from a course for authenticated users
-    if the last one is an onwer of the course.
+    if the last one is an onwer of this course.
     """
     model = UserCourse
     course = None
