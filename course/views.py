@@ -25,6 +25,10 @@ User = auth.get_user_model()
 
 
 class CourseCreateView(LoginRequiredMixin, FormView):
+    """
+    A view for displaying CourseCreateForm for authenticated users
+    and rendering a template response.
+    """
     template_name = 'course/create.html'
     form_class = CourseCreateForm
 
@@ -38,6 +42,10 @@ class CourseCreateView(LoginRequiredMixin, FormView):
 
 
 class CourseJoinView(LoginRequiredMixin, FormView):
+    """
+    A view for displaying CourseJoinForm for authenticated users
+    and rendering a template response.
+    """
     template_name = 'homepage/index.html'
     form_class = CourseJoinForm
     
@@ -87,6 +95,9 @@ class CourseJoinView(LoginRequiredMixin, FormView):
 
 
 class CourseDetailView(LoginRequiredMixin, DetailView):
+    """
+    A view for rendering course detail template for authenticated users.
+    """
     template_name = 'course/detail.html'
     pk_url_kwarg = 'course_id'
     model = Course
@@ -100,6 +111,11 @@ class CourseDetailView(LoginRequiredMixin, DetailView):
 
 
 class CourseDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """
+    A view for course deletion for authenticated user
+    if the last one is an owner of the course and rendering
+    a template response.
+    """
     success_url = '/'
     model = Course
     
@@ -112,6 +128,10 @@ class CourseDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    A view for displaying CourseUpdateForm for authenticated users
+    if the last one is an owner of the course. 
+    """
     template_name = 'course/settings.html'
     pk_url_kwarg = 'course_id'
     model = Course
@@ -142,18 +162,18 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class UserCourseView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """
-        UserCourseView provides operations for owner to see users joined to the course.
-        Attributes:
-        ----------
-        param model: Describes the UserCourse model in database
-        type model: UserCourse
+    A view for rendering course users template for authenticated users
+    if the last one is an owner of the course.
     """
     model = UserCourse
-    course = None
     pk_url_kwarg = 'course_id'
     context_object_name = 'users_course'
     template_name = 'course/course_users.html'
 
+    def __init__(self, **kwargs) -> None:
+        super(UserCourseView, self).__init__(**kwargs)
+        self.course = None
+    
     def get_queryset(self):
         if self.queryset:
             return self.queryset
@@ -215,6 +235,10 @@ class UserCourseView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 class KickUserView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """
+    A view for kicking users from a course for authenticated users
+    if the last one is an onwer of the course.
+    """
     model = UserCourse
     course = None
     course_url_kwarg = 'course_id'
@@ -236,6 +260,9 @@ class KickUserView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.get_course_object().owner == self.request.user
  
 class LeaveCourseView(LoginRequiredMixin, View):
+    """
+    A view for leaving a course for authenticated users.
+    """
     model = UserCourse
     success_url = '/'
     

@@ -9,7 +9,9 @@ from .models import Course
 
 
 class CourseCreateForm(forms.ModelForm):
-    
+    """
+    A form for course creating.
+    """
     confirm_password = forms.CharField(max_length=20, min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Повторіть Пароль'}))
     
     class Meta:
@@ -88,7 +90,9 @@ class CourseCreateForm(forms.ModelForm):
 
 
 class CourseUpdateForm(forms.ModelForm):
-    
+    """
+    A form for course updating.
+    """
     password = forms.CharField(required=False,
                                min_length=6,
                                max_length=20,
@@ -149,7 +153,9 @@ class CourseUpdateForm(forms.ModelForm):
 
 
 class CourseJoinForm(forms.ModelForm):
-    
+    """
+    A form for joining to a course.
+    """
     class Meta:
         model = Course
         fields = [
