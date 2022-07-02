@@ -2,7 +2,6 @@ from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext_lazy as _
 
 from .errors import ErrorMessages
 from .models import CustomUser

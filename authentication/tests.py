@@ -1,6 +1,4 @@
-from urllib import response
 from django.test import TestCase
-from django.contrib import auth
 from http import HTTPStatus
 
 from .errors import ErrorMessages
