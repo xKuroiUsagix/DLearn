@@ -24,7 +24,9 @@ INSTALLED_APPS = [
     'quiz',
     
     # third-party apps
-    'debug_toolbar',
+    # 'debug_toolbar',
+    'rest_framework',
+    'rest_framework.authtoken',
     
     # django apps
     'django.contrib.admin',
@@ -36,7 +38,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -103,6 +105,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
