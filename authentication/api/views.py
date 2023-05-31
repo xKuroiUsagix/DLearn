@@ -8,10 +8,3 @@ from .serializers import AuthTokenSerializer
 
 class ReceiveAuthToken(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
-
-
-class TestView(APIView):
-    permission_classes = (IsAuthenticated,)
-    
-    def get(self, request):
-        return Response(['works', request.user.email, request.user.password])

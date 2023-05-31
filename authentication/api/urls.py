@@ -1,11 +1,10 @@
 from django.urls import path
 
-from .views import ReceiveAuthToken, TestView
+from .views import ReceiveAuthToken
 
 
-app_name = 'auth'
+app_name = 'auth_api'
 
 urlpatterns = [
     path('token/', ReceiveAuthToken.as_view(), name='token'),
-    path('test/', TestView.as_view(), name='test'),
 ]
