@@ -22,8 +22,8 @@ class CourseAPIView(APIView):
             serializer = self.serializer_class(instance=course)
             return Response(serializer.data, status=HTTP_200_OK)
 
-        return Response(status=HTTP_400_BAD_REQUEST)
-    
+        return Response('id is required', status=HTTP_400_BAD_REQUEST)
+
     def post(self, request):
         confirm_password = request.data.pop('confirm_password')
         serializer = self.serializer_class(data=request.data, 
@@ -31,9 +31,10 @@ class CourseAPIView(APIView):
                                                'owner': request.user,
                                                'confirm_password': confirm_password
                                             })
-        
+
         if serializer.is_valid(raise_exception=True):
-            serializer.create(serializer.validated_data)
+            course = serializer.save()
+            serializer = self.serializer_class(instance=course)
             return Response(serializer.data, status=HTTP_201_CREATED)
 
 
@@ -65,7 +66,7 @@ class CourseUpdateAPIView(APIView):
         course_id = request.data.get('id')
 
         if not course_id:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response('id is required', status=HTTP_400_BAD_REQUEST)
 
         course = get_object_or_404(Course, id=int(course_id))
 
@@ -88,16 +89,16 @@ class JoinCourseAPIVIew(APIView):
         course_id = request.data.get('id')
 
         if not course_id:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response('id is required', status=HTTP_400_BAD_REQUEST)
 
         try:
             course_id = int(course_id)
         except ValueError:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response('id must be a number', status=HTTP_400_BAD_REQUEST)
         
         course = Course.objects.get(id=course_id)
         if course.users.contains(request.user):
-            return Response(status=HTTP_403_FORBIDDEN)
+            return Response(f'User {request.user} is already joined this course.', status=HTTP_403_FORBIDDEN)
 
         course.users.add(request.user)
         return Response(CourseSerializer(instance=course).data, status=HTTP_200_OK)
@@ -108,18 +109,18 @@ class LeaveCourseAPIView(APIView):
     
     def post(self, request):
         course_id = request.data.get('id')
-        
+
         if not course_id:
-            return Response(status=HTTP_400_BAD_REQUEST)
-        
+            return Response('id is required', status=HTTP_400_BAD_REQUEST)
+
         try:
             course_id = int(course_id)
         except ValueError:
-            return Response(status=HTTP_400_BAD_REQUEST)
-        
+            return Response('id must be a number', status=HTTP_400_BAD_REQUEST)
+
         course = Course.objects.get(id=course_id)
         if not course.users.contains(request.user):
-            return Response(status=HTTP_403_FORBIDDEN)
+            return Response(f'User {request.user} is not a member of this course.', status=HTTP_403_FORBIDDEN)
         
         course.users.remove(request.user)
         return Response(status=HTTP_200_OK)

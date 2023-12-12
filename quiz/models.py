@@ -11,6 +11,9 @@ class Quiz(models.Model):
     
     task = models.ForeignKey(Task, on_delete=CASCADE)
     description = models.TextField(null=True)
+    
+    def get_questions(self):
+        return self.question_set.all()
 
 
 class UserResult(models.Model):
@@ -26,6 +29,9 @@ class Question(models.Model):
     question = models.CharField(max_length=550)
     price = models.FloatField(default=0)
     text_answer = models.BooleanField(default=False)
+    
+    def get_options(self):
+        return self.option_set.all()
 
 
 class Option(models.Model):

@@ -26,10 +26,12 @@ class CourseSerializer(serializers.ModelSerializer):
         return course
     
     def validate(self, data):
-        if data['password'] != self.context['confirm_password']:
-            raise serializers.ValidationError('password and confirm_password don\'t match.')
+        if data['password'] != self.context['confirm_password'][0]:
+            msg = 'Password and confirm_password don\'t match.'
+            raise serializers.ValidationError(msg)
         if Course.objects.filter(join_code=data['join_code']).exists():
-            raise serializers.ValidationError('join_code already exists.')
+            msg = 'This join code already exists.'
+            raise serializers.ValidationError(msg)
         return data
 
 
@@ -69,12 +71,14 @@ class CourseUpdateSerializer(serializers.ModelSerializer):
         password = data.get('password')
         confirm_password = data.get('confirm_password')
         join_code = data.get('join_code')
-        
+
         if password:
             if password != confirm_password:
-                  raise serializers.ValidationError('password and confirm_password don\'t match.')
+                msg = 'Password and confirm_password don\'t match.'
+                raise serializers.ValidationError(msg)
         if join_code:
             if Course.objects.filter(join_code=data['join_code']).exists():
-                raise serializers.ValidationError('join_code already exists.')
+                msg = 'This join code already exists.'
+                raise serializers.ValidationError(msg)
 
         return data
