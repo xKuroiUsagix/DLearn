@@ -1,10 +1,10 @@
 from django.urls import path
-from django.contrib.auth.decorators import login_required
 
 from .views import (
     CourseCreateView,
     CourseJoinView,
     CourseDetailView,
+    CourseDeleteView,
     CourseUpdateView,
     UserCourseView,
     LeaveCourseView,
@@ -14,11 +14,12 @@ from .views import (
 
 app_name = 'course'
 urlpatterns = [
-    path('create/', login_required(CourseCreateView.as_view()), name='create'),
-    path('join/', login_required(CourseJoinView.as_view()), name='join'),
-    path('<int:pk>/', login_required(CourseDetailView.as_view()), name='detail'),
-    path('<int:pk>/settings/', login_required(CourseUpdateView.as_view()), name='settings'),
-    path('<int:course_id>/users/', login_required(UserCourseView.as_view()), name='users'),
-    path('<int:course_id>/kick_user/<int:user_id>/', login_required(KickUserView.as_view()), name='kick_user'),
-    path('<int:course_id>/leave/', login_required(LeaveCourseView.as_view()), name='leave'),
+    path('create/', CourseCreateView.as_view(), name='create'),
+    path('join/', CourseJoinView.as_view(), name='join'),
+    path('<int:course_id>/', CourseDetailView.as_view(), name='detail'),
+    path('<int:course_id>/delete/', CourseDeleteView.as_view(), name='delete'),
+    path('<int:course_id>/settings/', CourseUpdateView.as_view(), name='settings'),
+    path('<int:course_id>/users/', UserCourseView.as_view(), name='users'),
+    path('<int:course_id>/kick_user/<int:user_id>/', KickUserView.as_view(), name='kick_user'),
+    path('<int:course_id>/leave/', LeaveCourseView.as_view(), name='leave'),
 ]

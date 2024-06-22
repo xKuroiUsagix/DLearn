@@ -44,8 +44,9 @@
                     <a href="{% url 'course:users' course.id %}"><button class="course-button">Рейтинг</button></a>
                 </div>
                 <div class="col course-button-col">
-                    <form action="{% url 'course:detail' course.id %}" method="POST">
+                    <form action="{% url 'course:delete' course.id %}" method="post">
                         {% csrf_token %}
+                        <input type="hidden" name="is_owner" value="{{ is_owner }}">
                         <input type="submit" class="course-leave-button course-button" value="Видалити Курс">
                     </form>
                 </div>

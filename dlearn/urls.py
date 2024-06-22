@@ -12,4 +12,16 @@ urlpatterns = [
     path('course/', include('task.urls')),
     path('course/', include('quiz.urls')),
     path('', include('homepage.urls')),
+    # path('__debug__/', include('debug_toolbar.urls'))
+]
+
+api_urlpatterns = [
+    path('auth/', include('authentication.api.urls')),
+    path('course/', include('course.api.urls')),
+    path('task/', include('task.api.urls')),
+    path('quiz/', include('quiz.api.urls')),
+]
+
+urlpatterns += [
+    path('api/1.0/', include(api_urlpatterns)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,7 +13,7 @@ class TaskForm(forms.ModelForm):
     file = forms.FileField(
         required=False, 
         widget=forms.ClearableFileInput(attrs={
-            'multiple': True, 
+            'multiple': False, 
             'class': 'form-control', 
             'id': 'taskFiles'
         })

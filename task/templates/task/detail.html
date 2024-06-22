@@ -12,11 +12,11 @@
         <div class="col">
             <h2 class="col task-header">{{ task.name }}</h2>
             <small class="task-time">
-                {% if user_files.0.too_late %}
+                {% if not is_owner and user_files.0.too_late %}
                     <span style="color: red">
                         <b>Здано з запізенням</b>
                     </span>
-                {% elif too_late %}
+                {% elif not is_onwer and too_late %}
                     <span style="color: red">
                         <b>Не здано</b>
                     </span>
@@ -50,7 +50,7 @@
             <h5 class="col-md-3 files-header">Файли завдання:</h5>
         {% endif %}
 
-        {% if user_files and not is_owner %}
+        {% if not is_owner %}
             <h5 class="col-md-3 user-files-header">Ваші файли:</h5>
         {% endif %}
     </div>
