@@ -6,6 +6,7 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_RE
 from django.shortcuts import get_object_or_404
 
 from .serializers import CourseSerializer, CourseUpdateSerializer
+from .helpers import get_course_id_error_message_if_any
 
 from ..models import Course
 
@@ -64,9 +65,10 @@ class CourseUpdateAPIView(APIView):
     
     def patch(self, request):
         course_id = request.data.get('id')
-
-        if not course_id:
-            return Response('id is required', status=HTTP_400_BAD_REQUEST)
+        message = get_course_id_error_message_if_any(course_id)
+        
+        if message:
+            return Response(message, status=HTTP_400_BAD_REQUEST)
 
         course = get_object_or_404(Course, id=int(course_id))
 
@@ -87,14 +89,10 @@ class JoinCourseAPIVIew(APIView):
 
     def post(self, request):
         course_id = request.data.get('id')
-
-        if not course_id:
-            return Response('id is required', status=HTTP_400_BAD_REQUEST)
-
-        try:
-            course_id = int(course_id)
-        except ValueError:
-            return Response('id must be a number', status=HTTP_400_BAD_REQUEST)
+        message = get_course_id_error_message_if_any(course_id)
+        
+        if message:
+            return Response(message, status=HTTP_400_BAD_REQUEST)
         
         course = Course.objects.get(id=course_id)
         if course.users.contains(request.user):
@@ -109,14 +107,10 @@ class LeaveCourseAPIView(APIView):
     
     def post(self, request):
         course_id = request.data.get('id')
-
-        if not course_id:
-            return Response('id is required', status=HTTP_400_BAD_REQUEST)
-
-        try:
-            course_id = int(course_id)
-        except ValueError:
-            return Response('id must be a number', status=HTTP_400_BAD_REQUEST)
+        message = get_course_id_error_message_if_any(course_id)
+        
+        if message:
+            return Response(message, status=HTTP_400_BAD_REQUEST)
 
         course = Course.objects.get(id=course_id)
         if not course.users.contains(request.user):
