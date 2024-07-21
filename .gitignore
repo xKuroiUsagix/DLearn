@@ -8,6 +8,9 @@ media
 uploads
 my_secrets.py
 
+# PostgreSQL
+postgres_data
+
 # Backup files # 
 *.bak 
 
