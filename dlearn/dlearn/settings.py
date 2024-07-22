@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # 'debug_toolbar',
     'rest_framework',
     'rest_framework.authtoken',
+    'storages',
     
     # django apps
     'django.contrib.admin',
@@ -137,8 +138,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+USE_S3 = os.environ.get('USE_S3') == 'TRUE'
+
+if USE_S3:
+    # aws settings
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_DEFAULT_ACL = None
+    # s3 static settings
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+    STATICFILES_STORAGE = 'dlearn.storage_backends.StaticStorage'
+    # s3 public media settings
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'dlearn.storage_backends.PublicMediaStorage'
+    # s3 private media settings
+    PRIVATE_MEDIA_LOCATION = 'private'
+    PRIVATE_FILE_STORAGE = 'dlearn.storage_backends.PrivateMediaStorage'
+else:
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/mediafiles/'
+
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -148,8 +175,5 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 
 LOGIN_URL = '/auth/login?login_open=open'
 LOGIN_REDIRECT_URL = LOGIN_URL
-
-MEDIA_ROOT = BASE_DIR / 'uploads/'
-MEDIA_URL = '/media/'
 
 SHOW_TOOLBAR_CALLBACK = True

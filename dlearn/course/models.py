@@ -4,10 +4,9 @@ from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
 
 from dlearn.settings import AUTH_USER_MODEL
-from dlearn.settings import MEDIA_ROOT
+from dlearn.storage_backends import PublicMediaStorage
 
-
-DEFAULT_IMAGE_PATH = MEDIA_ROOT / f'default/default_image.png'
+from .constants import DEFAULT_IMAGE_PATH
 
 
 class Course(models.Model):
@@ -35,7 +34,7 @@ class Course(models.Model):
     users = models.ManyToManyField(AUTH_USER_MODEL, through='UserCourse', related_name='courses')
     group_name = models.CharField(max_length=60, null=True, blank=True, verbose_name=_('GroupName'))
     join_code = models.CharField(max_length=20, unique=True, verbose_name=_('JoinCode'))
-    image = models.ImageField(null=False, blank=False, max_length=256, default=DEFAULT_IMAGE_PATH)
+    image = models.ImageField(null=False, blank=False, max_length=256, default=DEFAULT_IMAGE_PATH, storage=PublicMediaStorage())
     password = models.CharField(max_length=128,  verbose_name=_('Password'))
     created_at = models.DateField(auto_now_add=True, verbose_name=_('CreatedAt'))
     

@@ -17,6 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from authentication.errors import ErrorMessages
 from task.models import Task, UserTask
 from quiz.models import Quiz, UserResult
+
 from .models import Course, UserCourse
 from .forms import CourseCreateForm, CourseJoinForm, CourseUpdateForm
 

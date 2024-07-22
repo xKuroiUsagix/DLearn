@@ -1,6 +1,6 @@
 from django.contrib import auth
 
-from course.models import Course, UserCourse
+from course.models import Course
 from course.forms import CourseJoinForm
 from authentication.forms import LoginForm
 

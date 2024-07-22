@@ -16,8 +16,10 @@
 <body>
     {% include 'homepage/navbar.html' %}
     <!-- login modal -->
-    {% if login_error or open %}<div class="modal" id="loginModal" style="display: block;">
-    {% else %}<div class="modal" id="loginModal">
+    {% if login_error or open %}
+        <div class="modal" id="loginModal" style="display: block;">
+    {% else %}
+        <div class="modal" id="loginModal">
     {% endif %}
         <div class="modal-content">
             <span class="close" id="closeLogin">&times;</span>
@@ -26,8 +28,10 @@
     </div>
 
     <!-- join modal -->
-    {% if join_error or join_open %}<div class="modal" id="joinModal" style="display: block;">
-    {% else %}<div class="modal" id="joinModal">
+    {% if join_error or join_open %}
+        <div class="modal" id="joinModal" style="display: block;">
+    {% else %}
+        <div class="modal" id="joinModal">
     {% endif %}
         <div class="modal-content">
             <span class="close" id="closeJoin">&times;</span>
