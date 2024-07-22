@@ -2,7 +2,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ErrorMessages:
-    
     PASSWORD_VALIDATION_ERROR = _('Пароль надто слабкий')
     PASSWORD_NOT_MATCH_ERROR = _('Паролі не одинакові')
     BAD_PASSWORD_ERROR = _('Не правильний пароль')

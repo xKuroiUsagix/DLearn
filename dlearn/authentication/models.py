@@ -5,7 +5,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .managers import UserManager
-from .constants import ROLE_CHOICES
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -30,8 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(verbose_name=_('Password'), max_length=255)
     first_name = models.CharField(verbose_name=_('First Name'), max_length=30, null=True)
     last_name = models.CharField(verbose_name=_('Last Name'), max_length=30, null=True)
-    created_at = models.DateField(verbose_name=_('CreatedAt'), auto_now_add=True)
-    role = models.IntegerField(default=0, choices=ROLE_CHOICES)
+    created_at = models.DateField(verbose_name=_('CreatedAt'), auto_now_add=True, db_index=True)
     
     USERNAME_FIELD = 'email'
     objects = UserManager()
